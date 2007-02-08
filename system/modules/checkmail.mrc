@@ -122,36 +122,46 @@ alias checkmail_check {
 
 ;GMAIL
 alias checkmail_gmail {
-  if ($hget(gmailcookies) != $null) {
-    .hfree gmailcookies
-  }
-  hmake gmailcookies 1
-  if ($exists(system\gmailcookies.dat)) {
-    hload gmailcookies system\gmailcookies.dat
+  ; ha nincs gmailcookies hash tabla, betoltjuk fajlbol (ha letezik)
+  if ($hget(gmailcookies) == $null) {
+    hmake gmailcookies 1
+    if ($exists(system\gmailcookies.dat)) {
+      hload gmailcookies system\gmailcookies.dat
+    }
   }
   unset %gmail_*
-  %gmail_login = 1
-  %gmail_emailnum = 0
-  %gmail_debug = 1
+
+  ; elsore megprobaljuk lekerni a gmail mobilos oldalt
+  %gmail_location = /mail/?ui=mobile&zyp=n
+  %gmail_host = mail.google.com
+  %gmail_port = 80
+
+  %gmail_emailnum = -1
+  ;%gmail_debug = 1
 
   if (%gmail_debug) {
+    %gmail_login = 1
     .window -c @gmail_debug
     /window -e @gmail_debug Fixedsys
-    write -c c:\1.txt
-    write -c c:\2.txt
-    write -c c:\3.txt
-    write -c c:\4.txt
-    write -c c:\5.txt
-    write -c c:\6.txt
+    .remove c:\1.txt
+    .remove c:\2.txt
+    .remove c:\3.txt
+    .remove c:\4.txt
+    .remove c:\5.txt
+    .remove c:\6.txt
+    .remove c:\7.txt
   }
 
-  if ($sock(gmail).status == active) { sockclose gmail }
-  sockopen -e gmail www.google.com 443
+  sockclose gmail
+  sockopen gmail %gmail_host %gmail_port
 }
 
 on 1:sockopen:gmail: {
   if ($sockerr > 0) { if (!%checkmail_quiet) { /echo $color(info2) -atng *** checkmail: hiba a kapcsolódás során! ellenõrizd az email szerver beállításaidat! } | halt }
-  if (%gmail_login == 1) {
+
+  if (ServiceLogin isin %gmail_location) {
+    ; ez akkor van ha nem jo a/nem volt bekuldott cookie, ujra kell loginelni
+    gmail_cookiedel
     ; siman bekuldjuk POST-tal a felhasznalonevet, jelszot
     var %logintmp Email= $+ $urlencode(%checkmail_username) $+ &Passwd= $+ $urlencode($dekod(%checkmail_pass)) $+ &PersistentCookie=yes&service=mail&continue= $+ $urlencode(http://mail.google.com/mail/?) $+ &rm=false&passive=true&nui=5&btmpl=mobile&ui=html
     sockwrite -n gmail POST /accounts/ServiceLoginAuth HTTP/1.0
@@ -168,65 +178,25 @@ on 1:sockopen:gmail: {
     return
   }
 
-  if (%gmail_login == 2) {
-    ; redirecteket kovetjuk
-    if (%gmail_debug) { echo -tng @gmail_debug %gmail_login - opening %gmail_location }
-    sockwrite -n gmail GET %gmail_location HTTP/1.0
-    sockwrite -n gmail Accept: */*
-    sockwrite -n gmail Accept-Language: en-us
-    sockwrite -n gmail User-Agent: netZ Script Pro v $+ %ver
-    sockwrite -n gmail Host: %gmail_host
-    sockwrite -n gmail Connection: close
-    gmail_sendcookies
-    sockwrite -n gmail $crlf
-  }
+  ; egyebkent meg a redirecteket kovetjuk
+  if (%gmail_debug) { echo -tng @gmail_debug %gmail_login - opening %gmail_location }
+  sockwrite -n gmail GET %gmail_location HTTP/1.0
+  sockwrite -n gmail Accept: */*
+  sockwrite -n gmail Accept-Language: en-us
+  sockwrite -n gmail User-Agent: netZ Script Pro v $+ %ver
+  sockwrite -n gmail Host: %gmail_host
+  sockwrite -n gmail Connection: close
+  gmail_sendcookies
+  sockwrite -n gmail $crlf
 
-  if (%gmail_login == 3) {
-    if (%gmail_debug) { echo -tng @gmail_debug %gmail_login - opening %gmail_location }
-    sockwrite -n gmail GET $replace(%gmail_location,&amp;,&) HTTP/1.0
-    sockwrite -n gmail Accept: */*
-    sockwrite -n gmail Accept-Language: en-us
-    sockwrite -n gmail User-Agent: netZ Script Pro v $+ %ver
-    sockwrite -n gmail Host: %gmail_host
-    sockwrite -n gmail Connection: close
-    sockwrite -n gmail $crlf
-  }
+  unset %gmail_location
+}
 
-  if (%gmail_login == 4) {
-    if (%gmail_debug) { echo -tng @gmail_debug %gmail_login - opening %gmail_location }
-    sockwrite -n gmail GET %gmail_location HTTP/1.0
-    sockwrite -n gmail Accept: */*
-    sockwrite -n gmail Accept-Language: en-us
-    sockwrite -n gmail User-Agent: netZ Script Pro v $+ %ver
-    sockwrite -n gmail Host: %gmail_host
-    sockwrite -n gmail Connection: close
-    sockwrite -n gmail $crlf
+alias gmail_cookiedel {
+  if ($hget(gmailcookies) != $null) {
+    hdel -w gmailcookies *
   }
-
-  if (%gmail_login == 5) {
-    ; mobilos feluletre valtunk
-    if (%gmail_debug) { echo -tng @gmail_debug %gmail_login - opening /mail/?ui=mobile&zyp=n }
-    sockwrite -n gmail GET /mail/?ui=mobile&zyp=n HTTP/1.0
-    sockwrite -n gmail Accept: */*
-    sockwrite -n gmail Accept-Language: en-us
-    sockwrite -n gmail User-Agent: netZ Script Pro v $+ %ver
-    sockwrite -n gmail Host: %gmail_host
-    sockwrite -n gmail Connection: close
-    gmail_sendcookies
-    sockwrite -n gmail $crlf
-  }
-
-  if (%gmail_login == 6) {
-    if (%gmail_debug) { echo -tng @gmail_debug %gmail_login - opening /mail/?ui=mobile&zyp=n }
-    sockwrite -n gmail GET %gmail_location HTTP/1.0
-    sockwrite -n gmail Accept: */*
-    sockwrite -n gmail Accept-Language: en-us
-    sockwrite -n gmail User-Agent: netZ Script Pro v $+ %ver
-    sockwrite -n gmail Host: %gmail_host
-    sockwrite -n gmail Connection: close
-    gmail_sendcookies
-    sockwrite -n gmail $crlf
-  }
+  .remove system\gmailcookies.dat
 }
 
 alias gmail_locationconv {
@@ -236,6 +206,14 @@ alias gmail_locationconv {
   if (%cp != $null) {
     %gmail_host = $left(%gmail_host,$calc(%cp - 1))
   }
+
+  if (https:// isin %gmail_location) {
+    %gmail_port = 443
+  }
+  else {
+    %gmail_port = 80
+  }
+
   ; http://www.nonoo.hu/lofasz/valami -> /lofasz/valami
   %cp = $pos(%gmail_location,/,3)
   if (%cp != $null) {
@@ -244,8 +222,11 @@ alias gmail_locationconv {
   else {
     %gmail_location = /
   }
+
+  %gmail_location = $replace(%gmail_location,&amp;,&)
 }
 
+; elkuldi az eltarolt cookiekat a szervernek
 alias gmail_sendcookies {
   var %gmail_cookiecount = $hget(gmailcookies,0).item
   while (%gmail_cookiecount > 0) {
@@ -255,6 +236,7 @@ alias gmail_sendcookies {
   }
 }
 
+; Set-Cookie kezdetu sornal hivjuk meg, eltarolja a cookiet hash tablaba
 alias gmail_setcookie {
   ; elso space pos
   var %cs $calc($pos($1-,$chr(32),1)+1)
@@ -284,125 +266,81 @@ on 1:sockread:gmail: {
   sockread %temp
   if (!$sockbr) { return }
 
-  if (%gmail_login == 1) {
-    if ($left(%temp,10) == Set-Cookie) {
-      gmail_setcookie %temp
-    }
-    if ($left(%temp,8) == Location) {
-      gmail_location %temp
-    }
-    if (%gmail_debug) { write c:\1.txt %temp }
+  if (<title>Welcome $+ $chr(32) $+ to $+ $chr(32) $+ Gmail</title> isin %temp) {
+    if (!%checkmail_quiet) { /echo $color(info2) -atng *** checkmail: hibás felhasználónév vagy jelszó! }
+    unset %gmail_*
+    unset %checkmail_quiet
+    sockclose gmail
+    halt
+  }
+
+  if ($left(%temp,10) == Set-Cookie) {
+    gmail_setcookie %temp
     goto ujraolvas
   }
 
-  if (%gmail_login == 2) {
-    if ($left(%temp,10) == Set-Cookie) {
-      gmail_setcookie %temp
-    }
-    ; itt nem http headerben jon a location, hanem a html head-bol ollozzuk ki
-    if (meta $+ $chr(32) $+ content isin %temp) {
-      var %cs $calc($pos(%temp,$chr(34) $+ 0; $+ $chr(32) $+ url=',1)+9)
-      %gmail_location = $mid(%temp,%cs,$calc($pos(%temp,' $+ $chr(34))-%cs))
-      gmail_locationconv
-      if (%gmail_debug) { echo -tng @gmail_debug %gmail_login - got location: %gmail_location }
-    }
-    if (%gmail_debug) { write c:\2.txt %temp }
-    goto ujraolvas
+  if ($left(%temp,8) == Location) {
+    gmail_location %temp
+    gmail_sockclose
+    halt
   }
 
-  if (%gmail_login == 3) {
-    if ($left(%temp,10) == Set-Cookie) {
-      gmail_setcookie %temp
-    }
-    if ($left(%temp,8) == Location) {
-      gmail_location %temp
-    }
-    if (%gmail_debug) { write c:\3.txt %temp }
-    goto ujraolvas
+  ; ha nem http headerben jon a location, a html head-bol ollozzuk ki
+  if (%gmail_location == $null) && (meta $+ $chr(32) $+ content isin %temp) {
+    var %cs $calc($pos(%temp,$chr(34) $+ 0; $+ $chr(32) $+ url=',1)+9)
+    %gmail_location = $mid(%temp,%cs,$calc($pos(%temp,' $+ $chr(34))-%cs))
+    gmail_locationconv
+    if (%gmail_debug) { echo -tng @gmail_debug %gmail_login - got location: %gmail_location }
+    gmail_sockclose
+    halt
   }
 
-  if (%gmail_login == 4) {
-    if ($left(%temp,10) == Set-Cookie) {
-      gmail_setcookie %temp
-    }
-    if ($left(%temp,8) == Location) {
-      gmail_location %temp
-    }
-    if (%gmail_debug) { write c:\4.txt %temp }
-    goto ujraolvas
-  }
-
-  if (%gmail_login == 5) {
-    if ($left(%temp,10) == Set-Cookie) {
-      gmail_setcookie %temp
-    }
-    if ($left(%temp,8) == Location) {
-      gmail_location %temp
-    }
-    if (%gmail_debug) { write c:\5.txt %temp }
-    goto ujraolvas
+  ; ez a szoveg a rendes gmail oldalon van, ha ez jon, mobilos feluletre valtunk
+  if (it $+ $chr(32) $+ seems $+ $chr(32) $+ JavaScript $+ $chr(32) $+ is $+ $chr(32) $+ either $+ $chr(32) $+ disabled isin %temp) {
+    %gmail_location = http://mail.google.com/mail/?ui=mobile&zyp=n
+    gmail_locationconv
+    gmail_sockclose
+    halt
   }
 
   ; megkeressuk a sort amiben az inboxban levo emailek szama van
-  if (Inbox&nbsp; $+ $chr(40) isin %temp) {
+  if (%gmail_location == $null) && (Inbox&nbsp; $+ $chr(40) isin %temp) {
     var %cs = $calc($pos(%temp,Inbox&nbsp; $+ $chr(40)) + 12)
     %gmail_emailnum = $mid(%temp,%cs, $calc($pos(%temp,$chr(41)) - %cs) )
     if (%gmail_debug) { echo -tng @gmail_debug %gmail_login - got emailnum: %gmail_emailnum }
+    gmail_sockclose
+    halt
   }
-  if (%gmail_debug) { write c:\6.txt %temp }
+
+  if (%gmail_debug) { write c:\ $+ %gmail_login $+ .txt %temp }
+
   goto ujraolvas
 }
 
-on 1:sockclose:gmail: {
-  if (%gmail_login == 1) {
-    if ($len(%gmail_location) > 0) {
-      %gmail_login = 2
-      sockclose gmail
-      sockopen -e gmail www.google.com 443
-      return
+on 1:sockclose:gmail: { gmail_sockclose }
+
+alias gmail_sockclose {
+  sockclose gmail
+  if ($len(%gmail_location) > 0) {
+    if (%gmail_debug) { inc %gmail_login 1 }
+    if (%gmail_port == 443) {
+      sockopen -e gmail %gmail_host %gmail_port
     }
+    else {
+      sockopen gmail %gmail_host %gmail_port
+    }
+    return
   }
 
-  if (%gmail_login == 2) {
-    if ($len(%gmail_location) > 0) {
-      %gmail_login = 3
-      sockclose gmail
-      sockopen gmail %gmail_host 80
-      return
-    }
+  if (%gmail_emailnum == -1) {
+    if (!%checkmail_quiet) { /echo $color(info2) -atng *** checkmail: hiba történt a lekérdezés során - valószínûleg változott a google protokoll. }
+    gmail_cookiedel
   }
-
-  if (%gmail_login == 3) {
-    if ($len(%gmail_location) > 0) {
-      %gmail_login = 4
-      sockclose gmail
-      sockopen gmail %gmail_host 80
-      return
-    }
+  else {
+    checkmail_check %gmail_emailnum
   }
-
-  if (%gmail_login == 4) {
-    if ($len(%gmail_location) > 0) {
-      %gmail_login = 5
-      sockclose gmail
-      sockopen gmail %gmail_host 80
-      return
-    }
-  }
-
-  if (%gmail_login == 5) {
-    if ($len(%gmail_location) > 0) {
-      %gmail_login = 6
-      sockclose gmail
-      sockopen gmail %gmail_host 80
-      return
-    }
-  }
-
-  checkmail_check %gmail_emailnum
 
   hsave gmailcookies system\gmailcookies.dat
-  .hfree gmailcookies
   unset %gmail_*
   unset %checkmail_quiet
 }

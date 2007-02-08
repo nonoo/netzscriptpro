@@ -73,6 +73,7 @@
 /emailer {
   if (!%emailezo_prog) { /mailsetup }
   else { /run %emailezo_prog }
+  if (%checkmail_deletecounter) { %checkmail_lastnum = 0 }
 }
 /page /ctcp $$1 page
 /awaysetup { /setup | /did -f setupdialog 2 }

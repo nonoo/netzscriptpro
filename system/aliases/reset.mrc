@@ -208,6 +208,7 @@
   %flooddetekt_csatik = #csati1 #csati2
   %checkmail_ssl = 0
   %checkmail_gmailmode = 0
+  %checkmail_deletecounter = 1
 
   /echo $color(info) -atng *** Reset done.
 }
@@ -394,6 +395,7 @@
   if (%flooddetekt_csatik == $null) { %flooddetekt_csatik = #csati1 #csati2 }
   if (%checkmail_ssl == $null) { %checkmail_ssl = 0 }
   if (%checkmail_gmailmode == $null) { %checkmail_gmailmode = 0 }
+  if (%checkmail_deletecounter == $null) { %checkmail_deletecounter = 1 }
 }
 ;END
 

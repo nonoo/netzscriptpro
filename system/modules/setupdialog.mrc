@@ -188,7 +188,7 @@ dialog setupdialog {
   edit "", 180, 103 39 28 20, tab 194 disable autohs
   text "percenként.", 181, 137 41 62 17, tab 194
   check "Beep használata email figyelésnél ha van új emailed (lásd Beep beállítások)", 182, 15 216 307 31, tab 194 disable multi
-  check "Emailezõ indítása email figyelésnél ha jött email", 183, 15 260 305 17, tab 194 disable
+  check "Emailezõ indítása email figyelésnél ha jött email", 183, 15 260 307 17, tab 194 disable
   text "Elérési útja:", 184, 16 285 100 14, tab 194
   edit "", 185, 15 300 308 20, tab 194 autohs
   button "tallóz", 186, 255 284 65 16, tab 194
@@ -278,5 +278,7 @@ dialog setupdialog {
   edit "", 115, 19 362 302 20, tab 33 disable autohs
   check "SSL használata", 275, 181 120 100 17, tab 194
   check "GMail", 276, 132 78 51 17, tab 194 multi
-  button "Beállítások ellenõrzése", 277, 97 340 145 25, tab 194
+  button "Beállítások ellenõrzése", 277, 97 348 145 25, tab 194
+  button "cookie törlése", 278, 182 78 93 18, tab 194 hide
+  check "Emailezõ indítása után a checkmail számlálójának nullázása", 279, 15 323 307 17, tab 194
 }
