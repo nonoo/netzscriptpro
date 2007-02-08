@@ -1,0 +1,11 @@
+LIBRARY netz
+EXPORTS
+	beep
+	title
+	idle
+	seticon
+	winamp
+	enkod
+	dekod
+	LoadDll
+	UnloadDll

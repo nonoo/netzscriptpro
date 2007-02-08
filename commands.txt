@@ -1,0 +1,153 @@
+A netZ parancsok listája:
+^^^^^^^^^^^^^^^^^^^^^^^^^
+A ()-ben lévõ paramétereket nem kötelezõ megadni. Az [on|off] értelemszerûen azt jelenti hogy
+vagy on-t, vagy offot írsz oda.
+
+/uzenet - üzenet küldése a fejlesztõnek
+/telnet (-ssl) [host] [port] - Telnet kapcsolat létesítése
+/telnetserver [port] (bind ip) - Telnet szerver létrehozása
+/ts - /telnetserver
+/listclients - Listázza az aktív kapcsolatokat a telnet szerver ablakban
+/dropclient [sorszám] - Lekapcsolja a megadott sorszámú kapcsolatot a telnet szerverrõl
+/insult [nick] - inzultálás
+/classictema - klasszikus színtémára váltás
+/origtema - eredeti színtémára váltás
+/uptime - kiírja az uptimeokat
+/topic (csati) [topic] - topic változtatás a megadott csatin
+/sinv - /siteinvite
+/siteinvite [ftp://(user:pass@)host(:port)] (nick) - ftp site invite
+/szerverforgalom - szerver forgalmi statisztika (/stats l)
+/hextoip [hexadecimálisan kódolt ip] - hexkódolt ip-t vált át sima ip-re
+/update - új verzió keresése, frissítés
+/dl [urlek] - http/ftp file letöltés
+/dlc - letöltési sor törlése
+/opme - /botop
+/botop [nick] - opot kér a megadott bottól
+/mailsetup - email beállítások
+/checkmail - email postafiók ellenõrzés
+/autocheckmail [on|off] - automata email ellenõrzés
+/am [szó] - angol-magyar szótár (szotar.sztaki.hu)
+/ma [szó] - magyar-angol szótár (szotar.sztaki.hu)
+/nm [szó] - német-magyar szótár (szotar.sztaki.hu)
+/mn [szó] - magyar-német szótár (szotar.sztaki.hu)
+/hm [szó] - holland-magyar szótár (szotar.sztaki.hu)
+/mh [szó] - magyar-holland szótár (szotar.sztaki.hu)
+/lm [szó] - lengyel-magyar szótár (szotar.sztaki.hu)
+/ml [szó] - magyar-lengyel szótár (szotar.sztaki.hu)
+/om [szó] - olasz-magyar szótár (szotar.sztaki.hu)
+/mo [szó] - magyar-olasz szótár (szotar.sztaki.hu)
+/fm [szó] - francia-magyar szótár (szotar.sztaki.hu)
+/mf [szó] - magyar-francia szótár (szotar.sztaki.hu)
+/calc (mûvelet) - gyors számológép
+/forgalom - kiírja hogy eddig mennyi volt a szerverrel az adatforgalmunk
+/textformatter - text formatter
+/page [nick] - page küldése
+/nevnap (hónap) (nap) - névnap lekérdezése, paraméter nélkül a mai
+/away (üzenet) - away kapcsolása
+/aaway (üzenet) - away kapcsolása minden kapcsolaton, egyszerre
+/aaway (üzenet) - az összes kapcsolaton lehet vele egyszerre kapcsolni az awayt
+/awaysetup - away beállításai
+/rizsa - szövegek átmeneti tárolására és csatira való bevágására szolgáló ablak megnyitása
+/asciicodes - ASCII kód konvertáló
+/realnames (csati) - kilistázza a csatin a userek real nameit
+/idents (csati) - kilistázza a csatin a userek identjeit
+/servers (csati) - kilistázza a csatin a userek irc szervereit
+/hosts (csati) - kilistázza a csatin a userek hostjait
+/psybnc (erase) - bnc log lekérése, erase paraméterre törli a logot
+/unban (csati) [hostmask] - unban
+/reoplist (csati) - kilistázza a reop hostokat a csatin
+/banlist (csati) - kilistázza a banokat a csatin
+/lagauto [on|off] - automatikus lag detektor
+/lag - lag kiírása
+/fancy.autumn - színes írás
+/fancy.sunset - színes írás
+/fancy.ocean - színes írás
+/fancy.bluefade - színes írás
+/fancy.redfade - színes írás
+/fancy.purplefade - színes írás
+/fancy.greenfade - színes írás
+/fancy.yellowfade - színes írás
+/fancy.greyfade - színes írás
+/fancy.lila - színes írás
+/fancy.rainbow - színes írás
+/fancy.dobozos - színes írás
+/fancy.caution - színes írás
+/fancy.hiya - színes írás
+/fancy.tesco - tesco gazdaságos csatorna
+/fancy.szines - színes írás
+/anyad - "színes kurva anyád" :)
+/flashbang - próbáld ki, flashbang :)
+/wp (csati) - winampban éppen hallható mp3 kiíratása a megadott csatira (ha nincs megadva csati, aktívba nyomja)
+/awp - /wp az összes csatira
+/wpauto [on|off] - automata kiírás be/kikapcsolása a setupban megadottak szerint
+/setup - setup
+/hop [num] - num-szor cyclezik az aktív csatin
+/hopchan [csati] [num] - num-szor cyclezik a megadott csatin
+/cycle - ugyanaz mint a /hop 1
+/slap [nick] - slap
+/on - /orignick
+/orignick (nick|off) - ha elvették a nicked használd ezt, amint lehet, visszaszerzi, paraméter nélkül a státuszt adja vissza
+/ig - /ignore
+/unig - unignore
+/unignore
+/kickban (csati) [nick|host] (indok) - kickban
+/kick (csati) [nick] (indok) - kick
+/kb - /kickban
+/motd - motd kiírása
+/w - /whois
+/ww - /whowas
+/whoami - kiírja a nicked
+/ip - kiírja az ip-d és a vágólapra másolja
+/host - kiírja a hostod és a vágólapra másolja
+/version - ctcp version
+/sa - /server atw.irc.hu
+/sh - /server hub.irc.hu
+/ss - /server sote.irc.hu
+/sx - /server extra.irc.hu
+/se - /server elte.irc.hu
+/si - /server irc.hu
+/sl - /server localhost
+/s - /server
+/sm [host] - csatlakozás a megadott szerverhez új szerver ablakban
+/sn - új szerver ablak nyitása
+/op
+/dop - /deop
+/deop
+/voice
+/devoice
+/network - aktív irc hálózat kiírása
+/j - /join
+/p - /part
+/n - /nick
+/m - /mode
+/k - /kick
+/q - /query
+/send - dcc send
+/chat - dcc chat
+/ping - ctcp ping
+/paint - elindítja a paintot
+/emailer - elindítja az emailezõ programot
+/rnick (num) - num-szor random nicket vált
+/masskickban (csati) - mass kickban (oposokat nem bánt)
+/massvoice (csati) - mass voice (oposokat nem bánt)
+/massdevoice (csati) - mass devoice (oposokat nem bánt)
+/massinvite [csati] [hova] - a csatin lévõ összes embert inviteolja a megadott csatira
+/massinvitenonops [csati] [hova] - a csatin lévõ összes nem opot inviteolja a megadott csatira
+/massdccsend [csati] [fájl] - mindenkinek elküldi a fájlt a csatin
+/massnotice [csati] [üzenet] - mindenkinek elküldi noticeban az üzenetet
+/massnoticeops [csati] [üzenet] - az opoknak elküldi noticeban az üzenetet
+/massnoticenonops [csati] [üzenet] - a nem opoknak elküldi noticeban az üzenetet
+/masskick (csati) - nem opokat kirúgja
+/massmsg [csati] [msg] - mindenkinek elküldi a csatin az üzenetet
+/massmsgops [csati] [msg] - opoknak elküldi a csatin az üzenetet
+/massmsgnonops [csati] [msg] - nem opoknak elküldi a csatin az üzenetet
+/massop (csati) - mindenkit opol a csatin
+/massdeop (csati) - mindenkit deopol a csatin
+/masshighlight (csati) - mindenki nickjét beírja a csatira, ezáltal highlightol
+/convert [ip|longip] - ipbõl longip-re alakít, vagy vissza, utána a vágólapra másolja
+/showq - quit message kiírása
+/itime - internet idõ kiírása
+/sakk [nick] - sakkozás
+/amoba [nick] - amõbázás
+/domain [domain(pl. hu)] - országkód visszafejtés
+/viewlog - aktív csati logjának megnyitása

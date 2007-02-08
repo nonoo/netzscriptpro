@@ -1,0 +1,270 @@
+[2.102]
+- inzultálás queryben is kiírta a célnicket - javítva (köszi HyD)
+- /fancy.tesco, /fancy.szines, /anyad :)
+- /masshighlight
+- flood detektálás ezentúl alapból ki van kapcsolva
+- nem lehetett beírni csatira, querybe azt hogy "" - javítva
+- netz.dll-be került át az összes winampot kezelõ függvény.
+  a netz.dll forráskódját a honlapról le lehet tölteni.
+- winamp5 támogatás az mp3 kijelzésnél
+- a frissités most nem a szokásos netz update-tel érkezik, hanem külön le kell
+  tölteni azt, mert a netz.dll-t nem lehet menet közben unloadolni.
+  a frissítés tartalmazza a mirc 6.21-es exejét is és az új guildftpd-t.
+  a frissítés egészen a 2.8-as verziótól kezdve mûködik 2.101-ig.
+- ezentúl GPL licence alatt másolható, módosítható a script
+- /topic-nak ha nem adunk meg paramétert, ezentúl az aktív csati topicját
+  írja ki
+- uptime rekord mérés, szól ha új rekord van és ha nagyobb idõket érünk el
+  (1 nap, 5 nap, 1 hét, 15 nap, 1 hónap), a jelenlegi rekordot az /uptime
+  paranccsal lehet lekérni
+- ha már meg van nyitva egy privi ablak és újra megpróbáljuk megnyitni, ezentúl
+  nem vágja be megint az utolsó x. sornyi logot
+- netsplit detektálás kapcsolható a menübõl
+- ezentúl beállítható hogy az awaynick az éppen aktív nick kisbetûs változata
+  legyen
+- a háttérben lévõ ablak kiírás fontjának default színe 50,50,50 lett, ez
+  halványabb, kevésbé zavaró
+- flood védelem kapcsolható, hogy csak megadott csatikon mûködjön
+- flood védelem elvileg már úgy megy ahogyan mennie kéne :)
+  pl. ezentúl ha a csati floodnál csak a kickban van kipipálva, a kick nincs,
+  akkor is mûködik a kickban. eddig ez valamiért szarul volt
+- F8 "akció" gomb a csatikon ezentúl végtelenszer mûködik, nem csak 1x lehet
+  lenyomni.
+- SSL támogatás a POP3 email figyelõhöz
+- GMail postafiók támogatás az email figyelõhöz
+- Ezentúl csak akkor csipog email érkezésekor ha a mIRC ablak nem aktív
+- Ezentúl bármit be lehet írni emailezõ programnak, nem csak létezõ fájlt.
+  Hasznos pl. urlek beírására (http://mail.google.com/)
+- $encode/$decode helyett saját $enkod, $dekod a netz.dll-ben. Azért kell mert
+  alapból a mIRC lockolja a $decodet.
+- Új telepítõ
+- Toolbar háttere elcsúszott az ottlévõ csík miatt - javítva
+- atw.hu változtatott ezért 404et adnak a letöltések róla - javítva
+- ezentúl ha noticet kapsz, akkor is beepel (ha be van állítva)
+- szerver ablakban jobbkatt hibát jelzett ki - javítva
+- /viewlog parancs
+- /dl-ben voltak hibák, javítva, https:// (SSL) támogatás hozzáadva
+- SSL támogatás a /telnet parancsnál (-ssl)
+- Ezentúl ha /telnet és /telnetserver ablakokban /crlf parancsot adunk ki, egy
+  CR/LF karakterpárt küld el
+- Script fájlok apróbb darabokra szedve
+
+[2.101] 2006.04.24. 19:00
+- mirc 6.17 a telepítõben, a frissítés nem tartalmazza ezt, úgy tudsz
+  frissíteni hogy felülírod a régi mirc.exe-t az újjal - frissítés után
+  kapcsold ki a mirc beállítások->other->lock-ban a decodet jobboldalt
+- nincsen beállítva topic üzenet ezentúl nem highlightolja az ablak gombját
+- ezentúl nem jelez hibát ha paraméter nélkül lett kiadva a /me
+- voice adásánál rosszul írta ki az ablakba az üzenetet - javítva
+- ha pl. z00 volt a nicked, z betûkre highlightolt mert a 0-t
+  semminek vette - javítva
+- ha valakivel nyitva van egy query, kilép az ircrõl, újra belép más nickkel,
+  majd felveszi a régi nickjét, akkor figyelmeztetõ üzenet kerül a query
+  ablakba hogy az illetõ felvette a régi nickjét (jelzi hogy újra ittvan)
+
+[2.100] 2005.12.14. 03:00
+- telnet ablakba ha parancsot írunk, végrehajtja, mûködik a ctrl+enter is
+- telnetnél a spacek helyesen jelennek meg, ha több van egymás után, azok is
+- /si parancs
+- win95/98/ME alatt winamp beep opció is letiltva (jobb mintha hibákat dobálna)
+- sockread optimalizálás (gyorsabb downloader, kommunikáció)
+- notifynél a privi beep beállításoktól függõen pittyen
+- firstsetupban limitált volt a beírható karakterek száma az egyes editboxokba - javítva
+  (köszi Thund3R)
+- nevnapok.ini-ben még mindig maradt hiba
+- ha valamiért nem volt logfile, a loadbuf hibát jelzett a query ablakban log
+  bemásolásánál
+- /me-nel is highlightol a nicked említésére
+- kapcsolható url kiemelés
+- az away back nicket kapásból átveszi nick váltásnál
+- f8 idõzítés kiszedve
+- ha a nickedben speckó karakterek vannak (pl. ^ vagy ´ vagy [] stb.) vagy számok, akkor is
+  highlightol ha valaki ezek nélkül írja be a neved
+- f7-es köszönésnél néha nem azt mondta be ami ki volt írva - javítva
+- ablak hátterében a csati nevének szélességének auto igazítása korrigálva, hogy ha a csati-
+  lista az ablak szélén van akkor is kiférjen a csatinév
+- ha valaki away es queryzünk vele, csak 5 percenként írja ki hogy az illetõ nincs itt
+- halfopok % jelének megjelenítése csati üzeneteknél a nick mellett
+- ha kisebb a lagod mint 1 sec, msecben is kiírja
+- orignick állandóan figyelmeztetett ha aktív volt, hogy aktív, ezentúl csak akkor figyelmez-
+  tet ha nicket váltunk és közben aktív
+- ha csak simán :-ot írtunk az üzenetbe, mindig kiegészítette a nickkel - javítva
+- webchat ip egy sorba került a sima joinnal
+- netz.dll (speaker+band+hstylus funkciók egybegyúrva) Face által
+- meg lehet adni szavakat amire highlightol, nem csak a nickedre
+
+[2.99] 2005.09.20 01:00
+- /aaway parancs, az összes kapcsolaton lehet egyszerre kapcsolni vele az awayt
+- kapcsolható hogy az f10 egyszerre az összes kapcsolaton kapcsolja az awayt
+- away kikapcs/bekapcs üzenetek aechozódnak ezentúl
+- autoaway az f10 gomb beállításához igazodik, ha azzal minden kapcsolaton kapcsolod az awayt,
+  akkor az autoaway is minden kapcsolaton kapcsolódik
+- helyrepofozott /telnet kliens, /telnetserver szerver
+- nevnapok.ini javítva
+
+[2.98] 2005.09.17 20:30
+- noticekat, disconnectet nem az aktív ablakba írja hanem az összes csatiablakba ami az adott
+  kapcsolathoz tartozik
+- netsplit infót státusz ablakba írja mostantól
+- ha users.atw.hu-s formában adtunk meg atw.hu-s linket, azt is átalakította így nem töltõdött
+  le - javítva (köszi NobidioN)
+- query ablak nyitásakor a log legutóbbi sorait bemásolja az ablakba, így láthatjuk hogy elõzõleg
+  mit beszéltünk az illetõvel (köszi BlooD2oo1)
+- titlebar update minden másodpercben volt, még akkor is ha nem változott, most már csak akkor
+  hívódik meg a dll ha szükséges (proci idõ spórolás)
+- Win98/95/ME alatt nem megy az autoaway valamint a Winamp kijelzés, a dllek már nem támogatják
+  ezeket a régi oprendszereket - ezek a funkciók letiltásra kerültek
+
+[2.97] 2005.08.26. 19:00
+- nick menüben nem lehetett egyszerre több embert kickelni, kickbanolni - javítva
+- F4-re winamp kijelzés (/wp)
+- néha beragadt a %dl_quiet és nem ment a letöltés ha duplán linkre kattintás volt - javítva
+- meta tag refresh kezelése letöltésnél
+- ircproxy használata esetén mikor belépünk a bncre az összes csatin kiírja a topicot (a bnc
+  alapból nem íratja ki a mirccel)
+
+[2.96] 2005.08.17. 20:00
+- ha olyan nickû ember szólt hozzánk queryben akinek a nevében |,/,\ jel van, akkor hibát
+  jelzett, nem jelent meg az ablak háttér - javítva
+- /siteinvitenak nem csatit, hanem nicket kell megadni :)
+- ha belép valaki és van vele nyitott query és az utolsó sor az hogy a user kilépett, akkor
+  jelez, hogy visszajött
+- ha belép/kilép valaki és van vele nyitott query akkor ezek highlightolják a query switchbar
+  gombját, ezek az események a query logjába is bekerülnek
+- a lag mérés noticeval történik, így az idle idõ a whoisban megmarad
+- lag mérõ csíkot is jelezhet
+- ctcp ping (/ping) pontosabb idõt ír ki, nem a szokásos mirces másodperc alapú részletezéssel,
+  hanem századmásodpercre pontosan
+- pár új ctcp reply
+- volt egy elírás a 60perces idle szín használatnál és nem mentõdött el a beállítása - javítva
+- lag detektor normálisan mûködik több szerver kapcsolat esetén (mindig az aktív szerver lagját
+  mutatja)
+- hash táblás adattárolás $cid szerint átszervezve
+- idlecheck multiszerver támogatás normálisan megcsinálva
+- a &servers csatira már láthatatlanul lép be (netsplit detect)
+- /uzenet csak véges hosszúságú üzenetet tudott küldeni, javítva
+- inzultálás :)
+- autoaway csak akkor kapcsol be ha nem nyúlsz a gépedhez a megadott autoaway ideig, a
+  systemidle idõt veszi alapul, nem a mirc idle idejét
+- linkre kattintáskor az esetleges ' jelet leszedi a link végérõl (topicban van valamilyen link,
+  ott szokott ilyen elõfordulni)
+- dizájnos timestampot is lehet már állítani (a mirc alapból nem tárolja el a színkódokat a
+  timestampban)
+- ha megszakad a kapcsolat, nem lesz nicklist, query, channel menü, csak újrakapcsolódás után
+- szituáció függõ menüpontok (pl. op/deop csak akkor ha op vagy, bot kérés csak optól stb.)
+- ctcp flood védelem
+
+[2.95] 2005.08.12. 19:00
+- readmeben rossz mirc verzió volt
+- joinnál nem lehetett passos csatikra belépni a # kiegészítés miatt, javítva
+- nick lista színeit már lehet állítani, kapcsolható a 60 perc utáni színezés (hátha nagyon
+  sötét már az a szín)
+- timestamp zárojelekben van kapcsoszárójel helyett
+- quit.txt átszûrve Penya által
+- nick váltásnál nem íródott át a query ablak neve
+- legutóbbi szerverek a status popupban
+- autoconnect
+- atw.hu-ról letöltésnél framek kezelése
+- calc
+- whois lekérésekor lastmsg idõként az idle idõt is felhasználjuk (nick színezésnél)
+- ha valaki quitol, törlõdik a lastmsg ideje
+- továbbfejlesztett átirányításos letöltés támogatás
+- update nem kezelte rendesen a verzió szám nagyságokat, ezért lett 2.95, nem 2.10, így a követ-
+  kezõ verzió várhatóan 2.96 lesz, vagy 2.100
+
+[2.9] 2005.08.07. 17:00
+- /join csati - nem kötelezõ kitenni a #-t a csati neve elé
+- winamp automata kijelzés hibát jelzett ha nem futott a winamp, javítva (köszi blox)
+- klasszikus színtémára át lehet kapcsolni (/origtema, /classictema)
+- kick üzeneteknél pár dolog javítva
+- csati popup menüben ha kirúgtak a csatiról, nem cycle jelenik meg hanem rejoin
+- nem írt a whoisban a csatik helyére semmit ha csak a &serversen voltunk bennt, most nem írja
+  ki a csatikat se
+
+[2.8] 2005.08.05. 20:00
+- f8 gomb timeout ideje 180secrõl 360ra növelve
+- új letöltés hozzáadásakor mindig elõugrik a downloader ablak
+- átirányításos letöltéseket is támogatja már (pl. szanalmas.hu redir.php)
+- új hátterek
+- /uptime
+- ablakok hátterébe ablak nevének kiírása (/wndback)
+
+[2.7] 2005.07.19. 9:30
+- ftp letöltésnél byteban írta ki a fájlméretet, nem írta ki a százalékot - javítva
+
+[2.6] 2005.07.18. 22:00
+- autoawayben maradt még hiba, javítva (köszi Hyd)
+
+[2.5] 2005.07.18. 19:30
+- binaris patch fileokat külön kezeli
+- onserverop rész kiszedve
+- ha valaki kimondja a nicked valamelyik csatin (highlight) és nem aktív a mirc akkor csipog/
+  beepel (ez a pager priviknél setup részben kapcsolható a jobb felsõ sarokban lévõ checkboxszal)
+- downloader mutatja a hátralévõ idõt, a dialog frissítése timeres lett, így kevesebb procit
+  eszik meg, a sebességmérés másodpercenként történik, így pontosabb, kiírja a file méretét is
+- ha több letöltést adtunk meg /dl-nek, mindig csak az elsõ urlt töltötte le - javítva
+
+[2.4] 2005.07.17. 14:30
+- dcc chat ablakban nem megy a filter, mirc faszsága, szóval most a script nem engedi dcc chat
+  ablakban a filtert használni (köszi Battle)
+- új netsplit quit üzenetek (köszi Battle)
+- pár hejesírási hiba javítva (köszi Hyd)
+- az ablakokban a timestampok többé nem lilák
+- topicot kétszer írta ki, javítva (köszi Penya)
+
+[2.3] 2005.07.16. 16:00
+- webchat unicode karaktereket helyesen jeleníti meg
+- /mailsetup már nem az egyéb2 setupot hozza elõ
+- /wp akkor is ment ha nem futott a winamp
+- ha nincs valamelyik winamp csík kijelzés paraméter megadva, a csík kikapcsolt lesz
+- csati menüben letöltés folytatása menüpont megjelenik ha van a letöltési sorban letöltés
+- speaker.exe helyett speaker.dll (köszi Face)
+- kapcsolható hogy a windows beep csak akkor menjen ha szól a winamp (ehhez swamp.dllt használ)
+- autoawaynél folyamatosan írta a státuszba az üzeneteket, javítva
+- beepes figyelmeztetõ dolgok az egyéb2 tab helyére kerültek a setupban, email figyelmeztetési
+  opciókat is külön lehet már állítani
+- update bugos volt ha nagyon sok update file volt a zipben, átalakítva hash táblás adatkezelésre
+
+[2.2] 2005.07.15.
+- ha helyköz volt a mirc elérési útjában, nem ment az update
+- /topic parancs, kibõvítve az alap /topic-ot
+- letöltött adatmennyiség mérés nem ment rendesen
+
+[2.1] 2005.07.14.
+- inik helyett hash táblák használata
+- /siteinvite
+- netZ HttpGet átnevezve netZ Downloaderre, letöltési sor látható lett, dupla katt benne törli
+  az adott url-t, /dlc parancs, ftprõl is tölt már, http1.1-es protokollra upgrade
+- multi szerver támogatás továbbfejlesztve, winamp auto kijelzés minden csatira, kiválasztott
+  csatikra már az összes kapcsolaton aktív
+- hotlink hiba ha a topicban kattintottunk az urlre javítva
+- flash/beep timeout, hogy ne õrülj meg a folyamatos villogástól/sipolástól
+- idlecheck - ha valaki megszólalt az elmúlt 10 percben, világít a nickje a nicklistában
+  minél idlébb annál sötétebb lesz a nickje (10,20,40 perc)
+- rizsawindow mérete kisebb lett
+- kapcsolható flashelés, beep, pc speaker beep privát üzeneteknél, flashelés alapból bekapcsolva
+- /szerverforgalom
+- join/part/quit/mode/topic/whois/whowas színek átállítva
+
+[2.0] 2005.07.12. 17:06
+az 1-es szériához képest nagyon sok változás történt, így csak párat sorolok fel, ami éppen
+eszembe jut :)
+a legjobb ha elolvasod a commands.txt-t.
+
+- script 90%-a újraírva, kipucolt kód, csak a legszükségesebb, az ircelés kényelmét szolgáló
+  dolgok maradtak bennt (textscanner, quiz, ilyesmi felesleges szarságok kikerültek)
+- http letöltés, automatikus verzió frissítés netrõl
+- modeok teljes körû kezelése, reop lista
+- újraírt checkmail, away rendszer
+- csak a fontos eseményeknél világít a csati gombja, villog pl. akkor ha a nickedet valaki
+  kimondta valamelyik csatin
+- lila színtéma, biztos egy csomó embernek nem fog tetszeni, nekem tetszik, kész.
+- nyelvtani elemzés :) névelõk, toldalékok megfelelõ kiírásánál
+- orignick, ophop hüjeségek javítva
+- F8-as action gomb ablakonként külön aktív
+- felesleges dolgokat nem logol
+- winamp kijelzés r1dll.dll használatával
+- új setup
+- sztaki szótár használata
+- ha valaki kilép és van nyitott queryje akkor beleírja hogy kilépett
+- +minden más

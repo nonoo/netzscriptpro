@@ -1,0 +1,409 @@
+;  This file is part of netZ Script Pro.
+;
+;  netZ Script Pro is free software; you can redistribute it and/or modify
+;  it under the terms of the GNU General Public License as published by
+;  the Free Software Foundation; either version 2 of the License, or
+;  (at your option) any later version.
+;
+;  netZ Script Pro is distributed in the hope that it will be useful,
+;  but WITHOUT ANY WARRANTY; without even the implied warranty of
+;  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;  GNU General Public License for more details.
+;
+;  You should have received a copy of the GNU General Public License
+;  along with netZ Script Pro; if not, write to the Free Software
+;  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+;CHECKMAIL
+alias /autocheckmail {
+  if ($1 == off) { .timercheckmail_auto off | echo $color(info) -atngq *** Automata email ellenõrzés kikapcsolva. | return }
+  if (!%checkmail_interval) || (!%checkmail_szerver) || (!%checkmail_port) || (!%checkmail_username) || (!%checkmail_pass) { /mailsetup | halt }
+  if ($1 == on) { %checkmail_lastnum = 0 | .timercheckmail_auto -i 0 $calc(%checkmail_interval * 60) /checkmail -quiet | echo $color(info) -atngq *** Automata email ellenõrzés bekapcsolva. | return }
+  echo $color(info) -atng *** /autocheckmail - Automata email ellenõrzés. használat: /autocheckemail [on|off]
+}
+alias /mailsetup { /setup | /did -f setupdialog 194 }
+alias /checkmail {
+  if ($1 = -quiet) { %checkmail_quiet = 1 }
+  else { unset %checkmail_quiet }
+  if (!%checkmail_username) || (!%checkmail_pass) {
+    if (!%checkmail_gmailmode) {
+      if (!%checkmail_szerver) || (!%checkmail_port) {
+        /mailsetup | halt
+      }
+    }
+  }
+  if (!%checkmail_quiet) { echo $color(info) -atng *** checkmail... }
+  if (%checkmail_gmailmode) { /checkmail_gmail | return }
+
+  if ($sock(checkmail).status == active) { sockclose checkmail }
+  if (%checkmail_ssl) { sockopen -e checkmail %checkmail_szerver %checkmail_port }
+  else { sockopen checkmail %checkmail_szerver %checkmail_port }
+}
+
+on 1:sockopen:checkmail: {
+  if ($sockerr > 0) { if (!%checkmail_quiet) { /echo $color(info2) -atng *** checkmail: hiba a kapcsolódás során! ellenõrizd az email szerver beállításaidat! } | halt }
+  %poptimes = 0
+}
+
+on 1:sockread:checkmail: {
+  var %data
+  var %data2
+  var %datain
+  :ujraolvas
+  sockread %datain
+  if (!$sockbr) { return }
+  %data2 = $gettok(%datain,2,32)
+  %data = $gettok(%datain,1,32)
+  if (%data == -ERR) || (%data = +ERR) {
+    if (!%checkmail_quiet) {
+      if (%poptimes == 2) || (%poptimes == 3) {
+        /echo $color(info2) -atng *** checkmail: hibás felhasználónév vagy jelszó! ( $+ $gettok(%datain,2-,32) $+ )
+      }
+      else {
+        /echo $color(info2) -atng *** checkmail: szerver hiba! ellenõrizd az email beállításaidat! %datain
+      }
+    }
+    if ($sock(checkmail).status == active) { sockclose checkmail }
+    unset %poptimes | unset %checkmail_quiet
+    halt
+  }
+  if (%data == +OK) {
+    inc %poptimes 1
+    if (%poptimes == 1) { sockwrite -n checkmail USER %checkmail_username }
+    if (%poptimes == 2) { sockwrite -n checkmail PASS $dekod(%checkmail_pass) }
+    if (%poptimes == 3) { sockwrite -n checkmail STAT }
+    if (%poptimes == 4) {
+      checkmail_check %data2
+      sockclose checkmail
+      unset %poptimes | unset %checkmail_quiet
+    }
+    halt
+  }
+  if (!%checkmail_quiet) { /echo $color(info2) -atng *** checkmail: szerver hiba, ismeretlen válasz: %datain }
+  goto ujraolvas
+}
+
+on 1:sockclose:checkmail: { unset %poptimes | unset %checkmail_quiet }
+
+alias checkmail_check {
+  if ($1 == %checkmail_lastnum) && (%checkmail_quiet) {
+    sockclose checkmail
+    halt
+  }
+  %checkmail_lastnum = $1
+  if ($1 == 0) { if (!%checkmail_quiet) { /echo $color(info) -atng *** checkmail: nincs új emailed. } | unset %poptimes | unset %checkmail_quiet | sockclose checkmail }
+  else {
+    if (%checkmail_pager) && (%checkmail_quiet) && (!$appactive) {
+      if (%checkmail_beep) {
+        if (!%checkmail_beep_winamp) || ($dll(system/netz.dll, winamp, GetCurrentWinampSong) == 0)  { /beep 2 100 }
+        else {
+          if ($dll(system\netz.dll, winamp, isplaying)) { /beep 2 100 }
+        }
+      }
+      if (%checkmail_speaker) { .timer 1 0 /netzbeep mail }
+      if (%checkmail_flash) { .timer 1 0 /flash %checkmail_flash_szoveg }
+    }
+
+    var %eprogtxt
+
+    if (%checkmail_emailer) { .timer 1 0 /emailer }
+    else {
+      if (%emailezo_prog) {
+        %eprogtxt = (F8 - emailer)
+        .hdel data $cid $+ doit $+ $replace($active,Status Window,status)
+        .hadd data $cid $+ doit $+ $replace($active,Status Window,status) /emailer
+      }
+    }
+
+    /echo $color(info) -atng *** checkmail: $+ $color(nick) $1 új emailed érkezett! %eprogtxt
+  }
+}
+;END
+
+;GMAIL
+alias checkmail_gmail {
+  if ($hget(gmailcookies) != $null) {
+    .hfree gmailcookies
+  }
+  hmake gmailcookies 1
+  if ($exists(system\gmailcookies.dat)) {
+    hload gmailcookies system\gmailcookies.dat
+  }
+  unset %gmail_*
+  %gmail_login = 1
+  %gmail_emailnum = 0
+  %gmail_debug = 1
+
+  if (%gmail_debug) {
+    .window -c @gmail_debug
+    /window -e @gmail_debug Fixedsys
+    write -c c:\1.txt
+    write -c c:\2.txt
+    write -c c:\3.txt
+    write -c c:\4.txt
+    write -c c:\5.txt
+    write -c c:\6.txt
+  }
+
+  if ($sock(gmail).status == active) { sockclose gmail }
+  sockopen -e gmail www.google.com 443
+}
+
+on 1:sockopen:gmail: {
+  if ($sockerr > 0) { if (!%checkmail_quiet) { /echo $color(info2) -atng *** checkmail: hiba a kapcsolódás során! ellenõrizd az email szerver beállításaidat! } | halt }
+  if (%gmail_login == 1) {
+    ; siman bekuldjuk POST-tal a felhasznalonevet, jelszot
+    var %logintmp Email= $+ $urlencode(%checkmail_username) $+ &Passwd= $+ $urlencode($dekod(%checkmail_pass)) $+ &PersistentCookie=yes&service=mail&continue= $+ $urlencode(http://mail.google.com/mail/?) $+ &rm=false&passive=true&nui=5&btmpl=mobile&ui=html
+    sockwrite -n gmail POST /accounts/ServiceLoginAuth HTTP/1.0
+    sockwrite -n gmail Accept: */*
+    sockwrite -n gmail Accept-Language: en-us
+    sockwrite -n gmail Content-Type: application/x-www-form-urlencoded
+    sockwrite -n gmail Content-Length: $len(%logintmp)
+    sockwrite -n gmail User-Agent: netZ Script Pro v $+ %ver
+    sockwrite -n gmail Host: www.google.com
+    sockwrite -n gmail Connection: close
+    sockwrite -n gmail
+    sockwrite -n gmail %logintmp
+    sockwrite -n gmail
+    return
+  }
+
+  if (%gmail_login == 2) {
+    ; redirecteket kovetjuk
+    if (%gmail_debug) { echo -tng @gmail_debug %gmail_login - opening %gmail_location }
+    sockwrite -n gmail GET %gmail_location HTTP/1.0
+    sockwrite -n gmail Accept: */*
+    sockwrite -n gmail Accept-Language: en-us
+    sockwrite -n gmail User-Agent: netZ Script Pro v $+ %ver
+    sockwrite -n gmail Host: %gmail_host
+    sockwrite -n gmail Connection: close
+    gmail_sendcookies
+    sockwrite -n gmail $crlf
+  }
+
+  if (%gmail_login == 3) {
+    if (%gmail_debug) { echo -tng @gmail_debug %gmail_login - opening %gmail_location }
+    sockwrite -n gmail GET $replace(%gmail_location,&amp;,&) HTTP/1.0
+    sockwrite -n gmail Accept: */*
+    sockwrite -n gmail Accept-Language: en-us
+    sockwrite -n gmail User-Agent: netZ Script Pro v $+ %ver
+    sockwrite -n gmail Host: %gmail_host
+    sockwrite -n gmail Connection: close
+    sockwrite -n gmail $crlf
+  }
+
+  if (%gmail_login == 4) {
+    if (%gmail_debug) { echo -tng @gmail_debug %gmail_login - opening %gmail_location }
+    sockwrite -n gmail GET %gmail_location HTTP/1.0
+    sockwrite -n gmail Accept: */*
+    sockwrite -n gmail Accept-Language: en-us
+    sockwrite -n gmail User-Agent: netZ Script Pro v $+ %ver
+    sockwrite -n gmail Host: %gmail_host
+    sockwrite -n gmail Connection: close
+    sockwrite -n gmail $crlf
+  }
+
+  if (%gmail_login == 5) {
+    ; mobilos feluletre valtunk
+    if (%gmail_debug) { echo -tng @gmail_debug %gmail_login - opening /mail/?ui=mobile&zyp=n }
+    sockwrite -n gmail GET /mail/?ui=mobile&zyp=n HTTP/1.0
+    sockwrite -n gmail Accept: */*
+    sockwrite -n gmail Accept-Language: en-us
+    sockwrite -n gmail User-Agent: netZ Script Pro v $+ %ver
+    sockwrite -n gmail Host: %gmail_host
+    sockwrite -n gmail Connection: close
+    gmail_sendcookies
+    sockwrite -n gmail $crlf
+  }
+
+  if (%gmail_login == 6) {
+    if (%gmail_debug) { echo -tng @gmail_debug %gmail_login - opening /mail/?ui=mobile&zyp=n }
+    sockwrite -n gmail GET %gmail_location HTTP/1.0
+    sockwrite -n gmail Accept: */*
+    sockwrite -n gmail Accept-Language: en-us
+    sockwrite -n gmail User-Agent: netZ Script Pro v $+ %ver
+    sockwrite -n gmail Host: %gmail_host
+    sockwrite -n gmail Connection: close
+    gmail_sendcookies
+    sockwrite -n gmail $crlf
+  }
+}
+
+alias gmail_locationconv {
+  ; http://www.nonoo.hu/lofasz/valami -> www.nonoo.hu
+  %gmail_host = $remove(%gmail_location,http://,https://)
+  var %cp $pos(%gmail_host,/,1)
+  if (%cp != $null) {
+    %gmail_host = $left(%gmail_host,$calc(%cp - 1))
+  }
+  ; http://www.nonoo.hu/lofasz/valami -> /lofasz/valami
+  %cp = $pos(%gmail_location,/,3)
+  if (%cp != $null) {
+    %gmail_location = $remove(%gmail_location,$left(%gmail_location,$calc(%cp - 1)))
+  }
+  else {
+    %gmail_location = /
+  }
+}
+
+alias gmail_sendcookies {
+  var %gmail_cookiecount = $hget(gmailcookies,0).item
+  while (%gmail_cookiecount > 0) {
+    sockwrite -n gmail Cookie: $hget(gmailcookies,%gmail_cookiecount).item $+ = $+ $hget(gmailcookies,%gmail_cookiecount).data
+    if (%gmail_debug) { echo -tng @gmail_debug %gmail_login - sent cookie: $hget(gmailcookies,%gmail_cookiecount).item $+ = $+ $hget(gmailcookies,%gmail_cookiecount).data }
+    dec %gmail_cookiecount 1
+  }
+}
+
+alias gmail_setcookie {
+  ; elso space pos
+  var %cs $calc($pos($1-,$chr(32),1)+1)
+  ; egyenlosegjel pos
+  var %ce $pos($1-,$chr(61),1)
+  var %cookiename = $mid($1-,%cs,$calc(%ce - %cs))
+  ; pontosvesszo pos
+  var %cc $pos($1-,$chr(59),1)
+  if (%cc == $null) { %cc = $calc($len($1-) + 1) }
+  var %cookiedata = $mid($1-,$calc(%ce + 1),$calc( %cc - %ce - 1 ) )
+  if (%gmail_debug) { echo -tng @gmail_debug %gmail_login - got cookie: %cookiename $+ = $+ %cookiedata }
+  if (%cookiedata == EXPIRED) { hdel gmailcookies %cookiename }
+  else { hadd gmailcookies %cookiename %cookiedata }
+}
+
+; kivagja a parameterkent megadott sorbol a location-t
+alias gmail_location {
+  var %cs $calc($pos($1-,$chr(32),1)+1)
+  %gmail_location = $mid($1-,%cs,$calc($len($1-)-%cs+1))
+  gmail_locationconv
+  if (%gmail_debug) { echo -tng @gmail_debug %gmail_login - got location: %gmail_location }
+}
+
+on 1:sockread:gmail: {
+  var %temp
+  :ujraolvas
+  sockread %temp
+  if (!$sockbr) { return }
+
+  if (%gmail_login == 1) {
+    if ($left(%temp,10) == Set-Cookie) {
+      gmail_setcookie %temp
+    }
+    if ($left(%temp,8) == Location) {
+      gmail_location %temp
+    }
+    if (%gmail_debug) { write c:\1.txt %temp }
+    goto ujraolvas
+  }
+
+  if (%gmail_login == 2) {
+    if ($left(%temp,10) == Set-Cookie) {
+      gmail_setcookie %temp
+    }
+    ; itt nem http headerben jon a location, hanem a html head-bol ollozzuk ki
+    if (meta $+ $chr(32) $+ content isin %temp) {
+      var %cs $calc($pos(%temp,$chr(34) $+ 0; $+ $chr(32) $+ url=',1)+9)
+      %gmail_location = $mid(%temp,%cs,$calc($pos(%temp,' $+ $chr(34))-%cs))
+      gmail_locationconv
+      if (%gmail_debug) { echo -tng @gmail_debug %gmail_login - got location: %gmail_location }
+    }
+    if (%gmail_debug) { write c:\2.txt %temp }
+    goto ujraolvas
+  }
+
+  if (%gmail_login == 3) {
+    if ($left(%temp,10) == Set-Cookie) {
+      gmail_setcookie %temp
+    }
+    if ($left(%temp,8) == Location) {
+      gmail_location %temp
+    }
+    if (%gmail_debug) { write c:\3.txt %temp }
+    goto ujraolvas
+  }
+
+  if (%gmail_login == 4) {
+    if ($left(%temp,10) == Set-Cookie) {
+      gmail_setcookie %temp
+    }
+    if ($left(%temp,8) == Location) {
+      gmail_location %temp
+    }
+    if (%gmail_debug) { write c:\4.txt %temp }
+    goto ujraolvas
+  }
+
+  if (%gmail_login == 5) {
+    if ($left(%temp,10) == Set-Cookie) {
+      gmail_setcookie %temp
+    }
+    if ($left(%temp,8) == Location) {
+      gmail_location %temp
+    }
+    if (%gmail_debug) { write c:\5.txt %temp }
+    goto ujraolvas
+  }
+
+  ; megkeressuk a sort amiben az inboxban levo emailek szama van
+  if (Inbox&nbsp; $+ $chr(40) isin %temp) {
+    var %cs = $calc($pos(%temp,Inbox&nbsp; $+ $chr(40)) + 12)
+    %gmail_emailnum = $mid(%temp,%cs, $calc($pos(%temp,$chr(41)) - %cs) )
+    if (%gmail_debug) { echo -tng @gmail_debug %gmail_login - got emailnum: %gmail_emailnum }
+  }
+  if (%gmail_debug) { write c:\6.txt %temp }
+  goto ujraolvas
+}
+
+on 1:sockclose:gmail: {
+  if (%gmail_login == 1) {
+    if ($len(%gmail_location) > 0) {
+      %gmail_login = 2
+      sockclose gmail
+      sockopen -e gmail www.google.com 443
+      return
+    }
+  }
+
+  if (%gmail_login == 2) {
+    if ($len(%gmail_location) > 0) {
+      %gmail_login = 3
+      sockclose gmail
+      sockopen gmail %gmail_host 80
+      return
+    }
+  }
+
+  if (%gmail_login == 3) {
+    if ($len(%gmail_location) > 0) {
+      %gmail_login = 4
+      sockclose gmail
+      sockopen gmail %gmail_host 80
+      return
+    }
+  }
+
+  if (%gmail_login == 4) {
+    if ($len(%gmail_location) > 0) {
+      %gmail_login = 5
+      sockclose gmail
+      sockopen gmail %gmail_host 80
+      return
+    }
+  }
+
+  if (%gmail_login == 5) {
+    if ($len(%gmail_location) > 0) {
+      %gmail_login = 6
+      sockclose gmail
+      sockopen gmail %gmail_host 80
+      return
+    }
+  }
+
+  checkmail_check %gmail_emailnum
+
+  hsave gmailcookies system\gmailcookies.dat
+  .hfree gmailcookies
+  unset %gmail_*
+  unset %checkmail_quiet
+}
+;END
