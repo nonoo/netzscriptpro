@@ -312,6 +312,11 @@ on 1:sockread:gmail: {
     halt
   }
 
+  if (%gmail_location == $null) && (Inbox isin %temp) {
+    %gmail_emailnum = 0
+    if (%gmail_debug) { echo -tng @gmail_debug %gmail_login - got emailnum: %gmail_emailnum }
+  }
+
   if (%gmail_debug) { write c:\ $+ %gmail_login $+ .txt %temp }
 
   goto ujraolvas
