@@ -37,17 +37,18 @@
   Hasznos pl. urlek beírására (http://mail.google.com/)
 - $encode/$decode helyett saját $enkod, $dekod a netz.dll-ben. Azért kell mert
   alapból a mIRC lockolja a $decodet.
-- Új telepítõ
-- Toolbar háttere elcsúszott az ottlévõ csík miatt - javítva
+- új telepítõ
+- toolbar háttere elcsúszott az ottlévõ csík miatt - javítva
 - atw.hu változtatott ezért 404et adnak a letöltések róla - javítva
 - ezentúl ha noticet kapsz, akkor is beepel (ha be van állítva)
 - szerver ablakban jobbkatt hibát jelzett ki - javítva
 - /viewlog parancs
 - /dl-ben voltak hibák, javítva, https:// (SSL) támogatás hozzáadva
 - SSL támogatás a /telnet parancsnál (-ssl)
-- Ezentúl ha /telnet és /telnetserver ablakokban /crlf parancsot adunk ki, egy
+- ezentúl ha /telnet és /telnetserver ablakokban /crlf parancsot adunk ki, egy
   CR/LF karakterpárt küld el
-- Script fájlok apróbb darabokra szedve
+- script fájlok apróbb darabokra szedve
+- új opció az email figyelõnél - számláló nullázása emailer indítása esetén
 
 [2.101] 2006.04.24. 19:00
 - mirc 6.17 a telepítõben, a frissítés nem tartalmazza ezt, úgy tudsz

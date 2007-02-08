@@ -272,7 +272,9 @@ on *:DIALOG:setupdialog:init:*: {
   if (%checkmail_gmailmode) {
     did -c $dname 276
     did -b $dname 172 | did -b $dname 178 | did -b $dname 275
+    did -v $dname 278
   }
+  if (%checkmail_deletecounter) { did -c $dname 279 }
   ;END
 }
 ;END
@@ -674,12 +676,16 @@ on *:DIALOG:setupdialog:sclick:275: {
   else { did -ra $dname 178 110 }
 }
 on *:DIALOG:setupdialog:sclick:276: {
-  if ($did(276).state) { did -b $dname 172 | did -b $dname 178 | did -b $dname 275 }
-  else { did -e $dname 172 | did -e $dname 178 | did -e $dname 275 }
+  if ($did(276).state) { did -b $dname 172 | did -b $dname 178 | did -b $dname 275 | did -v $dname 278 }
+  else { did -e $dname 172 | did -e $dname 178 | did -e $dname 275 | did -h $dname 278 }
 }
 on *:DIALOG:setupdialog:sclick:277: {
   /emailsettingssave
   /checkmail
+}
+on *:DIALOG:setupdialog:sclick:278: {
+  /gmail_cookiedel
+  /echo $color(info) -atng *** GMail cookie törölve.
 }
 alias /emailsettingssave {
   if ($did(170).state) { %checkmail = 1 }
@@ -698,6 +704,8 @@ alias /emailsettingssave {
   else { %checkmail_ssl = 0 }
   if ($did(276).state) { %checkmail_gmailmode = 1 }
   else { %checkmail_gmailmode = 0 }
+  if ($did(279).state) { %checkmail_deletecounter = 1 }
+  else { %checkmail_deletecounter = 0 }
 }
 ;END
 

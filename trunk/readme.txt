@@ -47,13 +47,14 @@ olvashatsz, a parancsok listáját a commands.txt-ben találod meg.
 
 Ha el szeretnéd küldeni megjegyzésedet, ötletedet a scripttel kapcsolatban,
 esetleg szeretnél bekapcsolódni a fejlesztésbe akkor írj az /uzenet
-parancs használatával!
+parancs használatával, vagy használd a netZ Google csoportját:
+http://groups.google.com/group/netzscriptpro/topics?hl=hu
 
 Készítõk:
 Nonoo     (script, netz.dll)      - nonoo@nonoo.hu | www.nonoo.hu
 
 Battle    (tesztelés)             - battle@replays.hu
-Blood2oo1 (háttér)                - suli666@freemail.hu
+Blood2oo1 (háttér)                - melykuti.tamas@freemail.hu
 Face      (netz.dll)              - face.coder@freemail.hu
 HyD       (ascii logo, tesztelés) - attila.hydra@freemail.hu
 Penya     (quit.txt szûrés)       - penya@nonoo.hu
@@ -62,6 +63,8 @@ Régebbi verziók fejlesztésében részt vettek:
 Ryck      (mirc.exe fordítás)     - ryck@freemail.hu
 
 A script a GPL licence szerint módosítható és terjeszthetõ. Lásd copying.txt.
+A fejlesztés alatt lévõ változatot elérheted Subversion segítségével, bõvebb
+info itt: http://code.google.com/p/netzscriptpro/source
 
 netZ Script Pro © Nonoo 1999-2007
 
