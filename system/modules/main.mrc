@@ -53,7 +53,7 @@ on *:START: {
 
     ; mirc ikon
     .timer 1 0 /dll system\netz.dll seticon
-    .play -sc system\title.txt 100
+    .play -sc system\title.txt 40
     echo -sg  $+ $chr(32) $+  $+ $chr(32) $+  $+ $color(nick) $+ :[ netZ Script Pro v $+ %ver by Nonoo ]: :[ http://netz.nonoo.hu/ ]:
     echo $color(background) -sg -
     nevnap -s

@@ -129,10 +129,9 @@ alias checkmail_gmail {
       hload gmailcookies system\gmailcookies.dat
     }
   }
-  unset %gmail_*
 
-  ; elsore megprobaljuk lekerni a gmail mobilos oldalt
-  %gmail_location = /mail/?ui=mobile&zyp=n
+  ; elsore megprobaljuk lekerni az emailek szamat
+  %gmail_location = /mail/?ik=&search=inbox&view=tl&start=0&init=1&zx=
   %gmail_host = mail.google.com
   %gmail_port = 80
 
@@ -257,7 +256,6 @@ alias gmail_location {
   var %cs $calc($pos($1-,$chr(32),1)+1)
   %gmail_location = $mid($1-,%cs,$calc($len($1-)-%cs+1))
   gmail_locationconv
-  if (%gmail_debug) { echo -tng @gmail_debug %gmail_login - got location: %gmail_location }
 }
 
 on 1:sockread:gmail: {
@@ -275,50 +273,66 @@ on 1:sockread:gmail: {
   }
 
   if ($left(%temp,10) == Set-Cookie) {
+    if (GV=EXPIRED; isin %temp) {
+      %gmail_location = https://www.google.com/accounts/ServiceLoginAuth
+      gmail_locationconv
+      if (%gmail_debug) { echo -tng @gmail_debug %gmail_login - cookie expired, relogging }
+      else {
+        gmail_sockclose
+        halt
+      }
+    }
     gmail_setcookie %temp
-    goto ujraolvas
+    if (!%gmail_debug) { goto ujraolvas }
   }
 
   if ($left(%temp,8) == Location) {
     gmail_location %temp
-    gmail_sockclose
-    halt
+    if (%gmail_debug) { echo -tng @gmail_debug %gmail_login - got location: %gmail_location }
+    else {
+      gmail_sockclose
+      halt
+    }
   }
 
   ; ha nem http headerben jon a location, a html head-bol ollozzuk ki
-  if (%gmail_location == $null) && (meta $+ $chr(32) $+ content isin %temp) {
+  if (%gmail_location == $null) && (meta $+ $chr(32) $+ content= $+ $chr(34) $+ 0; $+ $chr(32) $+ url=' isin %temp) {
     var %cs $calc($pos(%temp,$chr(34) $+ 0; $+ $chr(32) $+ url=',1)+9)
-    %gmail_location = $mid(%temp,%cs,$calc($pos(%temp,' $+ $chr(34))-%cs))
+    var %ce $calc($pos(%temp,' $+ $chr(34)) - %cs)
+    %gmail_location = $mid(%temp,%cs,%ce)
     gmail_locationconv
     if (%gmail_debug) { echo -tng @gmail_debug %gmail_login - got location: %gmail_location }
-    gmail_sockclose
-    halt
+    else {
+      gmail_sockclose
+      halt
+    }
   }
 
-  ; ez a szoveg a rendes gmail oldalon van, ha ez jon, mobilos feluletre valtunk
-  if (it $+ $chr(32) $+ seems $+ $chr(32) $+ JavaScript $+ $chr(32) $+ is $+ $chr(32) $+ either $+ $chr(32) $+ disabled isin %temp) {
-    %gmail_location = http://mail.google.com/mail/?ui=mobile&zyp=n
+  ; ez a szoveg a rendes gmail oldalon van, ha ez jon,
+  ; lekerjuk a javascript oldalt amiben benne lesz az olvasatlan levelek szama
+  if (indexOf $+ $chr(40) $+ 'nocheckbrowser' $+ $chr(41) isin %temp) {
+    %gmail_location = http://mail.google.com/mail/?ik=&search=inbox&view=tl&start=0&init=1&zx=
     gmail_locationconv
-    gmail_sockclose
-    halt
+    if (%gmail_debug) { echo -tng @gmail_debug %gmail_login - getting number of unread mails }
+    else {
+      gmail_sockclose
+      halt
+    }
   }
 
   ; megkeressuk a sort amiben az inboxban levo emailek szama van
-  if (%gmail_location == $null) && (Inbox&nbsp; $+ $chr(40) isin %temp) {
-    var %cs = $calc($pos(%temp,Inbox&nbsp; $+ $chr(40)) + 12)
-    %gmail_emailnum = $mid(%temp,%cs, $calc($pos(%temp,$chr(41)) - %cs) )
+  ; D(["ds",[["inbox",1]
+  if (%gmail_location == $null) && (D $+ $chr(40) $+ $chr(91) $+ $chr(34) $+ ds $+ $chr(34) $+ $chr(44) $+ $chr(91) $+ $chr(91) $+ $chr(34) $+ inbox $+ $chr(34) isin %temp) {
+    var %cs = $calc($pos(%temp,$chr(34) $+ inbox $+ $chr(34)) + 8)
+    %gmail_emailnum = $mid(%temp,%cs, $calc($pos(%temp,$chr(93)) - %cs) )
     if (%gmail_debug) { echo -tng @gmail_debug %gmail_login - got emailnum: %gmail_emailnum }
-    gmail_sockclose
-    halt
-  }
-
-  if (%gmail_location == $null) && (Inbox isin %temp) {
-    %gmail_emailnum = 0
-    if (%gmail_debug) { echo -tng @gmail_debug %gmail_login - got emailnum: %gmail_emailnum }
+    else {
+      gmail_sockclose
+      halt
+    }
   }
 
   if (%gmail_debug) { write c:\ $+ %gmail_login $+ .txt %temp }
-
   goto ujraolvas
 }
 
