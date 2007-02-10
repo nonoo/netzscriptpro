@@ -489,7 +489,7 @@
   /echo @hotkeys *** F8 - "Action Button"
   /echo @hotkeys *** F9 - Awaysetup (/awaysetup)
   /echo @hotkeys *** F10 - Away ON/OFF
-  /echo @hotkeys *** F11 - FTP szerver indítása
+  if ($exists(system\guildftpd\guildftpd.exe)) { /echo @hotkeys *** F11 - FTP szerver indítása }
   /echo @hotkeys *** F12 - netZ Script Pro Setup
   /echo @hotkeys *** CTRL+F3 - Új netZ Script Pro indítása
   /echo $color(background) @hotkeys -
@@ -529,7 +529,7 @@
   if (%aaway_f10) { /aaway }
   else { /away }
 }
-/f11 { /run system\guildftpd\guildftpd.exe }
+/f11 { if ($exists(system\guildftpd\guildftpd.exe)) { /run system\guildftpd\guildftpd.exe } }
 /f12 { /setup }
 /cf3 {
   .run mirc.exe
