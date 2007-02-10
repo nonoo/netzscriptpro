@@ -163,6 +163,9 @@
 /title {
   var %tiit = netZ Script Pro %ver
   if ($away) { %tiit = %tiit %titlebar_bal $+ Away $+ %titlebar_jobb }
+  if (%checkmail) && (%checkmail_lastnum > 0) {
+    %tiit = %tiit %titlebar_bal $+ Email: %checkmail_lastnum $+ %titlebar_jobb
+  }
   if ($timer(lag $+ $cid).type) {
     var %lag = $hget(data,$cid $+ lag)
     if (%lag) {

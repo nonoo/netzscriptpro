@@ -9,7 +9,7 @@
 - winamp5 támogatás az mp3 kijelzésnél
 - a frissités most nem a szokásos netz update-tel érkezik, hanem külön le kell
   tölteni azt, mert a netz.dll-t nem lehet menet közben unloadolni.
-  a frissítés tartalmazza a mirc 6.21-es exejét is és az új guildftpd-t.
+  a frissítés tartalmazza a mirc 6.21-es exejét.
   a frissítés egészen a 2.8-as verziótól kezdve mûködik 2.101-ig.
 - ezentúl GPL licence alatt másolható, módosítható a script
 - /topic-nak ha nem adunk meg paramétert, ezentúl az aktív csati topicját
@@ -49,6 +49,9 @@
   CR/LF karakterpárt küld el
 - script fájlok apróbb darabokra szedve
 - új opció az email figyelõnél - számláló nullázása emailer indítása esetén
+- update rendszer átdolgozva egyszerûbbre, a régi tele volt felesleggel
+- guildftpd kikerült az alap telepítésbõl
+- az emailek számát kiírja a titlebarban (ha több van mint 0)
 
 [2.101] 2006.04.24. 19:00
 - mirc 6.17 a telepítõben, a frissítés nem tartalmazza ezt, úgy tudsz

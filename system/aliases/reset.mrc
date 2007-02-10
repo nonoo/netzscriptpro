@@ -144,7 +144,7 @@
   %checkmail_emailer = 0
   %checkmail_lastnum = 0
   %tmpSetting = -auto
-  %update_php = update.php
+  %update_php = update.ini
   %pager_beep_winamp = 0
   %beep_priviknel_winamp = 1
   %pager_flash = 1
@@ -217,7 +217,8 @@
 ;VARCHECK
 /varcheck {
   ; vegignezi a netz valtozoit es ha valamelyik hianyzik, default ertekre allitja
-  %ver = 2.102
+  %ver = 2.102 beta
+  %update_php = update.ini
   if (%nemvoltinditva == $null) { %nemvoltinditva = 0 }
   if (%url == $null) { %url = netz.nonoo.hu }
   if (%winamp_csik_kijelzes == $null) { %winamp_csik_kijelzes = 1 }
@@ -337,7 +338,6 @@
   if (%checkmail_emailer == $null) { %checkmail_emailer = 0 }
   if (%checkmail_lastnum == $null) { %checkmail_lastnum = 0 }
   if (%tmpSetting == $null) { %tmpSetting = -auto }
-  if (%update_php == $null) { %update_php = update.php }
   if (%pager_beep_winamp == $null) { %pager_beep_winamp = 0 }
   if (%beep_priviknel_winamp == $null) { %beep_priviknel_winamp = 1 }
   if (%pager_flash == $null) { %pager_flash = 1 }
