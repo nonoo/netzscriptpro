@@ -72,7 +72,8 @@ on *:DIALOG:dl:sclick:6: {
   ; ha update letoltes elott allunk
   if ($did(6) == Update) {
     did -ra dl 6 OK | unset %dl_noclose
-    /dl %patchneeded
+    if (%patchneeded != $null) { /dl %patchneeded }
+    else { echo $color(info2) -atng *** Hiba az update fájlban, nem található a szükséges frissítés! }
     halt
   }
   /window -c @Downloader
@@ -113,7 +114,7 @@ alias /dl {
   if (!$1) && (!$hget(dl_urllist,1)) { /echo $color(info2) -atng *** /dl hiba: túl kevés paraméter! használat: /dl [-f urlfile|urlek] | halt }
   if ($1 == -f) && (!$2) { /echo $color(info2) -atng *** /dl hiba: túl kevés paraméter! használat: /dl [-f urlfile|urlek] | halt }
   ; ez azert mert az /update a /dl_importot hasznalja
-  urlremove http://netz.nonoo.hu/update/update.php
+  urlremove %update_url $+ %update_php
   %dl_quiet = 0
   ; aktivva tesszuk az ablakot
   if ($dialog(dl)) { /dialog -v dl }
