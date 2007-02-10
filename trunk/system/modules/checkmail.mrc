@@ -88,7 +88,7 @@ on 1:sockclose:checkmail: { unset %poptimes | unset %checkmail_quiet }
 alias checkmail_check {
   if ($1 == %checkmail_lastnum) && (%checkmail_quiet) {
     sockclose checkmail
-    halt
+    return
   }
   %checkmail_lastnum = $1
   if ($1 == 0) { if (!%checkmail_quiet) { /echo $color(info) -atng *** checkmail: nincs új emailed. } | unset %poptimes | unset %checkmail_quiet | sockclose checkmail }
