@@ -52,6 +52,9 @@
 - update rendszer átdolgozva egyszerûbbre, a régi tele volt felesleggel
 - guildftpd kikerült az alap telepítésbõl
 - az emailek számát kiírja a titlebarban (ha több van mint 0)
+- ha gyorsan egymás után volt használva a szótár, sockopen hibát
+  jelzett - javítva
+- emailer F6-ra került, mailsetup helyett
 
 [2.101] 2006.04.24. 19:00
 - mirc 6.17 a telepítõben, a frissítés nem tartalmazza ezt, úgy tudsz
