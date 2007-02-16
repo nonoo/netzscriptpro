@@ -277,10 +277,6 @@ on 1:sockread:gmail: {
       %gmail_location = https://www.google.com/accounts/ServiceLoginAuth
       gmail_locationconv
       if (%gmail_debug) { echo -tng @gmail_debug %gmail_login - cookie expired, relogging }
-      else {
-        gmail_sockclose
-        halt
-      }
     }
     gmail_setcookie %temp
     if (!%gmail_debug) { goto ujraolvas }

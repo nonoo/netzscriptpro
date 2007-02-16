@@ -484,7 +484,7 @@
   /echo @hotkeys *** F2 - Connect to %legutobbiszerver1
   /echo @hotkeys *** F4 - Winamp kijelzés (/wp)
   /echo @hotkeys *** F5 - Email check (/checkmail)
-  /echo @hotkeys *** F6 - Email setup (/mailsetup)
+  /echo @hotkeys *** F6 - Emailezõ indítása (/emailer)
   /echo @hotkeys *** F7 - Köszönés
   /echo @hotkeys *** F8 - "Action Button"
   /echo @hotkeys *** F9 - Awaysetup (/awaysetup)
@@ -507,7 +507,7 @@
   }
 }
 /f4 { /wp }
-/f6 { /mailsetup }
+/f6 { /emailer }
 /f5 { /checkmail }
 /f7 {
   if ($active == Status Window) { halt }

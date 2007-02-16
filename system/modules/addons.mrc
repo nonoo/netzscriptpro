@@ -347,6 +347,7 @@ alias /am {
   %nyelvfrom = ENG
   %nyelvto = HUN
   %szotar = EngHunDict
+  sockclose szotar
   sockopen szotar szotar.sztaki.hu 80
 }
 alias /ma {
@@ -356,6 +357,7 @@ alias /ma {
   %nyelvfrom = HUN
   %nyelvto = ENG
   %szotar = EngHunDict
+  sockclose szotar
   sockopen szotar szotar.sztaki.hu 80
 }
 alias /nm {
@@ -365,6 +367,7 @@ alias /nm {
   %nyelvfrom = GER
   %nyelvto = HUN
   %szotar = GerHunDict
+  sockclose szotar
   sockopen szotar szotar.sztaki.hu 80
 }
 alias /mn {
@@ -374,6 +377,7 @@ alias /mn {
   %nyelvfrom = HUN
   %nyelvto = GER
   %szotar = GerHunDict
+  sockclose szotar
   sockopen szotar szotar.sztaki.hu 80
 }
 alias /fm {
@@ -383,6 +387,7 @@ alias /fm {
   %nyelvfrom = FRA
   %nyelvto = HUN
   %szotar = FraHunDict
+  sockclose szotar
   sockopen szotar szotar.sztaki.hu 80
 }
 alias /mf {
@@ -392,6 +397,7 @@ alias /mf {
   %nyelvfrom = HUN
   %nyelvto = FRA
   %szotar = FraHunDict
+  sockclose szotar
   sockopen szotar szotar.sztaki.hu 80
 }
 alias /om {
@@ -401,6 +407,7 @@ alias /om {
   %nyelvfrom = ITA
   %nyelvto = HUN
   %szotar = ItaHunDict
+  sockclose szotar
   sockopen szotar szotar.sztaki.hu 80
 }
 alias /mo {
@@ -410,6 +417,7 @@ alias /mo {
   %nyelvfrom = HUN
   %nyelvto = ITA
   %szotar = ItaHunDict
+  sockclose szotar
   sockopen szotar szotar.sztaki.hu 80
 }
 alias /hm {
@@ -419,6 +427,7 @@ alias /hm {
   %nyelvfrom = HOL
   %nyelvto = HUN
   %szotar = HolHunDict
+  sockclose szotar
   sockopen szotar szotar.sztaki.hu 80
 }
 alias /mh {
@@ -428,6 +437,7 @@ alias /mh {
   %nyelvfrom = HUN
   %nyelvto = HOL
   %szotar = HolHunDict
+  sockclose szotar
   sockopen szotar szotar.sztaki.hu 80
 }
 alias /lm {
@@ -437,6 +447,7 @@ alias /lm {
   %nyelvfrom = POL
   %nyelvto = HUN
   %szotar = PolHunDict
+  sockclose szotar
   sockopen szotar szotar.sztaki.hu 80
 }
 alias /ml {
@@ -446,6 +457,7 @@ alias /ml {
   %nyelvfrom = HUN
   %nyelvto = POL
   %szotar = PolHunDict
+  sockclose szotar
   sockopen szotar szotar.sztaki.hu 80
 }
 ;END
