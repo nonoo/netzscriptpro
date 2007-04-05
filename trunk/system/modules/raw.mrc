@@ -328,7 +328,7 @@ raw 219:*: { .enable #simastatslinkinfo | .disable #forgalomstatslinkinfo | halt
 ;LUSERS
 raw 251:*: {
   if (!%lusers_kiiras) && (!%lusers_kiir) { halt }
-  /echo $color(background) -sn - | echo $color(other) -sn *** Stats of $server
+  /echo $color(background) -sn - | echo $color(other) -sn *** Stats of $server at $time $date
   echo $color(highlight) -sn *** A hálózatban lévõ felhasználók száma: $4
   %fickokszama = $4
   %szerverszam = $10

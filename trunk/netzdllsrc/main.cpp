@@ -31,7 +31,7 @@ struct LOADINFO
 void __stdcall LoadDll( struct LOADINFO *load )
 {
 	g_hMIRC = load->mHwnd;
-	load->mKeep = FALSE;
+	load->mKeep = TRUE;
 }
 
 int __stdcall UnloadDll( int mTimeout )
