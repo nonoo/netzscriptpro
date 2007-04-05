@@ -152,3 +152,15 @@ __declspec( dllexport ) int __stdcall dekod( HWND mWnd, HWND aWnd, char *data, c
 
 	return 3;
 }
+
+// open
+__declspec( dllexport ) int __stdcall sysopen( HWND mWnd, HWND aWnd, char *data, char *parms, BOOL show, BOOL nopause )
+{
+	if( !strlen( data ) )
+	{
+		return 1;
+	}
+
+	ShellExecute( NULL, "open", data, NULL, NULL, SW_SHOW );
+	return 1;
+}

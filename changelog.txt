@@ -55,6 +55,10 @@
 - ha gyorsan egymás után volt használva a szótár, sockopen hibát
   jelzett - javítva
 - emailer F6-ra került, mailsetup helyett
+- státusz ablakban duplakattra az irc szerver statisztikához már kiírja az
+  idõt/dátumot is
+- /wp paraméterezhetõ lett
+- url megnyitásakor már nem ír hibaüzenetet
 
 [2.101] 2006.04.24. 19:00
 - mirc 6.17 a telepítõben, a frissítés nem tartalmazza ezt, úgy tudsz

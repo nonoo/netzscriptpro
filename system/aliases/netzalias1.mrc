@@ -72,7 +72,7 @@
 /paint /run mspaint
 /emailer {
   if (!%emailezo_prog) { /mailsetup }
-  else { /run %emailezo_prog }
+  else { /dll system/netz.dll sysopen %emailezo_prog }
   if (%checkmail_deletecounter) { %checkmail_lastnum = 0 }
 }
 /page /ctcp $$1 page
@@ -223,7 +223,7 @@
   var %i 1
   :loop
   ; ha van megfelelo ablak akkor abba irjuk a noticet
-  if ( $chat(%i) == $remove($1,=) ) || ( $query(%i) == $1 ) { /echo $color(notice) -tm $1 -n-o-t-i-c-e-> $2- | .notice $1- | return }
+  if ( $chat(%i) == $remove($1,=) ) || ( $query(%i) == $1 ) { /echo $color(notice) -tm $1 -n-o-t-i-c-e-> $2- | .notice $1- }
   if (%i >= $query(0)) && (%i >= $chat(0)) {
     ; egyebkent meg az aktiv ablakba irjuk
     /echo $color(notice) -atngm -n-o-t-i-c-e-> - $+ $1 $+ - $2-

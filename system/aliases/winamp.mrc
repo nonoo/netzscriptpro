@@ -160,11 +160,21 @@
     /echo $color(info) -atng Winamp: $wpmsg
   }
   else {
-    if ($1) {
-      /describe $1 %winamp_kiiras_szoveg $wpmsg
+    if ($1) && ($1 ischan) {
+      if ($2) {
+        /describe $1 $2- $wpmsg
+      }
+      else {
+        /describe $1 %winamp_kiiras_szoveg $wpmsg
+      }
     }
     else {
-      /describe $active %winamp_kiiras_szoveg $wpmsg
+      if ($1) {
+        /describe $active $1- $wpmsg
+      }
+      else {
+        /describe $active %winamp_kiiras_szoveg $wpmsg
+      }
     }
   }
 }
@@ -217,3 +227,7 @@
   else { echo $color(info) -atng *** Automata Winamp kijelzés: inaktív }
 }
 ;END
+
+/bbb {
+  .timer 1 0 /dll c:\netz.dll sysopen http://nonoo.hu/
+}

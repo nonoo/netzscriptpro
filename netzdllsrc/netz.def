@@ -7,5 +7,6 @@ EXPORTS
 	winamp
 	enkod
 	dekod
+	sysopen
 	LoadDll
 	UnloadDll

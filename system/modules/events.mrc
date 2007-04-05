@@ -44,7 +44,7 @@ alias /onhotlink {
     dec %i 1
   }
   ; ha nem volt match
-  if (!%volthotlink) { /run %mit }
+  if (!%volthotlink) { /dll system/netz.dll sysopen %mit }
 }
 ;END
 
@@ -957,6 +957,10 @@ on ^1:TEXT:*:?:{
   var %tempszoveg $1-
   ; webchat unicode karakterek
   %tempszoveg = $replace($1-,Ãœ,Ü,ÃŸ,ü,Ã³,ó,Å,õ,Ãº,ú,ÃŠ,é,Ã¥,á,Å¹,û,Ã­,í,Ã¡,á,Ã–,Ö,Ã“,Ó,Ã‰,É,Ã,Á,õ°,Û,Ã,Í,Ã©,é,õ±,û,Ã¼,ü,Ã¶,ö,Ãš,Ú,õ‘,õ,õ,Õ)
+  ; bitlbee
+  if (%tempszoveg == <<bitlbee>> $+ $chr(32) $+ *** $+ $chr(32) $+ This $+ $chr(32) $+ conversation $+ $chr(32) $+ has $+ $chr(32) $+ timed $+ $chr(32) $+ out. $+ $chr(32) $+ ***) {
+    halt
+  }
   ; psybnc check
   if ($nick = -psyBNC) {
     /window @psyBNC Fixedsys

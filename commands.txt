@@ -77,7 +77,7 @@ vagy on-t, vagy offot írsz oda.
 /fancy.szines - színes írás
 /anyad - "színes kurva anyád" :)
 /flashbang - próbáld ki, flashbang :)
-/wp (csati) - winampban éppen hallható mp3 kiíratása a megadott csatira (ha nincs megadva csati, aktívba nyomja)
+/wp (üzenet/( csati (üzenet) )) - winampban éppen hallható mp3 kiíratása a megadott csatira (ha nincs megadva csati, aktívba nyomja)
 /awp - /wp az összes csatira
 /wpauto [on|off] - automata kiírás be/kikapcsolása a setupban megadottak szerint
 /setup - setup
