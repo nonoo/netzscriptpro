@@ -220,6 +220,7 @@ on *:DIALOG:setupdialog:init:*: {
   if (%url_kiemeles) { did -c $dname 259 | did -e $dname 261 }
   did -a $dname 261 %url_kiemeles_style
   did -a $dname 265 %highlight_szavak
+  did -a $dname 280 %highlight_ignore_szavak
   if (%uptime_meres) { did -c $dname 267 | did -e $dname 268 | did -e $dname 269 }
   if (%uptime_notice) { did -c $dname 268 }
   if (%uptime_notice_newrecord) { did -c $dname 269 }
@@ -935,6 +936,7 @@ on *:DIALOG:setupdialog:sclick:3: {
   else { %url_kiemeles = 0 }
   %url_kiemeles_style = $did(261)
   %highlight_szavak = $did(265)
+  %highlight_ignore_szavak = $did(280)
   if ($did(267).state) { %uptime_meres = 1 }
   else { %uptime_meres = 0 }
   if ($did(268).state) { %uptime_notice = 1 }

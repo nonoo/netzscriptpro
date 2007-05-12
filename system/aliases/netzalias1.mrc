@@ -162,7 +162,6 @@
     if (!$1) { /scon -at1 /away gone }
     else { var %tmp = $1- | /scon -at1 /away %tmp }
   }
-
 }
 /who {
   if (!$1) { /echo $color(info2) -atng *** /who hiba: túl kevés paraméter! használat: /who [nick|csati] | halt }
@@ -539,6 +538,16 @@
 
 ;HIGHLIGHT_OK
 /highlight_ok {
+  ; megnezi hogy a parameterkent megadott szovegben benne van-e legalabb 1, a %highlight_ignore_szavak
+  ; valtozo altal tarolt szoreszlet
+  var %i = $numtok(%highlight_ignore_szavak,32)
+  while (%i > 0) {
+    if ($gettok(%highlight_ignore_szavak,%i,32) isin $1-) { return 0 }
+    dec %i 1
+  }
+
+  if ($me isin $1-) { return 1 }
+
   ; megnezi hogy a parameterkent megadott szovegben benne van-e legalabb 1, a %highlight_szavak
   ; valtozo altal tarolt szoreszlet
   var %i = $numtok(%highlight_szavak,32)

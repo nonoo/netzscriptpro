@@ -503,8 +503,9 @@ on ^1:nick: {
   if ($hget(lastmsg,$cid $+ $nick)) { .hadd lastmsg $cid $+ $newnick $hget(lastmsg,$cid $+ $nick) }
   /wndback $newnick
   if ( $nick = $me ) {
-    /aecho $color(join) -tn --nostatus *** Az ˙j nicked: $+ $color(highlight) $newnick
-    if ($active !ischan) { echo $color(join) -atn *** Az ˙j nicked: $+ $color(highlight) $newnick }
+    ;/aecho $color(join) -tn --nostatus *** Az ˙j nicked: $+ $color(highlight) $newnick
+    ;if ($active !ischan) { echo $color(join) -atn *** Az ˙j nicked: $+ $color(highlight) $newnick }
+    /aecho $color(join) -tn *** Az ˙j nicked: $+ $color(highlight) $newnick
     if ($newnick == %orig_nick) && ($timer(OrigNick $+ $cid).type) { /echo $color(info) -atng *** OrigNick: $newnick visszaszerezve. | .timerOrigNick $+ $cid off | halt }
     halt
   }
@@ -776,14 +777,14 @@ on ^1:ACTION:*:#:{
   ; webchat unicode karakterek
   %tempszoveg = $replace($1-,√ú,‹,√ü,¸,√≥,Û,≈,ı,√∫,˙,√ä,È,√•,·,≈π,˚,√≠,Ì,√°,·,√ñ,÷,√ì,”,√â,…,√Å,¡,ı∞,€,√ç,Õ,√©,È,ı±,˚,√º,¸,√∂,ˆ,√ö,⁄,ıë,ı,ıê,’,√É¬º,˚)
   ; highlight
-  if ($me isin %tempszoveg) || ($highlight_ok(%tempszoveg)) {
+  if ($highlight_ok(%tempszoveg)) {
     echo $color(action) -tm $chan  $+ %nick_highlight_szin $+ * $nick %tempszoveg
   }
   else { echo $color(action) -tm $chan * $nick %tempszoveg }
   ; awayreason eltarolasa
   if (away isin $1-) || (tavozik isin $1-) || (t·vozik isin $1-) || (gone isin $1-) { .hadd data $cid $+ awayreason $+ $nick $1- }
   ; villogtatjuk a csati ablakot ha a nevunk benne van az uzenetben
-  if ($highlight_ok(%tempszoveg)) || ($me isin $1-) {
+  if ($highlight_ok(%tempszoveg)) {
     /window -g2 $chan
     ; ha kell pager
     if (%highlight_pager) {
@@ -889,7 +890,7 @@ on ^1:TEXT:*:#:{
     }
   }
   ; kiemelÈs+kiÌr·s
-  if ($highlight_ok(%tempszoveg)) || ($me isin %tempszoveg) {
+  if ($highlight_ok(%tempszoveg)) {
     /echo $color(normal) -tm $chan %mas_bal $+  $+ %nick_highlight_szin $+ %plusz $+ $nick $+ %mas_jobb $+  $+ $color(normal) %tempszoveg
     ; villogtatjuk a csati ablakot ha a nevunk benne van az uzenetben
     /window -g2 $chan

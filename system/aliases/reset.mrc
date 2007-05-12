@@ -209,6 +209,7 @@
   %checkmail_ssl = 0
   %checkmail_gmailmode = 0
   %checkmail_deletecounter = 1
+  %highlight_ignore_szavak = top10(words)
 
   /echo $color(info) -atng *** Reset done.
 }
@@ -396,6 +397,7 @@
   if (%checkmail_ssl == $null) { %checkmail_ssl = 0 }
   if (%checkmail_gmailmode == $null) { %checkmail_gmailmode = 0 }
   if (%checkmail_deletecounter == $null) { %checkmail_deletecounter = 1 }
+  if (%highlight_ignore_szavak == $null) { %highlight_ignore_szavak = top10(words) }
 }
 ;END
 
