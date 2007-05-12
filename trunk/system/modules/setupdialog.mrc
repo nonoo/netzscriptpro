@@ -11,6 +11,7 @@ dialog setupdialog {
   tab "E&gyéb 2", 251
   tab "&Beep", 166
   tab "E&mail", 194
+  box "", 252, 8 25 322 365, tab 251
   box "", 195, 8 25 322 365, tab 194
   box "", 56, 8 25 322 365, tab 33
   box "", 219, 8 25 322 365, tab 218
@@ -252,7 +253,6 @@ dialog setupdialog {
   edit "", 248, 148 278 30 20, tab 33 disable autohs
   text "/", 249, 181 279 4 17, tab 33 disable
   edit "", 250, 188 278 30 20, tab 33 disable autohs
-  box "", 252, 8 25 322 365, tab 251
   box " Log bemásolása új query ablak nyitásakor ", 253, 15 33 308 40, tab 251
   check "Aktív", 254, 22 50 55 17, tab 251
   text "Sorok:", 255, 229 51 37 17, tab 251
@@ -263,16 +263,16 @@ dialog setupdialog {
   text "Stílus:", 260, 126 92 41 17, tab 251
   edit "", 261, 174 89 42 20, tab 251 autohs
   text "+http:// v. ftp://", 262, 226 91 86 17, tab 251
-  box " Highlight ", 263, 15 116 308 72, tab 251
+  box " Highlight ", 263, 15 116 308 128, tab 251
   text "A nickeden kívül a következõ szórészletekre aktiválódjon (spaceszel elválasztva):", 264, 23 133 282 26, tab 251
   edit "", 265, 24 163 290 20, tab 251 autohs
-  box " Uptime mérés ", 266, 16 191 308 60, tab 251
-  check "Aktív", 267, 22 208 50 17, tab 251
-  check "Nagyobb idõknél figyelmeztetés", 268, 129 208 177 17, tab 251 disable
-  check "Új rekordnál figyelmeztetés", 269, 129 229 162 17, tab 251 disable
-  box " Netsplit figyelés ", 270, 15 253 308 40, tab 251
-  check "Aktív", 271, 22 271 53 17, tab 251
-  check "Csak a magyar szervereket figyelje", 272, 129 271 188 17, tab 251
+  box " Uptime mérés ", 266, 16 247 308 60, tab 251
+  check "Aktív", 267, 22 264 50 17, tab 251
+  check "Nagyobb idõknél figyelmeztetés", 268, 129 264 177 17, tab 251 disable
+  check "Új rekordnál figyelmeztetés", 269, 129 285 162 17, tab 251 disable
+  box " Netsplit figyelés ", 270, 15 309 308 40, tab 251
+  check "Aktív", 271, 22 327 53 17, tab 251
+  check "Csak a magyar szervereket figyelje", 272, 129 327 188 17, tab 251
   check "Az awaynick az éppen aktív nick kisbetûs változata legyen", 273, 196 62 127 41, tab 2 disable multi
   check "Flood detekt csak ezeken a csatikon:", 274, 19 343 202 17, tab 33 disable
   edit "", 115, 19 362 302 20, tab 33 disable autohs
@@ -281,4 +281,6 @@ dialog setupdialog {
   button "Beállítások ellenõrzése", 277, 97 348 145 25, tab 194
   button "cookie törlése", 278, 182 78 93 18, tab 194 hide
   check "Emailezõ indítása után a checkmail számlálójának nullázása", 279, 15 323 307 17, tab 194
+  text "Ezeket a szavakat tartalmazó sorokat figyelmen kívül hagyja:", 281, 23 187 282 26, tab 251
+  edit "", 280, 24 219 290 20, tab 251 autohs
 }

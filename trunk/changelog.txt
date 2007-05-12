@@ -1,4 +1,4 @@
-[2.102]
+[2.102] 2007. 05. 13. 00:00
 - inzultálás queryben is kiírta a célnicket - javítva (köszi HyD)
 - /fancy.tesco, /fancy.szines, /anyad :)
 - /masshighlight
@@ -59,6 +59,10 @@
   idõt/dátumot is
 - /wp paraméterezhetõ lett
 - url megnyitásakor már nem ír hibaüzenetet
+- highlight ignore szavak megadásának lehetõsége - ezeket a szavakat
+  tartalmazó sorokra semmiképpen nem fog highlightolni, még ha a nicked is
+  bennük van, akkor se, hasznos pl. topten lekérdezésnél a highlight
+  ignoreolására
 
 [2.101] 2006.04.24. 19:00
 - mirc 6.17 a telepítõben, a frissítés nem tartalmazza ezt, úgy tudsz
