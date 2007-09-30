@@ -516,6 +516,9 @@
     .hdel data $cid $+ koszones $+ $active
   }
 }
+/sf7 {
+  /amsg $read(system\greetings.txt)
+}
 /f8 {
   var %ablak $active
   if ($active == Status Window) { %ablak = status }

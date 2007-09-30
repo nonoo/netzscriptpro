@@ -366,3 +366,18 @@
   .timer 1 0 /dll system\netz.dll beep $1 $2 $3 $4
 }
 ;END
+
+;GETEXTENSION
+/getextension {
+  if ( $1 == $null ) { /echo $color(info2) -atng *** /getextension hiba: túl kevés paraméter! használat: /getextension [fájlnév] | halt }
+  var %i = $calc( $len( $1 ) - 1 )
+  while ( ( $mid( $1, %i, 1 ) != . ) && ( %i > 0 ) ) {
+    dec %i
+  }
+  if ( %i == 0 ) {
+    return $null
+    } else {
+    return $mid( $1, %i, $len( $1 ) - %i )
+  }
+}
+;END
