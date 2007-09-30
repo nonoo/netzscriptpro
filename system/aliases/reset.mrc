@@ -218,7 +218,7 @@
 ;VARCHECK
 /varcheck {
   ; vegignezi a netz valtozoit es ha valamelyik hianyzik, default ertekre allitja
-  %ver = 2.102 beta
+  %ver = 2.102
   %update_php = update.ini
   if (%nemvoltinditva == $null) { %nemvoltinditva = 0 }
   if (%url == $null) { %url = netz.nonoo.hu }

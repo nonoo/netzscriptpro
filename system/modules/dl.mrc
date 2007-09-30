@@ -383,11 +383,8 @@ on 1:sockopen:httpget: {
     sockwrite -n httpget Accept: */* $+ $crlf $+ $crlf
   }
   else {
-    if (%dl_filemeret > $file(%dl_downloaddir $+ %dl_filename).size) && ($file(%dl_downloaddir $+ %dl_filename).size > 0) { var %dl_resume = 1 }
-
     ; nincs feluliras ha mar megvan a file
     if (%dl_filemeret == $file(%dl_downloaddir $+ %dl_filename).size) {
-      if (!%dl_quiet) { %dl_hiba = 1 | did -a dl 5 Letöltés: %dl_filename - nem írom felül a fájlt! $+ $crlf | did -ra dl 2 Kész. | did -r dl 4 | did -a dl 9 100 0 100 | did -r dl 3 | did -r dl 18 | did -r dl 20 }
       ; ha update filet toltottunk le akkor vegrehajtjuk
       if (%update_url isin %dl_geturl) { %dl_noclose = 1 | /updateapply %dl_downloaddir $+ %dl_filename }
       dl_done
@@ -455,13 +452,7 @@ on 1:sockclose:httpget: {
   }
   ; header lekerese utan file letoltes megkezdese
   if (!%dl_fileiras) && (!%dl_hiba) {
-    %dl_fileiras = 1
-    if ((%dl_port == 443) || (https isin %dl_geturl)) {
-      sockopen -e httpget %dl_host %dl_port
-    }
-    else {
-      sockopen httpget %dl_host %dl_port
-    }
+    .timer 1 0 continuedl
     halt
   }
   dl_done
@@ -519,6 +510,26 @@ on 1:sockread:httpget: {
     }
 
     goto ujraolvas2
+  }
+}
+; header lekerese utan file letoltes megkezdese init
+; azert kell ez kulon fuggvenybe, hogy meg tudjuk hivni modalisan a dl_felulir dialogot
+alias continuedl {
+  if ( (!%dl_quiet) && ( $file(%dl_downloaddir $+ %dl_filename) != $null ) ) {
+    ; ha letezik a file, megkerdezzuk a usert hogy mit akar
+    $dialog( dl_felulir, dl_felulir, dl )
+    if ( %dl_geturl == $null ) {
+      ; a dialogot kiXeltek
+      return
+    }
+  }
+
+  %dl_fileiras = 1
+  if ((%dl_port == 443) || (https isin %dl_geturl)) {
+    sockopen -e httpget %dl_host %dl_port
+  }
+  else {
+    sockopen httpget %dl_host %dl_port
   }
 }
 ;END
@@ -649,5 +660,59 @@ alias /siteinvite {
   if (!$2) { %ftp_site_invite = $me }
   else { %ftp_site_invite = $2 }
   /dl $1
+}
+;END
+
+;FELULIRDIALOG
+dialog dl_felulir {
+  title "netZ Downloader"
+  size -1 -1 392 117
+  option pixels notheme
+  text "A fájl már létezik:", 1, 8 32 109 17, right
+  button "Folytat", 2, 5 94 112 20
+  button "Felülír", 3, 141 94 112 20
+  button "Más néven ment", 4, 273 94 112 20
+  text "Mérete:", 5, 52 51 65 17, right
+  text "Letöltendõ fájl mérete:", 6, 5 68 113 17, right
+  text "", 7, 122 32 261 17
+  text "", 8, 122 51 261 17
+  text "", 9, 122 68 261 17
+  text "URL:", 10, 81 7 35 17, right
+  text "", 11, 122 7 261 17
+}
+on *:DIALOG:dl_felulir:init:*: {
+  did -ra $dname 7 %dl_downloaddir $+ %dl_filename
+  did -ra $dname 8 $file(%dl_downloaddir $+ %dl_filename).size byte
+  did -ra $dname 9 %dl_filemeret byte
+  did -ra $dname 11 %dl_geturl
+  if (%dl_filemeret <= $file(%dl_downloaddir $+ %dl_filename).size) {
+    did -b $dname 2
+  }
+  /dialog -r $dname
+}
+on *:DIALOG:dl_felulir:close:*: {
+  ; az ablakot kiXeltek, kivesszuk a jelenlegi urlt a letoltesi listabol
+  /urlremove %dl_geturl
+  %dl_geturl = $null
+
+  /dl_dialog_update
+  /ujdl
+}
+on *:DIALOG:dl_felulir:sclick:2: {
+  %dl_resume = 1
+  /dialog -x $dname
+}
+on *:DIALOG:dl_felulir:sclick:3: {
+  .remove %dl_downloaddir $+ %dl_filename
+  /dialog -x $dname
+}
+on *:DIALOG:dl_felulir:sclick:4: {
+  var %i = 1
+  var %fname = $replace( %dl_filename, $getextension( %dl_filename ), $null )
+  while ( $file( %fname $+ . $+ %i $+ $getextension( %dl_filename ) ) != $null ) {
+    inc %i
+  }
+  %dl_filename = %fname $+ . $+ %i $+ $getextension( %dl_filename )
+  /dialog -x $dname
 }
 ;END

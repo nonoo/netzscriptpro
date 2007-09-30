@@ -519,12 +519,17 @@ on ^1:nick: {
   ; ha epp arrol a nickrol valtott at amire vagyunk
   if ($nick == %orig_nick) && ($timer(OrigNick $+ $cid).type) { .timer 1 0 .nick %orig_nick }
 
-  ; ha van nyitott query vele és az utolsó sor az hogy a user kilépett, akkor szólunk, hogy visszajött
-  if (*** $newnick kilépett az ircrõl. isin $strip($line($newnick,$line($newnick,0)))) {
+  ; ha van nyitott query vele
+  if ($query($newnick) != $null) {
     var %greet $read(system\greetings.txt)
     .hdel data $cid $+ koszones $+ $newnick
     .hadd data $cid $+ koszones $+ $newnick %greet
-    echo $color(join) -t $newnick *** $+ $color(highlight) $nick új nickje: $+ $color(highlight) $newnick (F7 - %greet $+ )
+    ; ha az utolsó sor az hogy a user kilépett, akkor szólunk, hogy visszajött
+    if (*** $newnick kilépett az ircrõl. isin $strip($line($newnick,$line($newnick,0)))) {
+      echo $color(join) -t $newnick *** $+ $color(highlight) $nick új nickje: $+ $color(highlight) $newnick (F7 - %greet $+ )
+      } else {
+      echo $color(join) -t $newnick *** $+ $color(highlight) $nick új nickje: $+ $color(highlight) $newnick (F7 - %greet $+ )
+    }
   }
 
   ; flooddetekt
