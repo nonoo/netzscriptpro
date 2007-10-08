@@ -277,6 +277,36 @@ on *:DIALOG:setupdialog:init:*: {
   }
   if (%checkmail_deletecounter) { did -c $dname 279 }
   ;END
+
+  ;SKYPE
+  if (%skype_hasznalat) { did -c $dname 284 }
+  else {
+    did -b $dname 286 | did -b $dname 288 | did -b $dname 289 | did -b $dname 290 | did -b $dname 292 | did -b $dname 294
+    did -b $dname 295 | did -b $dname 298
+  }
+  did -a $dname 298 %skype_separator
+  did -a $dname 295 %skype_winamp_szoveg
+  if (%skype_winamp_kijelzes) { did -c $dname 294 }
+  else { did -b $dname 295 | did -b $dname 301 | did -b $dname 302 }
+  if (%skype_winamp_hossz_kijelzes) { did -c $dname 301 }
+  if (%skype_winamp_bitrata_kijelzes) { did -c $dname 302 }
+  if (%skype_away_kijelzes) { did -c $dname 286 }
+  else { did -b $dname 288 | did -b $dname 289 }
+  did -a $dname 288 %skype_away_szoveg
+  if (%skype_awaymsg_kiiras) { did -c $dname 289 }
+  if (%skype_away_follow) { did -c $dname 290 }
+  else { did -b $dname 292 }
+  did -a $dname 292 Away
+  did -a $dname 292 Not Available
+  did -a $dname 292 Do Not Disturb
+  did -a $dname 292 Invisible
+  if (%skype_away_mod == away) { did -c $dname 292 1 }
+  if (%skype_away_mod == na) { did -c $dname 292 2 }
+  if (%skype_away_mod == dnd) { did -c $dname 292 3 }
+  if (%skype_away_mod == invisible) { did -c $dname 292 4 }
+  did -a $dname 303 %skype_msg1
+  did -a $dname 304 %skype_msg2
+  ;END
 }
 ;END
 
@@ -342,7 +372,7 @@ on *:DIALOG:setupdialog:sclick:34: {
   else { did -b $dname 35 }
 }
 on *:DIALOG:setupdialog:sclick:36: {
-  if ($did(36).state) { did -e $dname 37 | did -e $dname 273 }
+  if ($did(36).state) { if (!$did(273).state) { did -e $dname 37 } | did -e $dname 273 }
   else { did -b $dname 37 | did -b $dname 273 }
 }
 on *:DIALOG:setupdialog:sclick:273: {
@@ -710,6 +740,31 @@ alias /emailsettingssave {
 }
 ;END
 
+;SKYPE EVENTS
+on *:DIALOG:setupdialog:sclick:284: {
+  if ($did(284).state) {
+    did -e $dname 286 | did -e $dname 288 | did -e $dname 289 | did -e $dname 290 | did -e $dname 292 | did -e $dname 294
+    did -e $dname 295 | did -e $dname 298 | did -e $dname 303 | did -e $dname 304
+  }
+  else {
+    did -b $dname 286 | did -b $dname 288 | did -b $dname 289 | did -b $dname 290 | did -b $dname 292 | did -b $dname 294
+    did -b $dname 295 | did -b $dname 298 | did -b $dname 303 | did -b $dname 304
+  }
+}
+on *:DIALOG:setupdialog:sclick:286: {
+  if ($did(286).state) { did -e $dname 288 | did -e $dname 289 }
+  else { did -b $dname 288 | did -b $dname 289 }
+}
+on *:DIALOG:setupdialog:sclick:290: {
+  if ($did(290).state) { did -e $dname 292 }
+  else { did -b $dname 292 }
+}
+on *:DIALOG:setupdialog:sclick:294: {
+  if ($did(294).state) { did -e $dname 295 | did -e $dname 301 | did -e $dname 302 }
+  else { did -b $dname 295 | did -b $dname 301 | did -b $dname 302 }
+}
+;END
+
 ;OK GOMB
 on *:DIALOG:setupdialog:sclick:3: {
   ;WINAMP
@@ -979,6 +1034,38 @@ on *:DIALOG:setupdialog:sclick:3: {
   else { %checkmail_speaker = 0 }
   if ($did(216).state) { %highlight_pager = 1 }
   else { %highlight_pager = 0 }
+  ;END
+
+  ;SKYPE
+  if ($did(284).state) { %skype_hasznalat = 1 }
+  else {
+    if (%skype_hasznalat) {
+      /dll system/netz.dll skypesendmsg set profile rich_mood_text
+    }
+    %skype_hasznalat = 0
+    /dll system/netz.dll skype disconnect
+  }
+  %skype_separator = $did(298)
+  %skype_winamp_szoveg = $did(295)
+  if ($did(294).state) { %skype_winamp_kijelzes = 1 }
+  else { %skype_winamp_kijelzes = 0 }
+  if ($did(301).state) { %skype_winamp_hossz_kijelzes = 1 }
+  else { %skype_winamp_hossz_kijelzes = 0 }
+  if ($did(302).state) { %skype_winamp_bitrata_kijelzes = 1 }
+  else { %skype_winamp_bitrata_kijelzes = 0 }
+  if ($did(286).state) { %skype_away_kijelzes = 1 }
+  else { %skype_away_kijelzes = 0 }
+  %skype_away_szoveg = $did(288)
+  if ($did(289).state) { %skype_awaymsg_kiiras = 1 }
+  else { %skype_awaymsg_kiiras = 0 }
+  if ($did(290).state) { %skype_away_follow = 1 }
+  else { %skype_away_follow = 0 }
+  if ($did(292).sel == 1) { %skype_away_mod = away }
+  if ($did(292).sel == 2) { %skype_away_mod = na }
+  if ($did(292).sel == 3) { %skype_away_mod = dnd }
+  if ($did(292).sel == 4) { %skype_away_mod = invisible }
+  %skype_msg1 = $did(303)
+  %skype_msg2 = $did(304)
   ;END
 
   emailsettingssave

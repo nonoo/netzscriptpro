@@ -226,4 +226,65 @@
   if ($timer(winamp_auto).type) { echo $color(info) -atng *** Automata Winamp kijelzés: aktív }
   else { echo $color(info) -atng *** Automata Winamp kijelzés: inaktív }
 }
+
+/getwpforskype {
+  if (!$dll(system\netz.dll, winamp, isplaying)) { return }
+
+  var %winamp.title $ekezetleszed( $dll(system/netz.dll, winamp, GetCurrentWinampSong) )
+  if (%winamp.title == 0) { return }
+
+  var %winamp.filename $dll(system/netz.dll, winamp, GetCurrentWinampSongFileName)
+  var %winamp.totaltime $dll(system/netz.dll, winamp, GetCurrentWinampSongTotalTime)
+  var %winamp.kbps @ $+ $dll(system/netz.dll, winamp, GetCurrentWinampSongKbps) $+ kbps
+  var %winamp.fileformat
+
+  if (%winamp.totaltime <= 0) && (!$file(%winamp.filename).size) {
+    var %winamp.stream 1
+    %winamp.fileformat = stream $+ %winamp.kbps
+  }
+
+  ; fajlnev, fajlformatum
+  if (%winamp.filename != $null) && (!%winamp.stream) {
+    %winamp.fileformat = $lower($gettok(%winamp.filename,-1, 46)) $+ %winamp.kbps
+  }
+
+  if (%winamp.title) {
+    var %wpinfo
+    if (%skype_winamp_hossz_kijelzes || %skype_winamp_bitrata_kijelzes) {
+      %wpinfo = (
+    }
+    if (%skype_winamp_hossz_kijelzes && !%winamp.stream) {
+      var %winamp.t_mins 0
+      var %winamp.t_secs %winamp.totaltime
+
+      :totalloop
+      if (%winamp.t_secs < 60) {
+        goto endtotalloop
+      }
+      inc %winamp.t_mins
+      dec %winamp.t_secs 60
+      goto totalloop
+      :endtotalloop
+
+      if (%winamp.t_secs < 10) {
+        var %winamp.filler2 0
+      }
+      var %winamp.total %winamp.t_mins $+ : $+ %winamp.filler2 $+ %winamp.t_secs
+
+      %wpinfo = %wpinfo $+ %winamp.total
+    }
+    if (%skype_winamp_bitrata_kijelzes) {
+      if (%skype_winamp_hossz_kijelzes && !%winamp.stream) {
+        %wpinfo = %wpinfo %winamp.fileformat
+      }
+      else {
+        %wpinfo = %wpinfo $+ %winamp.fileformat
+      }
+    }
+    if (%skype_winamp_hossz_kijelzes || %skype_winamp_bitrata_kijelzes) {
+      %wpinfo = %wpinfo $+ )
+    }
+    return %skype_winamp_szoveg %winamp.title %wpinfo
+  }
+}
 ;END
