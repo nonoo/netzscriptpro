@@ -210,6 +210,16 @@
   %checkmail_gmailmode = 0
   %checkmail_deletecounter = 1
   %highlight_ignore_szavak = top10(words)
+  ; 2.103
+  %skype_hasznalat = 0
+  %skype_separator = |
+  %skype_winamp_szoveg = plays:
+  %skype_winamp_kijelzes = 1
+  %skype_away_kijelzes = 1
+  %skype_away_szoveg = away:
+  %skype_awaymsg_kiiras = 1
+  %skype_away_follow = 1
+  %skype_away_mod = na
 
   /echo $color(info) -atng *** Reset done.
 }
@@ -398,6 +408,16 @@
   if (%checkmail_gmailmode == $null) { %checkmail_gmailmode = 0 }
   if (%checkmail_deletecounter == $null) { %checkmail_deletecounter = 1 }
   if (%highlight_ignore_szavak == $null) { %highlight_ignore_szavak = top10(words) }
+  ; 2.103
+  if (%skype_hasznalat == $null) { %skype_hasznalat = 0 }
+  if (%skype_separator == $null) { %skype_separator = | }
+  if (%skype_winamp_szoveg == $null) { %skype_winamp_szoveg = plays: }
+  if (%skype_winamp_kijelzes == $null) { %skype_winamp_kijelzes = 1 }
+  if (%skype_away_kijelzes == $null) { %skype_away_kijelzes = 1 }
+  if (%skype_away_szoveg == $null) { %skype_away_szoveg = away: }
+  if (%skype_awaymsg_kiiras == $null) { %skype_awaymsg_kiiras = 1 }
+  if (%skype_away_follow == $null) { %skype_away_follow = 1 }
+  if (%skype_away_mod == $null) { %skype_away_mod = na }
 }
 ;END
 

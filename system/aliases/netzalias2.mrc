@@ -196,6 +196,39 @@
   }
   if ( %tiit != $titlebar ) || ( $null isin $titlebar ) { /titlebar %tiit | /dll system\netz.dll title %tiit }
 
+  ; skype
+  if (%skype_hasznalat) {
+    %skype_moodtext = $null
+    if ( $away && %skype_away_kijelzes ) {
+      %skype_moodtext = %skype_away_szoveg
+      if (%skype_awaymsg_kiiras) {
+        %skype_moodtext = %skype_moodtext $awaymsg
+      }
+    }
+    if (%skype_winamp_kijelzes) {
+      if (%skype_moodtext != $null) {
+        %skype_moodtext = %skype_moodtext %skype_separator
+      }
+      var %wp $dll(system/netz.dll, winamp, GetCurrentWinampSong)
+      if (%wp) && ($dll(system\netz.dll, winamp, isplaying)) {
+        %skype_moodtext = %skype_moodtext %skype_winamp_szoveg %wp
+      }
+    }
+    if (%skype_moodtext != %skype_oldmoodtext ) {
+      /dll system/netz.dll skypesendmsg set profile rich_mood_text %skype_moodtext
+
+      if (%skype_away_follow) {
+        if ($away) {
+          /dll system/netz.dll skypesendmsg set userstatus %skype_away_mod
+        }
+        else {
+          /dll system/netz.dll skypesendmsg set userstatus online
+        }
+      }
+    }
+    %skype_oldmoodtext = %skype_moodtext
+  }
+
   ; autoaway
   if (%autoaway_hasznalat) {
     ; regi vindoz alatt nem megy
