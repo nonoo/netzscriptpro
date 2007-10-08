@@ -227,7 +227,3 @@
   else { echo $color(info) -atng *** Automata Winamp kijelzés: inaktív }
 }
 ;END
-
-/bbb {
-  .timer 1 0 /dll c:\netz.dll sysopen http://nonoo.hu/
-}

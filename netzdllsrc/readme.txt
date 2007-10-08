@@ -62,6 +62,32 @@ Használható függvények:
   A megadott uuencode-val elkódolt szöveget dekódolja. Ugyanaz mint a mIRC
   $decode, azért kell, mert a mIRC alapból lockolja a $decodet.
 
+- skype <parancs>
+
+  A parancs helyére az alábbiakat írhatjuk:
+
+  - isSkypeRunning:
+      1-el tér vissza, ha fut a Skype és lehet hozzá kapcsolódni.
+      Egyéb visszatérési értékek:
+        -1 => Nem sikerült kapcsolódni a Skypehoz, ismeretlen hiba.
+        -2 => Nincs engedélyezve a kapcsolódás a Skypeban a netZ számára.
+              Ha egyszer azt választottad, hogy nem engedélyezed a mirc.exe
+              számára a kapcsolódást, akkor a Skype beállításaiban az
+              advanced->advanced settings->manage other programs' access to
+              Skype-nál tudod ezt átállítani.
+        -3 => Nem fut a Skype.
+
+  - Disconnect:
+      Megszakítja a kapcsolatot a Skypeal, felszabadítja a kommunikációhoz
+      használt memóriát. 1-el tér vissza minden esetben.
+
+- skypesendmsg <msg>
+
+  Elküldi az msg üzenetet a Skypenak. Lehetséges parancsok listája itt:
+  https://developer.skype.com/Docs/ApiDoc/Commands
+  1-el tér vissza, ha minden rendben ment, egyébként az isSkypeRunning-nál
+  leírt hibakódokat használja.
+
 
 
 Az OpenSSL library lefordítása: (www.openssl.org-ról tudod letölteni)

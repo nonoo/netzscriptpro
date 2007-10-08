@@ -8,5 +8,7 @@ EXPORTS
 	enkod
 	dekod
 	sysopen
+	skype
+	skypesendmsg
 	LoadDll
 	UnloadDll

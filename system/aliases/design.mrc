@@ -127,13 +127,13 @@
       var %ablak2 = $replace(%origablaknev,$chr(124),$chr(0),\,$chr(0),/,$chr(0))
       .drawsave @wndback system\temp\ $+ %ablak2 $+ .bmp
       .window -c @wndback
-      .background -c%origablaknev system\temp\ $+ %ablak2 $+ .bmp
+      .background -c %origablaknev system\temp\ $+ %ablak2 $+ .bmp
       .remove system\temp\ $+ %ablak2 $+ .bmp
     }
     else {
       .drawsave @wndback system\temp\ $+ %origablaknev $+ .bmp
       .window -c @wndback
-      .background -c%origablaknev system\temp\ $+ %origablaknev $+ .bmp
+      .background -c %origablaknev system\temp\ $+ %origablaknev $+ .bmp
       .remove system\temp\ $+ %origablaknev $+ .bmp
     }
   }
