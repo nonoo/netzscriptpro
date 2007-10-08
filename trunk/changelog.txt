@@ -1,9 +1,10 @@
-[2.103] 2007. 05. 30. 22:00
+[2.103]
 - új mirc.exe (6.3), ezáltal pl. ismét normális a logolás (1 log/csati, query)
 - shift+F7-re minden csatira köszönés
 - ha valaki nicket váltott és van vele nyitott query, akkor már oda is kiírja
   a nickváltást
-- a downloader ezentúl felülírás elõtt rákérdez
+- a downloader ezentúl felülírás elõtt rákérdez (köszi Kehelyke)
+- skype támogatás (away, winamp kijelzés, skypeot is awaybe váltás)
 
 [2.102] 2007. 05. 13. 00:00
 - inzultálás queryben is kiírta a célnicket - javítva (köszi HyD)
