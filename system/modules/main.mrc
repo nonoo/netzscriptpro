@@ -62,6 +62,7 @@ on *:START: {
 
     %away_eredeti_nick = $me
 
+    %skype_oldmoodtext = $null
     ; title updater
     .timerTitle -i 0 1 /title
     ; temp uritese

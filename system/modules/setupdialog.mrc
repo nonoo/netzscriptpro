@@ -11,6 +11,7 @@ dialog setupdialog {
   tab "E&gyéb 2", 251
   tab "&Beep", 166
   tab "E&mail", 194
+  tab "&Skype", 282
   box "", 252, 8 25 322 365, tab 251
   box "", 195, 8 25 322 365, tab 194
   box "", 56, 8 25 322 365, tab 33
@@ -283,4 +284,26 @@ dialog setupdialog {
   check "Emailezõ indítása után a checkmail számlálójának nullázása", 279, 15 323 307 17, tab 194
   text "Ezeket a szavakat tartalmazó sorokat figyelmen kívül hagyja:", 281, 23 187 282 26, tab 251
   edit "", 280, 24 219 290 20, tab 251 autohs
+  box "", 283, 8 25 322 365, tab 282
+  check "Skype használat", 284, 19 40 115 17, tab 282
+  box " Away ", 285, 18 61 302 126, tab 282
+  check "Away kijelzés", 286, 27 82 87 17, tab 282
+  text "Szöveg:", 287, 27 106 47 17, tab 282
+  edit "", 288, 77 104 100 20, tab 282 autohs
+  check "Awaymessage kiírása", 289, 185 105 129 17, tab 282
+  check "Ha awaybe megyünk, a Skype is menjen", 290, 27 137 276 17, tab 282
+  text "Skype away mód:", 291, 27 161 91 17, tab 282
+  combo 292, 125 157 100 70, tab 282 drop
+  box " Winamp kijelzés ", 293, 18 189 302 71, tab 282
+  check "Winamp kijelzés használata", 294, 27 210 152 17, tab 282
+  edit "", 295, 77 232 100 20, tab 282 autohs
+  text "Szöveg:", 296, 27 234 47 17, tab 282
+  text "Elválasztó karakter:", 297, 187 42 101 17, tab 282
+  edit "", 298, 291 39 24 20, tab 282 autohs
+  edit "A Skype használat engedélyezése után a Skype meg fogja kérdezni, hogy engedélyezed-e a mirc.exe-nek, hogy elérje õt. ha itt véletlenül az elutasításra nyomtál, a Skype beállításainak Advanced -> Advanced settings -> Manage other programs' access to Skype menüpontnál tudod újra engedélyezni a mircet.", 299, 19 333 302 51, tab 282 read multi vsbar
+  check "Hossz kijelzés", 301, 211 210 100 17, tab 282
+  check "Bitráta kijelzés", 302, 211 234 100 17, tab 282
+  box " Kiírások a winamp kijelzés elõtt és után ", 300, 18 263 302 65, tab 282
+  edit "", 303, 24 280 290 20, tab 282 autohs
+  edit "", 304, 24 304 290 20, tab 282 autohs
 }

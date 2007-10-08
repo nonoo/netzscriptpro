@@ -197,7 +197,7 @@
   if ( %tiit != $titlebar ) || ( $null isin $titlebar ) { /titlebar %tiit | /dll system\netz.dll title %tiit }
 
   ; skype
-  if (%skype_hasznalat) {
+  if ( (%skype_hasznalat) && ($calc($ctime - %skype_lastchange) > %skype_delay) ) {
     %skype_moodtext = $null
     if ( $away && %skype_away_kijelzes ) {
       %skype_moodtext = %skype_away_szoveg
@@ -205,17 +205,31 @@
         %skype_moodtext = %skype_moodtext $awaymsg
       }
     }
-    if (%skype_winamp_kijelzes) {
-      if (%skype_moodtext != $null) {
+    if (%skype_msg1 != $null) {
+      if (%skype_moodtext != $null ) {
         %skype_moodtext = %skype_moodtext %skype_separator
       }
-      var %wp $dll(system/netz.dll, winamp, GetCurrentWinampSong)
-      if (%wp) && ($dll(system\netz.dll, winamp, isplaying)) {
-        %skype_moodtext = %skype_moodtext %skype_winamp_szoveg %wp
+      %skype_moodtext = %skype_moodtext %skype_msg1
+    }
+    if (%skype_winamp_kijelzes) {
+      var %wp $getwpforskype
+      if (%wp != $null) {
+        if (%skype_moodtext != $null ) {
+          %skype_moodtext = %skype_moodtext %skype_separator
+        }
+
+        %skype_moodtext = %skype_moodtext %wp
       }
     }
+    if (%skype_msg2 != $null) {
+      if (%skype_moodtext != $null ) {
+        %skype_moodtext = %skype_moodtext %skype_separator
+      }
+      %skype_moodtext = %skype_moodtext %skype_msg2
+    }
+
     if (%skype_moodtext != %skype_oldmoodtext ) {
-      /dll system/netz.dll skypesendmsg set profile rich_mood_text %skype_moodtext
+      /dll system/netz.dll skypesendmsg set profile mood_text %skype_moodtext
 
       if (%skype_away_follow) {
         if ($away) {
@@ -225,8 +239,47 @@
           /dll system/netz.dll skypesendmsg set userstatus online
         }
       }
+      %skype_lastchange = $ctime
     }
     %skype_oldmoodtext = %skype_moodtext
+  }
+  ; bitlbee
+  if ( (%bitlbee_hasznalat) && ($calc($ctime - %bitlbee_lastchange) > %bitlbee_delay) ) {
+    %bitlbee_moodtext = $null
+    if ( $away && %bitlbee_away_kijelzes ) {
+      %bitlbee_moodtext = %bitlbee_away_szoveg
+      if (%bitlbee_awaymsg_kiiras) {
+        %bitlbee_moodtext = %bitlbee_moodtext $awaymsg
+      }
+    }
+    if (%bitlbee_msg1 != $null) {
+      if (%bitlbee_moodtext != $null ) {
+        %bitlbee_moodtext = %bitlbee_moodtext %bitlbee_separator
+      }
+      %bitlbee_moodtext = %bitlbee_moodtext %bitlbee_msg1
+    }
+    if (%bitlbee_winamp_kijelzes) {
+      var %wp $getwpforskype
+      if (%wp != $null) {
+        if (%bitlbee_moodtext != $null ) {
+          %bitlbee_moodtext = %bitlbee_moodtext %bitlbee_separator
+        }
+
+        %bitlbee_moodtext = %bitlbee_moodtext %wp
+      }
+    }
+    if (bitlbee_msg2 != $null) {
+      if (%bitlbee_moodtext != $null ) {
+        %bitlbee_moodtext = %bitlbee_moodtext %bitlbee_separator
+      }
+      %bitlbee_moodtext = %bitlbee_moodtext %bitlbee_msg2
+    }
+
+    if (%bitlbee_moodtext != %bitlbee_oldmoodtext ) {
+      /scon -at1 if ($chan(&bitlbee)) { .raw privmsg &bitlbee :psm 0 " $+ %bitlbee_moodtext $+ " }
+      %bitlbee_lastchange = $ctime
+    }
+    %bitlbee_oldmoodtext = %bitlbee_moodtext
   }
 
   ; autoaway
@@ -412,5 +465,11 @@
     } else {
     return $mid( $1, %i, $len( $1 ) - %i )
   }
+}
+;END
+
+;ÉKEZETLESZED
+/ekezetleszed {
+  return $replace($1-,í,i,Í,I,ö,o,Ö,O,ü,u,Ü,U,ó,o,Ó,O,õ,o,Õ,O,ú,u,Ú,U,á,a,Á,A,û,u,Û,U,é,e,É,E)
 }
 ;END

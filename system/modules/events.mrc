@@ -633,6 +633,9 @@ on ^1:JOIN:*: {
     /idlecheck
     ; hatterbe kiirjuk csati nevet
     if (%wndback) { wndback $chan }
+    if ($chan == &bitlbee) {
+      %bitlbee_oldmoodtext = $null
+    }
   }
   else {
     var %greet $read(system\greetings.txt)
