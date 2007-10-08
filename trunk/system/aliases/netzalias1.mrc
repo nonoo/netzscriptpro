@@ -491,6 +491,7 @@
   if ($exists(system\guildftpd\guildftpd.exe)) { /echo @hotkeys *** F11 - FTP szerver indítása }
   /echo @hotkeys *** F12 - netZ Script Pro Setup
   /echo @hotkeys *** CTRL+F3 - Új netZ Script Pro indítása
+  /echo @hotkeys *** SHIFT+F7 - Köszönés minden csatira
   /echo $color(background) @hotkeys -
 }
 /f2 {

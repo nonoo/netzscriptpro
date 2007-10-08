@@ -53,12 +53,12 @@ BEGIN
         BLOCK "000004b0"
         BEGIN
             VALUE "FileDescription", "netZ Script Pro mIRC Plugin"
-            VALUE "FileVersion", "2.102.3"
+            VALUE "FileVersion", "2.103.1"
             VALUE "InternalName", "netz.dll"
             VALUE "LegalCopyright", "Copyright (C) 2005-2007 Face, Nonoo"
             VALUE "OriginalFilename", "netz.dll"
             VALUE "ProductName", "netz.dll"
-            VALUE "ProductVersion", "2.102"
+            VALUE "ProductVersion", "2.103"
         END
     END
     BLOCK "VarFileInfo"

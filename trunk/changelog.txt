@@ -1,4 +1,4 @@
-[2.103]
+[2.103] 2007. 05. 30. 22:00
 - új mirc.exe (6.3), ezáltal pl. ismét normális a logolás (1 log/csati, query)
 - shift+F7-re minden csatira köszönés
 - ha valaki nicket váltott és van vele nyitott query, akkor már oda is kiírja
