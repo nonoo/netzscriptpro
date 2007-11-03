@@ -473,3 +473,18 @@
   return $replace($1-,í,i,Í,I,ö,o,Ö,O,ü,u,Ü,U,ó,o,Ó,O,õ,o,Õ,O,ú,u,Ú,U,á,a,Á,A,û,u,Û,U,é,e,É,E)
 }
 ;END
+
+;TRIM
+/trim {
+  var %s = 1
+  var %e = $len($1-)
+  var %out
+  while (%s < $len($1-) && $mid($1-,%s,1) == $chr(32)) {
+    inc %s 1
+  }
+  while (%e > 0 && $mid($1-,%e,1) == $chr(32)) {
+    dec %e 1
+  }
+  return $mid($1-,%s,$calc(%e - %s + 1))
+}
+;END

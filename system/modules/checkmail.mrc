@@ -131,7 +131,7 @@ alias checkmail_gmail {
   }
 
   ; elsore megprobaljuk lekerni az emailek szamat
-  %gmail_location = /mail/?ik=&search=inbox&view=tl&start=0&init=1&zx=
+  %gmail_location = /mail/?ik=&search=inbox&view=tl&start=0&init=1&ui=1&zx=
   %gmail_host = mail.google.com
   %gmail_port = 80
 
@@ -307,7 +307,7 @@ on 1:sockread:gmail: {
   ; ez a szoveg a rendes gmail oldalon van, ha ez jon,
   ; lekerjuk a javascript oldalt amiben benne lesz az olvasatlan levelek szama
   if (indexOf $+ $chr(40) $+ 'nocheckbrowser' $+ $chr(41) isin %temp) {
-    %gmail_location = http://mail.google.com/mail/?ik=&search=inbox&view=tl&start=0&init=1&zx=
+    %gmail_location = http://mail.google.com/mail/?ik=&search=inbox&view=tl&start=0&init=1&ui=1&zx=
     gmail_locationconv
     if (%gmail_debug) { echo -tng @gmail_debug %gmail_login - getting number of unread mails }
     else {
