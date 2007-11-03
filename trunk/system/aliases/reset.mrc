@@ -193,7 +193,7 @@
   ; 2.100
   %url_kiemeles = 1
   %url_kiemeles_style = 0
-  %highlight_szavak = $null
+  %highlight_szavak2 = $null
   ; 2.102
   %udpbeep = 0
   %uptime_meres = 1
@@ -209,10 +209,10 @@
   %checkmail_ssl = 0
   %checkmail_gmailmode = 0
   %checkmail_deletecounter = 1
-  %highlight_ignore_szavak = top10(words)
+  %highlight_ignore_szavak2 = top10(words)
   ; 2.103
   %skype_hasznalat = 0
-  %skype_separator = |
+  %skype_separator = $chr(124)
   %skype_winamp_szoveg = plays:
   %skype_winamp_kijelzes = 1
   %skype_winamp_hossz_kijelzes = 1
@@ -225,6 +225,9 @@
   %skype_delay = 5
   %skype_msg1 = $null
   %skype_msg2 = $null
+  %skype_moodtext = $null
+  %skype_oldmoodtext = $null
+  %wndback_nodisp = $null
 
   /echo $color(info) -atng *** Reset done.
 }
@@ -412,10 +415,10 @@
   if (%checkmail_ssl == $null) { %checkmail_ssl = 0 }
   if (%checkmail_gmailmode == $null) { %checkmail_gmailmode = 0 }
   if (%checkmail_deletecounter == $null) { %checkmail_deletecounter = 1 }
-  if (%highlight_ignore_szavak == $null) { %highlight_ignore_szavak = top10(words) }
+  if (%highlight_ignore_szavak2 == $null) { %highlight_ignore_szavak2 = top10(words) }
   ; 2.103
   if (%skype_hasznalat == $null) { %skype_hasznalat = 0 }
-  if (%skype_separator == $null) { %skype_separator = | }
+  if (%skype_separator == $null) { %skype_separator = $chr(124) }
   if (%skype_winamp_szoveg == $null) { %skype_winamp_szoveg = plays: }
   if (%skype_winamp_kijelzes == $null) { %skype_winamp_kijelzes = 1 }
   if (%skype_winamp_hossz_kijelzes == $null) { %skype_winamp_hossz_kijelzes = 1 }
@@ -479,6 +482,16 @@
 
   if (%checkmail) { .autocheckmail on }
   else { .autocheckmail off }
+
+  ; 2.103
+  if (%highlight_szavak != $null) {
+    %highlight_szavak2 = $replace(%highlight_szavak,$chr(32),$chr(44) $+ $chr(32))
+    unset %highlight_szavak
+  }
+  if (%highlight_ignore_szavak != $null) {
+    %highlight_ignore_szavak2 = $replace(%highlight_ignore_szavak,$chr(32),$chr(44) $+ $chr(32))
+    unset %highlight_ignore_szavak
+  }
 }
 ;END
 

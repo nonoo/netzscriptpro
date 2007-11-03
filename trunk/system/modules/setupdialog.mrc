@@ -5,18 +5,20 @@ dialog setupdialog {
   tab "&Winamp", 1, 0 0 337 401
   tab "&Away", 2
   tab "&Flood", 33
-  tab "&Design", 59
-  tab "&Design2", 218
+  tab "Design&1", 59
+  tab "Design&2", 218
+  tab "Design&3", 306
   tab "&Egyéb", 145
   tab "E&gyéb 2", 251
   tab "&Beep", 166
   tab "E&mail", 194
   tab "&Skype", 282
+  box "", 307, 8 25 322 365, tab 306
   box "", 252, 8 25 322 365, tab 251
   box "", 195, 8 25 322 365, tab 194
   box "", 56, 8 25 322 365, tab 33
   box "", 219, 8 25 322 365, tab 218
-  box " Nick lista színek ", 230, 16 134 306 160, tab 218
+  box " Nick lista színek ", 230, 16 190 306 191, tab 218
   box "", 169, 8 25 322 365, tab 166
   box " Privát üzenet érkezésekor ", 196, 17 34 304 106, tab 166
   box "", 146, 8 25 322 365, tab 145
@@ -167,13 +169,13 @@ dialog setupdialog {
   box " Kapcsolódáskor... ", 152, 16 184 306 37, tab 145
   check "MOTD kiírás", 153, 22 200 83 17, tab 145
   check "Lusers kiírás", 154, 204 200 85 17, tab 145
-  box " Titlebar ", 155, 16 302 306 76, tab 218
-  check "Winamp kijelzés", 156, 22 318 92 17, tab 218
-  check "Internet idõ kijelzés", 157, 204 318 112 17, tab 218
-  check "Lag kijelzés", 158, 22 335 73 17, tab 218
-  text "Lag detektálás intervalluma:", 159, 39 355 142 17, tab 218
-  edit "", 160, 204 352 31 20, tab 218 disable autohs
-  text "sec.", 161, 241 355 28 17, tab 218
+  box " Titlebar ", 155, 16 38 306 76, tab 306
+  check "Winamp kijelzés", 156, 22 54 92 17, tab 306
+  check "Internet idõ kijelzés", 157, 204 54 112 17, tab 306
+  check "Lag kijelzés", 158, 22 71 73 17, tab 306
+  text "Lag detektálás intervalluma:", 159, 39 91 142 17, tab 306
+  edit "", 160, 204 88 31 20, tab 306 disable autohs
+  text "sec.", 161, 241 91 28 17, tab 306
   box " netZ AutoUpdate ", 162, 16 229 306 38, tab 145
   check "Új verzió keresése indításkor", 163, 22 246 177 17, tab 145
   text "Formátum:", 167, 25 359 57 17, tab 145
@@ -224,31 +226,30 @@ dialog setupdialog {
   check "jelzés PC speakeren", 215, 28 345 117 17, tab 166 disable
   check "Highlightkor is", 216, 220 49 88 17, tab 166
   box "", 217, 210 39 106 31, tab 166
-  box " Ablak nevének kiírása a háttérbe ", 220, 16 43 306 82, tab 218
-  check "Aktív", 221, 25 60 53 17, tab 218
-  text "Font:", 222, 26 80 31 17, tab 218
-  edit "", 223, 60 77 167 20, tab 218 disable autohs
-  text "Méret:", 224, 240 80 37 17, tab 218
-  edit "", 225, 280 77 32 20, tab 218 disable autohs
-  text "Szín (pl. 80,80,80):", 226, 26 103 103 17, tab 218
-  edit "", 227, 138 100 89 20, tab 218 disable autohs
-  box " Színtéma váltás ", 228, 208 247 109 42, tab 218
-  button "eredeti", 229, 216 264 92 18, tab 218
-  text "Alap szín (0 perc idle):", 231, 25 174 119 17, tab 218
-  check "Idle idõ alapú színezés használata", 232, 25 150 194 17, tab 218
-  edit "", 233, 151 173 32 20, tab 218 autohs
-  text "10 perc idle:", 234, 25 198 76 17, tab 218
-  text "20 perc idle:", 235, 25 222 76 17, tab 218
-  text "40 perc idle:", 236, 25 247 76 17, tab 218
-  edit "", 238, 151 197 32 18, tab 218 disable autohs
-  edit "", 239, 151 221 32 20, tab 218 disable autohs
-  edit "", 240, 151 245 32 20, tab 218 disable autohs
-  edit "", 241, 151 269 32 20, tab 218 disable autohs
+  box " Ablak nevének kiírása a háttérbe ", 220, 16 40 306 137, tab 218
+  check "Aktív", 221, 25 58 53 17, tab 218
+  text "Font:", 222, 26 84 31 17, tab 218
+  edit "", 223, 60 83 167 20, tab 218 disable autohs
+  text "Méret:", 224, 240 84 37 17, tab 218
+  edit "", 225, 280 83 32 20, tab 218 disable autohs
+  text "Szín (pl. 80,80,80):", 226, 26 107 103 17, tab 218
+  edit "", 227, 130 106 94 20, tab 218 disable autohs
+  button "eredeti", 229, 152 353 92 18, tab 218
+  text "Alap szín (0 perc idle):", 231, 25 230 119 17, tab 218
+  check "Idle idõ alapú színezés használata", 232, 25 206 194 17, tab 218
+  edit "", 233, 151 229 32 20, tab 218 autohs
+  text "10 perc idle:", 234, 25 254 76 17, tab 218
+  text "20 perc idle:", 235, 25 278 76 17, tab 218
+  text "40 perc idle:", 236, 25 303 76 17, tab 218
+  edit "", 238, 151 253 32 18, tab 218 autohs
+  edit "", 239, 151 277 32 20, tab 218 autohs
+  edit "", 240, 151 301 32 20, tab 218 autohs
+  edit "", 241, 151 325 32 20, tab 218 autohs
   box " Autoconnect ", 242, 16 37 306 41, tab 145
   check "Aktív", 243, 22 55 50 17, tab 145
   edit "", 244, 74 53 241 20, tab 145 disable autohs
-  check "60 perc idle:", 237, 25 271 100 17, tab 218 disable
-  check "Lag kijelzés csíkkal", 245, 204 335 114 17, tab 218 disable
+  check "60 perc idle:", 237, 25 327 100 17, tab 218
+  check "Lag kijelzés csíkkal", 245, 204 71 114 17, tab 306 disable
   text "A script az auto-away idõt a rendszer idle idejébõl számolja, tehát ha nem mozgatod az egeret 20 percig, akkor fog bekapcsolni az auto-away (értelemszerûen ha 20 percre van állítva)", 246, 15 218 310 53, tab 2
   check "CTCP védelem", 247, 19 280 92 17, tab 33 disable
   edit "", 248, 148 278 30 20, tab 33 disable autohs
@@ -265,7 +266,7 @@ dialog setupdialog {
   edit "", 261, 174 89 42 20, tab 251 autohs
   text "+http:// v. ftp://", 262, 226 91 86 17, tab 251
   box " Highlight ", 263, 15 116 308 128, tab 251
-  text "A nickeden kívül a következõ szórészletekre aktiválódjon (spaceszel elválasztva):", 264, 23 133 282 26, tab 251
+  text "A nickeden kívül a következõ szórészletekre aktiválódjon (vesszõvel elválasztva):", 264, 23 133 282 26, tab 251
   edit "", 265, 24 163 290 20, tab 251 autohs
   box " Uptime mérés ", 266, 16 247 308 60, tab 251
   check "Aktív", 267, 22 264 50 17, tab 251
@@ -306,4 +307,7 @@ dialog setupdialog {
   box " Kiírások a winamp kijelzés elõtt és után ", 300, 18 263 302 65, tab 282
   edit "", 303, 24 280 290 20, tab 282 autohs
   edit "", 304, 24 304 290 20, tab 282 autohs
+  text "Ezeken a csatikon nincs kijelzés (vesszõvel elválasztva):", 305, 26 133 270 17, tab 218
+  edit "", 308, 25 150 288 20, tab 218 disable
+  text "Színtéma váltás:", 228, 26 355 100 17, tab 218
 }

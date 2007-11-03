@@ -110,7 +110,7 @@
   else { %ablak = $1 }
   ; statusz ablakban, &serversben nem szarakodunk
   if (%ablak = Status Window) || (%ablak = &servers) { return }
-  if (%wndback) && ($window(%ablak)) {
+  if (%wndback) && ($window(%ablak)) && ($wndback_ok(%ablak)) {
     var %origablaknev = %ablak
     ; custom ablak nevek eltavolitasa
     if ($2) { %ablak = $2- }

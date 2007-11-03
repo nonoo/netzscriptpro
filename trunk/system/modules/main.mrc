@@ -29,6 +29,7 @@ alias moduleload {
   if (!$script(checkmail.mrc)) { .load -rs system\modules\checkmail.mrc }
   if (!$script(telnet.mrc)) { .load -rs system\modules\telnet.mrc }
   if (!$script(dl.mrc)) { .load -rs system\modules\dl.mrc }
+  if (!$script(raw.mrc)) { .load -rs system\modules\raw.mrc }
 
   if (!$alias(netzalias1.mrc)) { .load -a system\aliases\netzalias1.mrc }
   if (!$alias(netzalias2.mrc)) { .load -a system\aliases\netzalias2.mrc }

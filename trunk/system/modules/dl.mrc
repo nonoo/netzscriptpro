@@ -666,19 +666,19 @@ alias /siteinvite {
 ;FELULIRDIALOG
 dialog dl_felulir {
   title "netZ Downloader"
-  size -1 -1 392 117
+  size -1 -1 588 117
   option pixels notheme
   text "A fájl már létezik:", 1, 8 32 109 17, right
-  button "Folytat", 2, 5 94 112 20
-  button "Felülír", 3, 141 94 112 20
-  button "Más néven ment", 4, 273 94 112 20
+  button "Folytat", 2, 227 94 112 20
+  button "Felülír", 3, 351 94 112 20
+  button "Más néven ment", 4, 473 94 112 20
   text "Mérete:", 5, 52 51 65 17, right
   text "Letöltendõ fájl mérete:", 6, 5 68 113 17, right
-  text "", 7, 122 32 261 17
-  text "", 8, 122 51 261 17
-  text "", 9, 122 68 261 17
+  text "", 7, 122 32 460 17
+  text "", 8, 122 51 460 17
+  text "", 9, 122 68 460 17
   text "URL:", 10, 81 7 35 17, right
-  text "", 11, 122 7 261 17
+  text "", 11, 122 7 460 17
 }
 on *:DIALOG:dl_felulir:init:*: {
   did -ra $dname 7 %dl_downloaddir $+ %dl_filename

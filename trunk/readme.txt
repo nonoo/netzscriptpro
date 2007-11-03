@@ -40,7 +40,7 @@
 netZ Script Pro v2.103
 ^^^^^^^^^^^^^^^^^^^^^^
 Magyar script a mIRC-hez.
-Ez a verzió a v6.3-as mIRC32.exe-t használja.
+Ez a verzió a v6.31-es mIRC32.exe-t használja.
 A scriptben a fejlesztés során történt változásokról a changelog.txt-ben
 olvashatsz, a parancsok listáját a commands.txt-ben találod meg.
 

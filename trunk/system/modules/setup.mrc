@@ -209,18 +209,19 @@ on *:DIALOG:setupdialog:init:*: {
   if (%dl_hotlink) { did -c $dname 179 | did -e $dname 187 }
   did -a $dname 187 %dl_hotlink_kiterjesztesek
   did -a $dname 188 %dl_downloaddir
-  if (%wndback) { did -c $dname 221 | did -e $dname 223 | did -e $dname 225 | did -e $dname 227 }
+  if (%wndback) { did -c $dname 221 | did -e $dname 223 | did -e $dname 225 | did -e $dname 227 | did -e $dname 308 }
   did -a $dname 223 %wndback_font
   did -a $dname 225 %wndback_font_size
   did -a $dname 227 %wndback_font_color
+  did -a $dname 308 %wndback_nodisp
   if (%autoconnect) { did -c $dname 243 | did -e $dname 244 }
   did -a $dname 244 %autoconnect_servers
   if (%getlog) { did -c $dname 254 | did -e $dname 256 }
   did -a $dname 256 %getlog_numlines
   if (%url_kiemeles) { did -c $dname 259 | did -e $dname 261 }
   did -a $dname 261 %url_kiemeles_style
-  did -a $dname 265 %highlight_szavak
-  did -a $dname 280 %highlight_ignore_szavak
+  did -a $dname 265 %highlight_szavak2
+  did -a $dname 280 %highlight_ignore_szavak2
   if (%uptime_meres) { did -c $dname 267 | did -e $dname 268 | did -e $dname 269 }
   if (%uptime_notice) { did -c $dname 268 }
   if (%uptime_notice_newrecord) { did -c $dname 269 }
@@ -598,8 +599,8 @@ on *:DIALOG:setupdialog:sclick:190: {
 }
 on *:DIALOG:setupdialog:sclick:192: { /run notepad.exe system\greetings.txt }
 on *:DIALOG:setupdialog:sclick:221: {
-  if ($did(221).state) { did -e $dname 223 | did -e $dname 225 | did -e $dname 227 }
-  else { did -b $dname 223 | did -b $dname 225 | did -b $dname 227 }
+  if ($did(221).state) { did -e $dname 223 | did -e $dname 225 | did -e $dname 227 | did -e $dname 308 }
+  else { did -b $dname 223 | did -b $dname 225 | did -b $dname 227 | did -b $dname 308 }
 }
 on *:DIALOG:setupdialog:sclick:243: {
   if ($did(243).state) { did -e $dname 244 }
@@ -980,6 +981,7 @@ on *:DIALOG:setupdialog:sclick:3: {
   %wndback_font = $did(223)
   %wndback_font_size = $did(225)
   %wndback_font_color = $did(227)
+  %wndback_nodisp = $did(308)
   wndbackall
   if ($did(243).state) { %autoconnect = 1 }
   else { %autoconnect = 0 }
@@ -990,8 +992,8 @@ on *:DIALOG:setupdialog:sclick:3: {
   if ($did(259).state) { %url_kiemeles = 1 }
   else { %url_kiemeles = 0 }
   %url_kiemeles_style = $did(261)
-  %highlight_szavak = $did(265)
-  %highlight_ignore_szavak = $did(280)
+  %highlight_szavak2 = $did(265)
+  %highlight_ignore_szavak2 = $did(280)
   if ($did(267).state) { %uptime_meres = 1 }
   else { %uptime_meres = 0 }
   if ($did(268).state) { %uptime_notice = 1 }

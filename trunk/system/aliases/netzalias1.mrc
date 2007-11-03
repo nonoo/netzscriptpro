@@ -540,23 +540,36 @@
 }  
 ;END
 
+;WNDBACK_OK
+/wndback_ok {
+  ; megnezi, hogy a tiltott szavak kozul van-e parameterkent megadott
+  ; stringben, ha van, 0-val ter vissza
+  var %i = $numtok(%wndback_nodisp,44)
+  while (%i > 0) {
+    if ($trim($gettok(%wndback_nodisp,%i,44)) isin $1-) { return 0 }
+    dec %i 1
+  }
+  return 1
+}
+
 ;HIGHLIGHT_OK
 /highlight_ok {
-  ; megnezi hogy a parameterkent megadott szovegben benne van-e legalabb 1, a %highlight_ignore_szavak
+  ; megnezi hogy a parameterkent megadott szovegben benne van-e legalabb 1, a %highlight_ignore_szavak2
   ; valtozo altal tarolt szoreszlet
-  var %i = $numtok(%highlight_ignore_szavak,32)
+  var %i = $numtok(%highlight_ignore_szavak2,44)
   while (%i > 0) {
-    if ($gettok(%highlight_ignore_szavak,%i,32) isin $1-) { return 0 }
+    ; levagjuk a spacet a szo elejerol
+    if ($trim($gettok(%highlight_ignore_szavak2,%i,44)) isin $1-) { return 0 }
     dec %i 1
   }
 
   if ($me isin $1-) { return 1 }
 
-  ; megnezi hogy a parameterkent megadott szovegben benne van-e legalabb 1, a %highlight_szavak
+  ; megnezi hogy a parameterkent megadott szovegben benne van-e legalabb 1, a %highlight_szavak2
   ; valtozo altal tarolt szoreszlet
-  var %i = $numtok(%highlight_szavak,32)
+  var %i = $numtok(%highlight_szavak2,44)
   while (%i > 0) {
-    if ($gettok(%highlight_szavak,%i,32) isin $1-) { return 1 }
+    if ($trim($gettok(%highlight_szavak2,%i,44)) isin $1-) { return 1 }
     dec %i 1
   }
 
@@ -603,10 +616,18 @@
     }
   }
 
-  if ($calc($uptime(system,3)/86400) > 15) {
-    if (!%uptime_noticed_15) {
-      /echo $color(highlight) -atng *** Uptime: a rendszer már 15 napja megy!
-      %uptime_noticed_15 = 1
+  if ($calc($uptime(system,3)/86400) > 21) {
+    if (!%uptime_noticed_21) {
+      /echo $color(highlight) -atng *** Uptime: a rendszer már 3 hete megy!
+      %uptime_noticed_21 = 1
+      return
+    }
+  }
+
+  if ($calc($uptime(system,3)/86400) > 14) {
+    if (!%uptime_noticed_14) {
+      /echo $color(highlight) -atng *** Uptime: a rendszer már 2 hete megy!
+      %uptime_noticed_14 = 1
       return
     }
   }
@@ -650,16 +671,28 @@
     %uptime_noticed_2 = 1
     %uptime_noticed_5 = 1
     %uptime_noticed_7 = 1
-    %uptime_noticed_15 = 1
+    %uptime_noticed_14 = 1
+    %uptime_noticed_21 = 1
     %uptime_noticed_30 = 1
     return
   }
-  if ($calc($uptime(system,3)/86400) > 15) {
+  if ($calc($uptime(system,3)/86400) > 21) {
     %uptime_noticed_1 = 1
     %uptime_noticed_2 = 1
     %uptime_noticed_5 = 1
     %uptime_noticed_7 = 1
-    %uptime_noticed_15 = 1
+    %uptime_noticed_14 = 1
+    %uptime_noticed_21 = 1
+    %uptime_noticed_30 = 0
+    return
+  }
+  if ($calc($uptime(system,3)/86400) > 14) {
+    %uptime_noticed_1 = 1
+    %uptime_noticed_2 = 1
+    %uptime_noticed_5 = 1
+    %uptime_noticed_7 = 1
+    %uptime_noticed_14 = 1
+    %uptime_noticed_21 = 0
     %uptime_noticed_30 = 0
     return
   }
@@ -668,7 +701,8 @@
     %uptime_noticed_2 = 1
     %uptime_noticed_5 = 1
     %uptime_noticed_7 = 1
-    %uptime_noticed_15 = 0
+    %uptime_noticed_14 = 0
+    %uptime_noticed_21 = 0
     %uptime_noticed_30 = 0
     return
   }
@@ -677,7 +711,8 @@
     %uptime_noticed_2 = 1
     %uptime_noticed_5 = 1
     %uptime_noticed_7 = 0
-    %uptime_noticed_15 = 0
+    %uptime_noticed_14 = 0
+    %uptime_noticed_21 = 0
     %uptime_noticed_30 = 0
     return
   }
@@ -686,7 +721,8 @@
     %uptime_noticed_2 = 1
     %uptime_noticed_5 = 0
     %uptime_noticed_7 = 0
-    %uptime_noticed_15 = 0
+    %uptime_noticed_14 = 0
+    %uptime_noticed_21 = 0
     %uptime_noticed_30 = 0
     return
   }
@@ -695,7 +731,8 @@
     %uptime_noticed_2 = 0
     %uptime_noticed_5 = 0
     %uptime_noticed_7 = 0
-    %uptime_noticed_15 = 0
+    %uptime_noticed_14 = 0
+    %uptime_noticed_21 = 0
     %uptime_noticed_30 = 0
     return
   }
@@ -703,7 +740,8 @@
   %uptime_noticed_2 = 0
   %uptime_noticed_5 = 0
   %uptime_noticed_7 = 0
-  %uptime_noticed_15 = 0
+  %uptime_noticed_14 = 0
+  %uptime_noticed_21 = 0
   %uptime_noticed_30 = 0
 }
 ;END
