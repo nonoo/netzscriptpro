@@ -807,6 +807,9 @@ on ^1:ACTION:*:#:{
             }
           }
           if (%pcspeaker_priviknel) { /netzbeep highlight }
+          if (%highlight_tooltip) {
+            var %a $tip(highlight, Highlight: $chan, * $nick $strip(%tempszoveg), $null, $null, $null, /j $chan )
+          }
         }
       }
     }
@@ -861,6 +864,9 @@ on ^1:ACTION:*:?:{
       }
     }
     if (%pcspeaker_priviknel) { /netzbeep query }
+    if (%tooltip_priviknel) && (!$appactive) {
+      var %a $tip(highlight, Query: $nick, * $nick $strip(%tempszoveg), $null, $null, $null, /q $nick )
+    }
   }
   ; lastmsg (idle detekt)
   .hadd lastmsg $cid $+ $nick $ctime
@@ -900,7 +906,7 @@ on ^1:TEXT:*:#:{
   ; kiemelés+kiírás
   if ($highlight_ok(%tempszoveg)) {
     /echo $color(normal) -tm $chan %mas_bal $+  $+ %nick_highlight_szin $+ %plusz $+ $nick $+ %mas_jobb $+  $+ $color(normal) %tempszoveg
-    ; villogtatjuk a csati ablakot ha a nevunk benne van az uzenetben
+    ; villogtatjuk a csati ablakot
     /window -g2 $chan
     ; ha kell pager
     if (%highlight_pager) {
@@ -919,6 +925,9 @@ on ^1:TEXT:*:#:{
             }
           }
           if (%pcspeaker_priviknel) { /netzbeep highlight }
+          if (%highlight_tooltip) {
+            var %a $tip(highlight, Highlight: $chan, %mas_bal $+ $nick $+ %mas_jobb $strip(%tempszoveg), $null, $null, $null, /j $chan )
+          }
         }
       }
     }
@@ -1019,6 +1028,9 @@ on ^1:TEXT:*:?:{
         }
       }
       if (%pcspeaker_priviknel) { /netzbeep query }
+      if (%tooltip_priviknel) && (!$appactive) {
+        var %a $tip(query, Query: $nick, %mas_bal $+ $nick $+ %mas_jobb $strip(%tempszoveg), $null, $null, $null, /q $nick )
+      }
     }
   }
   ; lastmsg (idle detekt)
@@ -1043,4 +1055,10 @@ on 1:FILERCVD:*.*: {
 on 1:FILESENT:*: { /echo $color(info) -atg *** Átment $laz($nopath($filename)) $nopath($filename) $+  $+ $color(nick) $nick $+  $+ $color(info) $+ $toldalek($nick,-nak,-nek) $+ ! | halt }
 on 1:SENDFAIL:*: { echo $color(info2) -atg *** Nem sikerült elküldeni $+  $+ $color(nick) $nick $+  $+ $color(info2) $+ $toldalek($nick,-nak,-nek) $laz($nopath($filename)) $nopath($filename) fájlt! | /halt }
 on 1:GETFAIL:*: { echo $color(info2) -atg *** Nem sikerült fogadni $laz($nopath($filename)) $nopath($filename) fájlt $+  $+ $color(nick) $nick $+  $+ $color(info2) $+ $toldalek($nick,-tól,tõl) $+ ! | /halt }
+;END
+
+;ONCLOSE
+on 1:CLOSE:?: {
+  .hdel lastmsg $cid $+ $nick $+ privi
+}
 ;END
