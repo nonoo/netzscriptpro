@@ -1,3 +1,6 @@
+[2.104]
+-
+
 [2.103] 2007. 11. 02. 15:00
 - új mirc.exe (6.31), ezáltal pl. ismét normális a logolás (1 log/csati, query)
 - shift+F7-re minden csatira köszönés
