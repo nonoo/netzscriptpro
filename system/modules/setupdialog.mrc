@@ -310,4 +310,9 @@ dialog setupdialog {
   text "Ezeken a csatikon nincs kijelzés (vesszõvel elválasztva):", 305, 26 133 270 17, tab 218
   edit "", 308, 25 150 288 20, tab 218 disable
   text "Színtéma váltás:", 228, 26 355 100 17, tab 218
+  box " Tooltipek ", 309, 16 118 306 59, tab 306
+  check "Highlight esetén", 310, 22 136 108 17, tab 306
+  check "Priviknél", 311, 204 136 108 17, tab 306
+  check "Email érkezésekor", 312, 22 154 108 17, tab 306
+  check "DCC-nél", 313, 204 154 108 17
 }

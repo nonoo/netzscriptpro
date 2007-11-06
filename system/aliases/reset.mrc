@@ -20,7 +20,7 @@
   /write -c system\urls.ini
   /write -c system\control.ini
   /write -c system\gmailcookies.dat
-  /write -c system\alarms.dat
+  /write -c system\jobs.dat
   /botop -c
   .firewall off
   %nemvoltinditva = 1
@@ -230,6 +230,11 @@
   %skype_moodtext = $null
   %skype_oldmoodtext = $null
   %wndback_nodisp = $null
+  ; 2.104
+  %tooltip_priviknel = 1
+  %highlight_tooltip = 1
+  %checkmail_tooltip = 1
+  %tooltip_dccnel = 1
 
   /echo $color(info) -atng *** Reset done.
 }
@@ -431,6 +436,11 @@
   if (%skype_away_follow == $null) { %skype_away_follow = 1 }
   if (%skype_away_mod == $null) { %skype_away_mod = na }
   if (%skype_delay == $null) { %skype_delay = 5 }
+  ; 2.104
+  if (%tooltip_priviknel == $null) { %tooltip_priviknel = 1 }
+  if (%highlight_tooltip == $null) { %highlight_tooltip = 1 }
+  if (%checkmail_tooltip == $null) { %checkmail_tooltip = 1 }
+  if (%tooltip_dccnel == $null) { %tooltip_dccnel = 1 }
 }
 ;END
 
@@ -494,6 +504,9 @@
     %highlight_ignore_szavak2 = $replace(%highlight_ignore_szavak,$chr(32),$chr(44) $+ $chr(32))
     unset %highlight_ignore_szavak
   }
+
+  ; 2.104
+  initjobs
 }
 ;END
 

@@ -199,11 +199,6 @@ on *:DIALOG:setupdialog:init:*: {
   did -a $dname 151 %kedvenc_csatik
   if (%motd_kiiras) { did -c $dname 153 }
   if (%lusers_kiiras) { did -c $dname 154 }
-  if (%winamp_kijelzes_titlebarban) { did -c $dname 156 }
-  if (%itime_kijelzes_titlebarban) { did -c $dname 157 }
-  if (%lagdetect_titlebarban) { did -c $dname 158 | did -e $dname 160 | did -e $dname 245 }
-  if (%lagdetect_titlebarban_csik) { did -c $dname 245 }
-  did -a $dname 160 %lagdetect_auto_interval
   if (%autoupdate) { did -c $dname 163 }
   did -a $dname 168 %timestamp_format
   if (%dl_hotlink) { did -c $dname 179 | did -e $dname 187 }
@@ -227,6 +222,18 @@ on *:DIALOG:setupdialog:init:*: {
   if (%uptime_notice_newrecord) { did -c $dname 269 }
   if (%netsplit_detect) { did -c $dname 271 | did -e $dname 272 }
   if (%netsplit_detect_onlyhu) { did -c $dname 272 }
+  ;END
+
+  ;DESIGN3
+  if (%winamp_kijelzes_titlebarban) { did -c $dname 156 }
+  if (%itime_kijelzes_titlebarban) { did -c $dname 157 }
+  if (%lagdetect_titlebarban) { did -c $dname 158 | did -e $dname 160 | did -e $dname 245 }
+  if (%lagdetect_titlebarban_csik) { did -c $dname 245 }
+  did -a $dname 160 %lagdetect_auto_interval
+  if (%tooltip_priviknel) { did -c $dname 311 }
+  if (%highlight_tooltip) { did -c $dname 310 }
+  if (%checkmail_tooltip) { did -c $dname 312 }
+  if (%tooltip_dccnel) { did -c $dname 313 }
   ;END
 
   ;BEEP
@@ -939,35 +946,6 @@ on *:DIALOG:setupdialog:sclick:3: {
   else { %motd_kiiras = 0 }
   if ($did(154).state) { %lusers_kiiras = 1 }
   else { %lusers_kiiras = 0 }
-  if ($did(156).state) { %winamp_kijelzes_titlebarban = 1 }
-  else { %winamp_kijelzes_titlebarban = 0 }
-  if ($did(157).state) { %itime_kijelzes_titlebarban = 1 }
-  else { %itime_kijelzes_titlebarban = 0 }
-  %lagdetect_auto_interval = $did(160)
-  if ($did(245).state) { %lagdetect_titlebarban_csik = 1 }
-  else { %lagdetect_titlebarban_csik = 0 }
-  if ($did(158).state) {
-    %lagdetect_titlebarban = 1
-    ; minden szerver kapcsolatra vegigmegyunk
-    var %j $scon(0)
-    while (%j > 0) {
-      scon %j
-      if ($scon(%j).$server) { .timer 1 0 .lagauto on }
-      scon -r
-      dec %j 1
-    }
-  }
-  else {
-    %lagdetect_titlebarban = 0
-    ; minden szerver kapcsolatra vegigmegyunk
-    var %j $scon(0)
-    while (%j > 0) {
-      scon %j
-      if ($scon(%j).$server) { .timer 1 0 .lagauto off }
-      scon -r
-      dec %j 1
-    }
-  }
   if ($did(163).state) { %autoupdate = 1 }
   else { %autoupdate = 0 }
   %timestamp_format = $did(168)
@@ -1004,6 +982,46 @@ on *:DIALOG:setupdialog:sclick:3: {
   else { %netsplit_detect = 0 }
   if ($did(272).state) { %netsplit_detect_onlyhu = 1 }
   else { %netsplit_detect_onlyhu = 0 }
+  ;END
+
+  ;DESIGN3
+  if ($did(156).state) { %winamp_kijelzes_titlebarban = 1 }
+  else { %winamp_kijelzes_titlebarban = 0 }
+  if ($did(157).state) { %itime_kijelzes_titlebarban = 1 }
+  else { %itime_kijelzes_titlebarban = 0 }
+  %lagdetect_auto_interval = $did(160)
+  if ($did(245).state) { %lagdetect_titlebarban_csik = 1 }
+  else { %lagdetect_titlebarban_csik = 0 }
+  if ($did(158).state) {
+    %lagdetect_titlebarban = 1
+    ; minden szerver kapcsolatra vegigmegyunk
+    var %j $scon(0)
+    while (%j > 0) {
+      scon %j
+      if ($scon(%j).$server) { .timer 1 0 .lagauto on }
+      scon -r
+      dec %j 1
+    }
+  }
+  else {
+    %lagdetect_titlebarban = 0
+    ; minden szerver kapcsolatra vegigmegyunk
+    var %j $scon(0)
+    while (%j > 0) {
+      scon %j
+      if ($scon(%j).$server) { .timer 1 0 .lagauto off }
+      scon -r
+      dec %j 1
+    }
+  }
+  if ($did(311).state) { %tooltip_priviknel = 1 }
+  else { %tooltip_priviknel = 0 }
+  if ($did(310).state) { %highlight_tooltip = 1 }
+  else { %highlight_tooltip = 0 }
+  if ($did(312).state) { %checkmail_tooltip = 1 }
+  else { %checkmail_tooltip = 0 }
+  if ($did(313).state) { %tooltip_dccnel = 1 }
+  else { %tooltip_dccnel = 0 }
   ;END
 
   ;BEEP

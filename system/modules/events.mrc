@@ -214,6 +214,9 @@ on ^*:notice:*:*: {
             }
           }
           if (%pcspeaker_priviknel) { /netzbeep highlight }
+          if (%tooltip_priviknel) && (!$appactive) {
+            var %a $tip(notice, Notice: $nick, $strip($1-), $null, system\img\notice.ico, $null, /q $nick )
+          }
         }
       }
     }
@@ -322,6 +325,9 @@ ctcp ^1:PAGE: {
     }
     if (%pager_speaker) { /netzbeep pager }
     if (%pager_flash) { /flash %pager_flash_szoveg }
+    if (!$appactive) {
+      var %a $tip(pager, Pager: $nick, $nick paget küldött!, $null, system\img\warning.ico, $null, /q $nick )
+    }
   }
   halt
 }
@@ -1054,7 +1060,7 @@ on 1:FILERCVD:*.*: {
     }
   }
   else {
-    if (!$appactive) {
+    if (!$appactive) && (%tooltip_dccnel) {
       var %a $tip(dcc, DCC: $nick, Megjött $laz($nopath($filename)) $nopath($filename), $null, system\img\dcc.ico )
     }
   }
@@ -1062,21 +1068,21 @@ on 1:FILERCVD:*.*: {
 }
 on 1:FILESENT:*: {
   /echo $color(info) -atg *** Átment $laz($nopath($filename)) $nopath($filename) $+  $+ $color(nick) $nick $+  $+ $color(info) $+ $toldalek($nick,-nak,-nek) $+ !
-  if (!$appactive) {
+  if (!$appactive) && (%tooltip_dccnel) {
     var %a $tip(dcc, DCC: $nick, Átment $laz($nopath($filename)) $nopath($filename), $null, system\img\dcc.ico )
   }
   halt
 }
 on 1:SENDFAIL:*: {
   echo $color(info2) -atg *** Nem sikerült elküldeni $+  $+ $color(nick) $nick $+  $+ $color(info2) $+ $toldalek($nick,-nak,-nek) $laz($nopath($filename)) $nopath($filename) fájlt!
-  if (!$appactive) {
+  if (!$appactive) && (%tooltip_dccnel) {
     var %a $tip(dcc, DCC hiba: $nick, Nem sikerült elküldeni $+  $+ $color(nick) $nick $+ $toldalek($nick,-nak,-nek) $laz($nopath($filename)) $nopath($filename) fájlt!, $null, system\img\warning.ico )
   }
   halt
 }
 on 1:GETFAIL:*: {
   echo $color(info2) -atg *** Nem sikerült fogadni $laz($nopath($filename)) $nopath($filename) fájlt $+  $+ $color(nick) $nick $+  $+ $color(info2) $+ $toldalek($nick,-tól,tõl) $+ !
-  if (!$appactive) {
+  if (!$appactive) && (%tooltip_dccnel) {
     var %a $tip(dcc, DCC hiba: $nick, Nem sikerült fogadni $laz($nopath($filename)) $nopath($filename) fájlt $nick $+ $toldalek($nick,-tól,tõl) $+ !, $null, system\img\warning.ico )
   }
   halt

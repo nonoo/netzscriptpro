@@ -489,14 +489,124 @@
 }
 ;END
 
-;ALARM
+;JOBOK
+/job {
+  if ($2 == $null) { /echo $color(info2) -atng *** /job hiba: túl kevés paraméter! használat: /job (dátum (pl. 2007/11/06)) [idõ (pl. 0:25)] [parancs] | halt }
+
+  if ($2 == off) || ($2 == stop) {
+    if ($hget(jobs,$1) != $null) {
+      hdel jobs $1
+      hsave jobs system\jobs.dat
+      echo $color(info) -atng *** Job $+ $1 törölve.
+      return
+    }
+    else {
+      echo $color(info2) -atng *** Job $+ $1 nem létezik.
+      return
+    }
+  }
+
+  var %datum
+  var %ido
+  var %parancs
+  if ( / isin $1 ) {
+    %datum = $1
+    if (: !isin $2) { /echo $color(info2) -atng *** /job hiba: túl kevés paraméter! használat: /job (dátum (pl. 2007/11/06)) [idõ (pl. 0:25)] [parancs] | halt }
+    %ido = $2
+    if ($3 == $null) { /echo $color(info2) -atng *** /job hiba: túl kevés paraméter! használat: /job (dátum (pl. 2007/11/06)) [idõ (pl. 0:25)] [parancs] | halt }
+    %parancs = $3-
+  }
+  else {
+    if (: !isin $1) { /echo $color(info2) -atng *** /job hiba: túl kevés paraméter! használat: /job (dátum (pl. 2007/11/06)) [idõ (pl. 0:25)] [parancs] | halt }
+    %datum = $asctime(yyyy/mm/dd)
+    %ido = $1
+    %parancs = $2-
+  }
+
+  ; szabad job num kereses
+  var %tnum 1
+  while ($hget(jobs,%tnum) != $null) {
+    inc %tnum 1
+  }
+  hadd jobs %tnum $ctime($gettok(%datum,3,47) $+ / $+ $gettok(%datum,2,47) $+ / $+ $gettok(%datum,1,47) %ido) %parancs
+  hsave jobs system\jobs.dat
+
+  if ($gettok(%parancs,1,32) == /onalarm) {
+    echo $color(info) -atngq *** Alarm $+ %tnum bekapcsolva ( $+ %datum %ido $+ ): %parancs
+  }
+  else {
+    echo $color(info) -atngq *** Job $+ %tnum bekapcsolva ( $+ %datum %ido $+ ): %parancs
+  }
+}
+
+/jobs {
+  if ($hget(jobs,0).item == 0) {
+    echo $color(info) -atng *** Nincs aktív job.
+    return
+  }
+
+  if ($1 == off) || ($1 == stop) {
+    hdel -w jobs *
+    hsave jobs system\jobs.dat
+    echo $color(info) -atng *** Jobok törölve.
+    return
+  }
+
+  var %i $hget(jobs,0).item
+  echo $color(info) -atng *** Aktív jobok:
+  while (%i > 0) {
+    tokenize 32 $hget(jobs,%i).data
+    echo $color(info) -atng * $hget(jobs,%i).item $+ . $asctime($1,yyyy/mm/dd HH:nn) - $2-
+    dec %i 1
+  }
+}
+
+/onalarm {
+  echo $color(highlight) -atng *** ALARM: $1-
+  var %a $tip(alarm, Alarm, $1-, 60, system\img\warning.ico )
+  /beep 5 100
+  /netzbeep pager
+}
+
+/initjobs {
+  if ($hget(jobs) != $null) {
+    hfree jobs
+  }
+  hmake jobs 1
+  ; betoltjuk fajlbol az jobokat (ha letezik)
+  if ($exists(system\jobs.dat)) {
+    hload jobs system\jobs.dat
+  }
+  if (!$timer(jobs)) {
+    .timerjobs -i 0 60 /jobcheck
+  }
+}
+
+/jobcheck {
+  var %i $hget(jobs,0).item
+  while (%i > 0) {
+    tokenize 32 $hget(jobs,%i).data
+    if ($ctime >= $1) {
+      if ($2 != /onalarm) {
+        echo $color(info) -atng *** Job $+ $hget(jobs,%i).item indítása: $2-
+      }
+      $2-
+      hdel jobs $hget(jobs,%i).item
+      %i = $hget(jobs,0).item
+      continue
+    }
+    dec %i 1
+  }
+  hsave jobs system\jobs.dat
+}
+
 /alarm {
   if ($2 == $null) { /echo $color(info2) -atng *** /alarm hiba: túl kevés paraméter! használat: /alarm (dátum (pl. 2007/11/06)) [idõ (pl. 0:25)] [üzenet] | halt }
 
   if ($2 == off) || ($2 == stop) {
-    if ($hget(alarms,$1) != $null) {
-      hdel alarms $1
-      hsave alarms system\alarms.dat
+    if (/onalarm isin $hget(jobs,$1)) {
+      hdel jobs $1
+      hsave jobs system\jobs.dat
       echo $color(info) -atng *** Alarm $+ $1 törölve.
       return
     }
@@ -523,71 +633,52 @@
     %uzenet = $2-
   }
 
-  var %tnum 1
-  while ($hget(alarms,%tnum) != $null) {
-    inc %tnum 1
-  }
-  hadd alarms %tnum $ctime($gettok(%datum,3,47) $+ / $+ $gettok(%datum,2,47) $+ / $+ $gettok(%datum,1,47) %ido) %uzenet
-  hsave alarms system\alarms.dat
-
-  echo $color(info) -atng *** Alarm $+ %tnum bekapcsolva ( $+ %datum %ido $+ ): %uzenet
+  job %datum %ido /onalarm %uzenet
 }
 
 /alarms {
-  if ($hget(alarms,0).item == 0) {
+  var %off 0
+  if ($1 == off) || ($1 == stop) {
+    %off = 1
+  }
+
+  ; alarmok megszamolasa
+  var %i $hget(jobs,0).item
+  var %ac 0
+  while (%i > 0) {
+    tokenize 32 $hget(jobs,%i).data
+    if ($2 == /onalarm) {
+      inc %ac 1
+    }
+    dec %i 1
+  }
+  if (%ac == 0) {
     echo $color(info) -atng *** Nincs aktív alarm.
     return
   }
 
-  if ($1 == off) || ($1 == stop) {
-    hdel -w alarms *
-    hsave alarms system\alarms.dat
+  if (%off) {
+    var %i $hget(jobs,0).item
+    while (%i > 0) {
+      tokenize 32 $hget(jobs,%i).data
+      if ($2 == /onalarm) {
+        hdel jobs $hget(jobs,%i).item
+      }
+      dec %i 1
+    }
+    hsave jobs system\jobs.dat
     echo $color(info) -atng *** Alarmok törölve.
     return
   }
 
-  var %i $hget(alarms,0).item
+  var %i $hget(jobs,0).item
   echo $color(info) -atng *** Aktív alarmok:
   while (%i > 0) {
-    tokenize 32 $hget(alarms,%i).data
-    echo $color(info) -atng * $hget(alarms,%i).item $+ . $asctime($1,yyyy/mm/dd HH:nn) - $2-
-    dec %i 1
-  }
-}
-
-/onalarm {
-  echo $color(highlight) -atng *** ALARM: $1-
-  var %a $tip(alarm, Alarm, $1-, 60, system\img\warning.ico )
-  /beep 5 100
-  /netzbeep pager
-}
-
-/alarminit {
-  if ($hget(alarms) != $null) {
-    hfree alarms
-  }
-  hmake alarms 1
-  ; betoltjuk fajlbol az alarmokat (ha letezik)
-  if ($exists(system\alarms.dat)) {
-    hload alarms system\alarms.dat
-  }
-  if (!$timer(alarm)) {
-    .timeralarm -i 0 60 /alarmcheck
-  }
-}
-
-/alarmcheck {
-  var %i $hget(alarms,0).item
-  while (%i > 0) {
-    tokenize 32 $hget(alarms,%i).data
-    if ($ctime >= $1) {
-      /onalarm $2-
-      hdel alarms $hget(alarms,%i).item
-      %i = $hget(alarms,0).item
-      continue
+    tokenize 32 $hget(jobs,%i).data
+    if ($2 == /onalarm) {
+      echo $color(info) -atng * $hget(jobs,%i).item $+ . $asctime($1,yyyy/mm/dd HH:nn) - $remove($2-,/onalarm)
     }
     dec %i 1
   }
-  hsave alarms system\alarms.dat
 }
 ;END
