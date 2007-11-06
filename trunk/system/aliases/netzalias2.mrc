@@ -332,7 +332,7 @@
   }
   ; ha a kivant nick megegyezik a jelenlegivel
   if ($1 == $me) { /echo $color(info2) -atng *** /orignick: hiba: a nicked jelenleg is $me $+ ! | halt }
-  /echo $color(info) -atng *** OrigNick bekapcsolva ( $+ $1 $+ )
+  /echo $color(info) -atngq *** OrigNick bekapcsolva ( $+ $1 $+ )
   %orig_nick = $1
   .nick %orig_nick
   .timerOrigNick $+ $cid 0 15 .nick %orig_nick

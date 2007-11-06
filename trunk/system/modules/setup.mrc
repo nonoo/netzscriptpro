@@ -222,6 +222,7 @@ on *:DIALOG:setupdialog:init:*: {
   if (%uptime_notice_newrecord) { did -c $dname 269 }
   if (%netsplit_detect) { did -c $dname 271 | did -e $dname 272 }
   if (%netsplit_detect_onlyhu) { did -c $dname 272 }
+  if (%auto_orignick) { did -c $dname 315 }
   ;END
 
   ;DESIGN3
@@ -234,6 +235,8 @@ on *:DIALOG:setupdialog:init:*: {
   if (%highlight_tooltip) { did -c $dname 310 }
   if (%checkmail_tooltip) { did -c $dname 312 }
   if (%tooltip_dccnel) { did -c $dname 313 }
+  if (%tooltip_pagenel) { did -c $dname 316 }
+  if (%tooltip_noticenal) { did -c $dname 317 }
   ;END
 
   ;BEEP
@@ -982,6 +985,8 @@ on *:DIALOG:setupdialog:sclick:3: {
   else { %netsplit_detect = 0 }
   if ($did(272).state) { %netsplit_detect_onlyhu = 1 }
   else { %netsplit_detect_onlyhu = 0 }
+  if ($did(315).state) { %auto_orignick = 1 }
+  else { %auto_orignick = 0 }
   ;END
 
   ;DESIGN3
@@ -1022,6 +1027,10 @@ on *:DIALOG:setupdialog:sclick:3: {
   else { %checkmail_tooltip = 0 }
   if ($did(313).state) { %tooltip_dccnel = 1 }
   else { %tooltip_dccnel = 0 }
+  if ($did(316).state) { %tooltip_pagenel = 1 }
+  else { %tooltip_pagenel = 0 }
+  if ($did(317).state) { %tooltip_noticenal = 1 }
+  else { %tooltip_noticenal = 0 }
   ;END
 
   ;BEEP

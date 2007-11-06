@@ -212,9 +212,17 @@ raw 433:* {
   ; ha epp megy az orignick
   if ($timer(OrigNick $+ $cid).type) && ($2 == %orig_nick) { /halt }
 
-  /echo $color(info2) -atng *** $az($2) $2 nick foglalt. (F8 - $2 megszerzése OrigNick használatával)
-  .hdel data $cid $+ doit $+ $replace($active,Status Window,status)
-  .hadd data $cid $+ doit $+ $replace($active,Status Window,status) /orignick $2
+  if (%auto_orignick) {
+    /echo $color(info2) -atng *** $az($2) $2 nick foglalt, auto OrigNick bekapcsolva (F8 - kikapcsolás)
+    .orignick $2
+    .hdel data $cid $+ doit $+ $replace($active,Status Window,status)
+    .hadd data $cid $+ doit $+ $replace($active,Status Window,status) /orignick off
+  }
+  else {
+    /echo $color(info2) -atng *** $az($2) $2 nick foglalt. (F8 - $2 megszerzése OrigNick használatával)
+    .hdel data $cid $+ doit $+ $replace($active,Status Window,status)
+    .hadd data $cid $+ doit $+ $replace($active,Status Window,status) /orignick $2
+  }
   /halt
 }
 raw 436:* { echo $color(info2) -stg *** A szerver kirúgott nick ütközés miatt! | echo $color(info2) -atng *** A szerver kirúgott nick ütközés miatt! | halt }
@@ -223,9 +231,17 @@ raw 437:* {
   if ($timer(OrigNick $+ $cid).type) && ($2 == %orig_nick) { /halt }
 
   if ( $chr(33) !isin $2 ) && ( $chr(35) !isin $2 ) {
-    echo $color(info2) -atng *** $az($2) $2 nick jelenleg nem elérhetõ netsplit miatt! (F8 - $2 megszerzése OrigNick használatával) 
-    .hdel data $cid $+ doit $+ $replace($active,Status Window,status)
-    .hadd data $cid $+ doit $+ $replace($active,Status Window,status) /orignick $2
+    if (%auto_orignick) {
+      /echo $color(info2) -atng *** $az($2) $2 nick jelenleg nem elérhetõ netsplit miatt, auto OrigNick bekapcsolva (F8 - kikapcsolás)
+      .orignick $2
+      .hdel data $cid $+ doit $+ $replace($active,Status Window,status)
+      .hadd data $cid $+ doit $+ $replace($active,Status Window,status) /orignick off
+    }
+    else {
+      echo $color(info2) -atng *** $az($2) $2 nick jelenleg nem elérhetõ netsplit miatt! (F8 - $2 megszerzése OrigNick használatával) 
+      .hdel data $cid $+ doit $+ $replace($active,Status Window,status)
+      .hadd data $cid $+ doit $+ $replace($active,Status Window,status) /orignick $2
+    }
   }
   else {
     echo $color(info2) -atng *** $az($2) $2 csati jelenleg nem elérhetõ netsplit miatt!

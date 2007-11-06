@@ -1,3 +1,8 @@
+[2.105]
+- orignicket ezentúl automatára is lehet kapcsolni
+- tooltip állítási lehetõségek kibõvítve
+- setupban néhány cucc rossz helyen jelent meg - javítva
+
 [2.104] 2007. 11. 06. 15:15
 - tooltipek (buborékok a tálcán) használata highlightkor, privát üzenetnél,
   dcc befejezésekor és email érkezésekor
