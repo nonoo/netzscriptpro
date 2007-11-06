@@ -488,3 +488,106 @@
   return $mid($1-,%s,$calc(%e - %s + 1))
 }
 ;END
+
+;ALARM
+/alarm {
+  if ($2 == $null) { /echo $color(info2) -atng *** /alarm hiba: túl kevés paraméter! használat: /alarm (dátum (pl. 2007/11/06)) [idõ (pl. 0:25)] [üzenet] | halt }
+
+  if ($2 == off) || ($2 == stop) {
+    if ($hget(alarms,$1) != $null) {
+      hdel alarms $1
+      hsave alarms system\alarms.dat
+      echo $color(info) -atng *** Alarm $+ $1 törölve.
+      return
+    }
+    else {
+      echo $color(info2) -atng *** Alarm $+ $1 nem létezik.
+      return
+    }
+  }
+
+  var %datum
+  var %ido
+  var %uzenet
+  if ( / isin $1 ) {
+    %datum = $1
+    if (: !isin $2) { /echo $color(info2) -atng *** /alarm hiba: túl kevés paraméter! használat: /alarm (dátum (pl. 2007/11/06)) [idõ (pl. 0:25)] [üzenet] | halt }
+    %ido = $2
+    if ($3 == $null) { /echo $color(info2) -atng *** /alarm hiba: túl kevés paraméter! használat: /alarm (dátum (pl. 2007/11/06)) [idõ (pl. 0:25)] [üzenet] | halt }
+    %uzenet = $3-
+  }
+  else {
+    if (: !isin $1) { /echo $color(info2) -atng *** /alarm hiba: túl kevés paraméter! használat: /alarm (dátum (pl. 2007/11/06)) [idõ (pl. 0:25)] [üzenet] | halt }
+    %datum = $asctime(yyyy/mm/dd)
+    %ido = $1
+    %uzenet = $2-
+  }
+
+  var %tnum 1
+  while ($hget(alarms,%tnum) != $null) {
+    inc %tnum 1
+  }
+  hadd alarms %tnum $ctime($gettok(%datum,3,47) $+ / $+ $gettok(%datum,2,47) $+ / $+ $gettok(%datum,1,47) %ido) %uzenet
+  hsave alarms system\alarms.dat
+
+  echo $color(info) -atng *** Alarm $+ %tnum bekapcsolva ( $+ %datum %ido $+ ): %uzenet
+}
+
+/alarms {
+  if ($hget(alarms,0).item == 0) {
+    echo $color(info) -atng *** Nincs aktív alarm.
+    return
+  }
+
+  if ($1 == off) || ($1 == stop) {
+    hdel -w alarms *
+    hsave alarms system\alarms.dat
+    echo $color(info) -atng *** Alarmok törölve.
+    return
+  }
+
+  var %i $hget(alarms,0).item
+  echo $color(info) -atng *** Aktív alarmok:
+  while (%i > 0) {
+    tokenize 32 $hget(alarms,%i).data
+    echo $color(info) -atng * $hget(alarms,%i).item $+ . $asctime($1,yyyy/mm/dd HH:nn) - $2-
+    dec %i 1
+  }
+}
+
+/onalarm {
+  echo $color(highlight) -atng *** ALARM: $1-
+  var %a $tip(alarm, Alarm, $1-, 60, system\img\warning.ico )
+  /beep 5 100
+  /netzbeep pager
+}
+
+/alarminit {
+  if ($hget(alarms) != $null) {
+    hfree alarms
+  }
+  hmake alarms 1
+  ; betoltjuk fajlbol az alarmokat (ha letezik)
+  if ($exists(system\alarms.dat)) {
+    hload alarms system\alarms.dat
+  }
+  if (!$timer(alarm)) {
+    .timeralarm -i 0 60 /alarmcheck
+  }
+}
+
+/alarmcheck {
+  var %i $hget(alarms,0).item
+  while (%i > 0) {
+    tokenize 32 $hget(alarms,%i).data
+    if ($ctime >= $1) {
+      /onalarm $2-
+      hdel alarms $hget(alarms,%i).item
+      %i = $hget(alarms,0).item
+      continue
+    }
+    dec %i 1
+  }
+  hsave alarms system\alarms.dat
+}
+;END

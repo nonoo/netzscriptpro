@@ -103,7 +103,7 @@ alias checkmail_check {
       if (%checkmail_speaker) { .timer 1 0 /netzbeep mail }
       if (%checkmail_flash) { .timer 1 0 /flash %checkmail_flash_szoveg }
       if (%checkmail_tooltip) {
-        var %a $tip(email, Email, $1 új emailed érkezett!, $null, $null, $null, emailer )
+        var %a $tip(email, Email, $1 új emailed érkezett!, $null, system\img\email.ico, $null, emailer )
       }
     }
 

@@ -19,6 +19,8 @@
   if (!$?!="Tényleg resetelni akarod a scriptet? Ez minden beállításodat törölni fogja!") { /halt }
   /write -c system\urls.ini
   /write -c system\control.ini
+  /write -c system\gmailcookies.dat
+  /write -c system\alarms.dat
   /botop -c
   .firewall off
   %nemvoltinditva = 1

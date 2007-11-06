@@ -1,5 +1,8 @@
 [2.104]
--
+- tooltipek (buborékok a tálcán) használata highlightkor, privát üzenetnél,
+  dcc befejezésekor és email érkezésekor
+- /alarm és /alarms parancsok (lásd commands.txt)
+- /telnet nem mûködött a háttér kirajzolásának hibája miatt - javítva
 
 [2.103] 2007. 11. 02. 15:00
 - új mirc.exe (6.31), ezáltal pl. ismét normális a logolás (1 log/csati, query)
