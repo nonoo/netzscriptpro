@@ -1,7 +1,7 @@
-[2.104]
+[2.104] 2007. 11. 06. 15:15
 - tooltipek (buborékok a tálcán) használata highlightkor, privát üzenetnél,
   dcc befejezésekor és email érkezésekor
-- /alarm és /alarms parancsok (lásd commands.txt)
+- /job, /jobs, /alarm és /alarms parancsok (lásd commands.txt)
 - /telnet nem mûködött a háttér kirajzolásának hibája miatt - javítva
 
 [2.103] 2007. 11. 02. 15:00
