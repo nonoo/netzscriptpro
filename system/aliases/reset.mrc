@@ -235,6 +235,8 @@
   %highlight_tooltip = 1
   %checkmail_tooltip = 1
   %tooltip_dccnel = 1
+  ; 2.105
+  %auto_orignick = 0
 
   /echo $color(info) -atng *** Reset done.
 }
@@ -243,7 +245,7 @@
 ;VARCHECK
 /varcheck {
   ; vegignezi a netz valtozoit es ha valamelyik hianyzik, default ertekre allitja
-  %ver = 2.104
+  %ver = 2.105
   %update_php = update.ini
   if (%nemvoltinditva == $null) { %nemvoltinditva = 0 }
   if (%url == $null) { %url = netz.nonoo.hu }
@@ -441,6 +443,8 @@
   if (%highlight_tooltip == $null) { %highlight_tooltip = 1 }
   if (%checkmail_tooltip == $null) { %checkmail_tooltip = 1 }
   if (%tooltip_dccnel == $null) { %tooltip_dccnel = 1 }
+  ; 2.105
+  if (%auto_orignick == $null) { %auto_orignick = 0 }
 }
 ;END
 

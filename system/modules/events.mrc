@@ -214,7 +214,7 @@ on ^*:notice:*:*: {
             }
           }
           if (%pcspeaker_priviknel) { /netzbeep highlight }
-          if (%tooltip_priviknel) && (!$appactive) {
+          if (%tooltip_noticenal) && (!$appactive) {
             var %a $tip(notice, Notice: $nick, $strip($1-), $null, system\img\notice.ico, $null, /q $nick )
           }
         }
@@ -325,7 +325,7 @@ ctcp ^1:PAGE: {
     }
     if (%pager_speaker) { /netzbeep pager }
     if (%pager_flash) { /flash %pager_flash_szoveg }
-    if (!$appactive) {
+    if (%tooltip_pagenel) && (!$appactive) {
       var %a $tip(pager, Pager: $nick, $nick paget küldött!, $null, system\img\warning.ico, $null, /q $nick )
     }
   }

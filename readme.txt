@@ -37,7 +37,7 @@
                `V:P'         V::;;P"                  `V:::::b
                               ""¡                        `"""^
 
-netZ Script Pro v2.104
+netZ Script Pro v2.105
 ^^^^^^^^^^^^^^^^^^^^^^
 Magyar script a mIRC-hez.
 Ez a verzió a v6.31-es mIRC32.exe-t használja.
