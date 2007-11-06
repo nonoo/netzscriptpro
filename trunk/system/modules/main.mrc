@@ -74,6 +74,8 @@ on *:START: {
     if (%nemvoltinditva == 1) { firstsetup | %nemvoltinditva = 0 }
     ; frissites keresese
     if (%autoupdate) { .timer 1 1 update -quiet }
+    ; alarm figyelo inditasa
+    alarminit
     ; auto connect
     if (%autoconnect) {
       var %i 2

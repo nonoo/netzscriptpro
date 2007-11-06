@@ -808,7 +808,7 @@ on ^1:ACTION:*:#:{
           }
           if (%pcspeaker_priviknel) { /netzbeep highlight }
           if (%highlight_tooltip) {
-            var %a $tip(highlight, Highlight: $chan, * $nick $strip(%tempszoveg), $null, $null, $null, /j $chan )
+            var %a $tip(highlight, Highlight: $chan, * $nick $strip(%tempszoveg), $null, system\img\chanmsg.ico, $null, /j $chan )
           }
         }
       }
@@ -865,7 +865,7 @@ on ^1:ACTION:*:?:{
     }
     if (%pcspeaker_priviknel) { /netzbeep query }
     if (%tooltip_priviknel) && (!$appactive) {
-      var %a $tip(highlight, Query: $nick, * $nick $strip(%tempszoveg), $null, $null, $null, /q $nick )
+      var %a $tip(highlight, Query: $nick, * $nick $strip(%tempszoveg), $null, system\img\query.ico, $null, /q $nick )
     }
   }
   ; lastmsg (idle detekt)
@@ -926,7 +926,7 @@ on ^1:TEXT:*:#:{
           }
           if (%pcspeaker_priviknel) { /netzbeep highlight }
           if (%highlight_tooltip) {
-            var %a $tip(highlight, Highlight: $chan, %mas_bal $+ $nick $+ %mas_jobb $strip(%tempszoveg), $null, $null, $null, /j $chan )
+            var %a $tip(highlight, Highlight: $chan, %mas_bal $+ $nick $+ %mas_jobb $strip(%tempszoveg), $null, system\img\chanmsg.ico, $null, /j $chan )
           }
         }
       }
@@ -1029,7 +1029,7 @@ on ^1:TEXT:*:?:{
       }
       if (%pcspeaker_priviknel) { /netzbeep query }
       if (%tooltip_priviknel) && (!$appactive) {
-        var %a $tip(query, Query: $nick, %mas_bal $+ $nick $+ %mas_jobb $strip(%tempszoveg), $null, $null, $null, /q $nick )
+        var %a $tip(query, Query: $nick, %mas_bal $+ $nick $+ %mas_jobb $strip(%tempszoveg), $null, system\img\query.ico, $null, /q $nick )
       }
     }
   }
@@ -1049,12 +1049,38 @@ on 1:FILERCVD:*.*: {
     echo $color(info) -atng *** F8 - $nopath($filename) megnyitása
     .hdel data $cid $+ doit $+ $replace($active,Status Window,status)
     .hadd data $cid $+ doit $+ $replace($active,Status Window,status) /run $filename
+    if (!$appactive) {
+      var %a $tip(dcc, DCC: $nick, Megjött $laz($nopath($filename)) $nopath($filename), $null, system\img\dcc.ico, $null, /run $filename )
+    }
+  }
+  else {
+    if (!$appactive) {
+      var %a $tip(dcc, DCC: $nick, Megjött $laz($nopath($filename)) $nopath($filename), $null, system\img\dcc.ico )
+    }
   }
   halt
 }
-on 1:FILESENT:*: { /echo $color(info) -atg *** Átment $laz($nopath($filename)) $nopath($filename) $+  $+ $color(nick) $nick $+  $+ $color(info) $+ $toldalek($nick,-nak,-nek) $+ ! | halt }
-on 1:SENDFAIL:*: { echo $color(info2) -atg *** Nem sikerült elküldeni $+  $+ $color(nick) $nick $+  $+ $color(info2) $+ $toldalek($nick,-nak,-nek) $laz($nopath($filename)) $nopath($filename) fájlt! | /halt }
-on 1:GETFAIL:*: { echo $color(info2) -atg *** Nem sikerült fogadni $laz($nopath($filename)) $nopath($filename) fájlt $+  $+ $color(nick) $nick $+  $+ $color(info2) $+ $toldalek($nick,-tól,tõl) $+ ! | /halt }
+on 1:FILESENT:*: {
+  /echo $color(info) -atg *** Átment $laz($nopath($filename)) $nopath($filename) $+  $+ $color(nick) $nick $+  $+ $color(info) $+ $toldalek($nick,-nak,-nek) $+ !
+  if (!$appactive) {
+    var %a $tip(dcc, DCC: $nick, Átment $laz($nopath($filename)) $nopath($filename), $null, system\img\dcc.ico )
+  }
+  halt
+}
+on 1:SENDFAIL:*: {
+  echo $color(info2) -atg *** Nem sikerült elküldeni $+  $+ $color(nick) $nick $+  $+ $color(info2) $+ $toldalek($nick,-nak,-nek) $laz($nopath($filename)) $nopath($filename) fájlt!
+  if (!$appactive) {
+    var %a $tip(dcc, DCC hiba: $nick, Nem sikerült elküldeni $+  $+ $color(nick) $nick $+ $toldalek($nick,-nak,-nek) $laz($nopath($filename)) $nopath($filename) fájlt!, $null, system\img\warning.ico )
+  }
+  halt
+}
+on 1:GETFAIL:*: {
+  echo $color(info2) -atg *** Nem sikerült fogadni $laz($nopath($filename)) $nopath($filename) fájlt $+  $+ $color(nick) $nick $+  $+ $color(info2) $+ $toldalek($nick,-tól,tõl) $+ !
+  if (!$appactive) {
+    var %a $tip(dcc, DCC hiba: $nick, Nem sikerült fogadni $laz($nopath($filename)) $nopath($filename) fájlt $nick $+ $toldalek($nick,-tól,tõl) $+ !, $null, system\img\warning.ico )
+  }
+  halt
+}
 ;END
 
 ;ONCLOSE

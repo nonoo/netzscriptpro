@@ -113,8 +113,7 @@
   if (%wndback) && ($window(%ablak)) && ($wndback_ok(%ablak)) {
     var %origablaknev = %ablak
     ; custom ablak nevek eltavolitasa
-    if ($2) { %ablak = $2- }
-    else { %ablak = $remove(%ablak,@,_telnetssl,_telnet) }
+    %ablak = $remove(%ablak,@,_telnetssl,_telnet)
     ; hogy kiferjen a csati ablakba
     var %origfontsize = %wndback_font_size
     while ($width(%ablak,%wndback_font,%wndback_font_size,1) > $calc($window(-2).w - 230)) { dec %wndback_font_size 1 }
@@ -122,20 +121,13 @@
     drawtext -or @wndback $rgb( [ %wndback_font_color ] ) " $+ %wndback_font $+ " %wndback_font_size 0 0 %ablak
     %wndback_font_size = %origfontsize
 
-    ; |,/,\ jeleket kicsereljuk
-    if ($chr(124) isin %ablak) || (\ isin %ablak) || (/ isin %ablak) {
-      var %ablak2 = $replace(%origablaknev,$chr(124),$chr(0),\,$chr(0),/,$chr(0))
-      .drawsave @wndback system\temp\ $+ %ablak2 $+ .bmp
-      .window -c @wndback
-      .background -c %origablaknev system\temp\ $+ %ablak2 $+ .bmp
-      .remove system\temp\ $+ %ablak2 $+ .bmp
-    }
-    else {
-      .drawsave @wndback system\temp\ $+ %origablaknev $+ .bmp
-      .window -c @wndback
-      .background -c %origablaknev system\temp\ $+ %origablaknev $+ .bmp
-      .remove system\temp\ $+ %origablaknev $+ .bmp
-    }
+    ; speci jeleket kicsereljuk
+    var %fajlnev = $replace(%origablaknev,$chr(124),$chr(0),\,$chr(0),/,$chr(0),:,_,?,_)
+    %fajlnev = $remove(%fajlnev,@)
+    .drawsave @wndback system\temp\ $+ %fajlnev $+ .bmp
+    .window -c @wndback
+    .background -c %origablaknev system\temp\ $+ %fajlnev $+ .bmp
+    .remove system\temp\ $+ %fajlnev $+ .bmp
   }
   else { if ($window(%ablak)) { background -x %ablak } }
 }
