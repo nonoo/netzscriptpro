@@ -621,7 +621,7 @@ on ^1:QUIT: {
     if ($query($nick)) {
       /echo $color(quit) -t $nick *** $+ $color(gray) $nick kilépett az ircrõl. %rizon
     }
-    if ($nick = %orig_nick) && ($timer(OrigNick $+ $cid).type) { .timer 1 0 .nick %orig_nick }
+    if ($nick == %orig_nick) && ($timer(OrigNick $+ $cid).type) { .timer 1 0 .nick %orig_nick }
   }
   /halt
 }

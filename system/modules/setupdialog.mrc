@@ -173,7 +173,7 @@ dialog setupdialog {
   check "Winamp kijelzés", 156, 22 54 92 17, tab 306
   check "Internet idõ kijelzés", 157, 204 54 112 17, tab 306
   check "Lag kijelzés", 158, 22 71 73 17, tab 306
-  text "Lag detektálás intervalluma:", 159, 39 91 142 17, tab 306
+  text "Lag detektálás intervalluma:", 159, 41 91 142 17, tab 306
   edit "", 160, 204 88 31 20, tab 306 disable autohs
   text "sec.", 161, 241 91 28 17, tab 306
   box " netZ AutoUpdate ", 162, 16 229 306 38, tab 145

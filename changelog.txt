@@ -1,5 +1,5 @@
 [2.105]
-- orignicket ezentúl automatára is lehet kapcsolni
+- orignicket ezentúl automatára is lehet kapcsolni (köszi Zoo)
 - tooltip állítási lehetõségek kibõvítve
 - setupban néhány cucc rossz helyen jelent meg - javítva
 
