@@ -445,6 +445,8 @@
   if (%tooltip_dccnel == $null) { %tooltip_dccnel = 1 }
   ; 2.105
   if (%auto_orignick == $null) { %auto_orignick = 0 }
+  if (%tooltip_pagenel == $null) { %tooltip_pagenel = 1 }
+  if (%tooltip_noticenal == $null) { %tooltip_noticenal = 1 }
 }
 ;END
 
