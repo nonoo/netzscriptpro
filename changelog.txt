@@ -2,6 +2,15 @@
 - orignicket ezentúl automatára is lehet kapcsolni (köszi Zoo)
 - tooltip állítási lehetõségek kibõvítve
 - setupban néhány cucc rossz helyen jelent meg - javítva
+- /alarmnak, /jobnak már meg lehet adni dátum helyett hogy "holnap",
+  pl. /alarm holnap 20:00 kezdodik a dallas
+- át lehet írni az alarm üzeneteket és job parancsokat (lásd commands.txt)
+- bitlbee csatikon ezentúl nem jeleníti meg a MSN - Error: Could not allocate
+  memory for 'sha1c' in msn_imagefullpath(), MSN - Error: Please check
+  your 'msn_images_path_buddy' setting és MSN - Error: Please check your
+  'msn_images_path_emoticon' setting. It doesn't seem to be a valid directory!
+  tartalmú sorokat (igazából ezek idegesítõ, felesleges hibaüzenetek, ha az
+  általam vagy Akke által patchelt bitlbeet használod)
 
 [2.104] 2007. 11. 06. 15:15
 - tooltipek (buborékok a tálcán) használata highlightkor, privát üzenetnél,

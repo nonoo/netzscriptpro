@@ -215,7 +215,7 @@ on ^*:notice:*:*: {
           }
           if (%pcspeaker_priviknel) { /netzbeep highlight }
           if (%tooltip_noticenal) && (!$appactive) {
-            var %a $tip(notice, Notice: $nick, $strip($1-), $null, system\img\notice.ico, $null, /q $nick )
+            var %a $tip(notice, Notice: $nick, $1-, $null, system\img\notice.ico, $null, /q $nick )
           }
         }
       }
@@ -533,7 +533,8 @@ on ^1:nick: {
     ; ha az utolsÛ sor az hogy a user kilÈpett, akkor szÛlunk, hogy visszajˆtt
     if (*** $newnick kilÈpett az ircrıl. isin $strip($line($newnick,$line($newnick,0)))) {
       echo $color(join) -t $newnick *** $+ $color(highlight) $nick ˙j nickje: $+ $color(highlight) $newnick (F7 - %greet $+ )
-      } else {
+    }
+    else {
       echo $color(join) -t $newnick *** $+ $color(highlight) $nick ˙j nickje: $+ $color(highlight) $newnick (F7 - %greet $+ )
     }
   }
@@ -588,7 +589,7 @@ on ^1:nick: {
 on ^1:PART:*: {
   /haltdef
   if ($nick = $me) { /echo $color(part) -t $chan *** KilÈptÈl a csatirÛl. | /halt }
-  if (($nick($chan,0) = 2) && ($me !isop $chan)) { /echo $color(info) -st *** OpHopot hajtottam vÈgre a $chan csatin! | .timer 1 0 /hop $chan 1 | /halt }
+  if (($nick($chan,0) = 2) && ($me !isop $chan)) { /echo $color(info) -st *** OpHop a $chan csatin | .timer 1 0 /hop $chan 1 | /halt }
   if ($1) {
     /echo $color(part) -tn $chan *** $+ $color(gray) $nick ( $+ $address $+ ) kilÈpett a csatirÛl. ( $+ $color(other) $+ $1- $+ )
   }
@@ -613,7 +614,7 @@ on ^1:QUIT: {
       if ($nick ison $chan(%i)) {
         /echo $color(quit) -tn $chan(%i) *** $+ $color(gray) $nick ( $+ $address $+ ) kilÈpett az ircrıl. %rizon
         ; ophop
-        if ($chan(%i) != &servers) && ($nick($chan(%i),0) = 2) && ($me !isop $chan(%i)) { /echo $color(info) -st *** OpHopot hajtottam vÈgre a $chan(%i) csatin! | /hop $chan(%i) 1 }
+        if ($chan(%i) != &servers) && ($nick($chan(%i),0) = 2) && ($me !isop $chan(%i)) { /echo $color(info) -st *** OpHop a $chan(%i) csatin | /hop $chan(%i) 1 }
       }
       dec %i 1
     }
@@ -814,7 +815,7 @@ on ^1:ACTION:*:#:{
           }
           if (%pcspeaker_priviknel) { /netzbeep highlight }
           if (%highlight_tooltip) {
-            var %a $tip(highlight, Highlight: $chan, * $nick $strip(%tempszoveg), $null, system\img\chanmsg.ico, $null, /j $chan )
+            var %a $tip(highlight, Highlight: $chan,  $+ $color(action) $+ * $nick %tempszoveg, $null, system\img\chanmsg.ico, $null, /j $chan )
           }
         }
       }
@@ -871,7 +872,7 @@ on ^1:ACTION:*:?:{
     }
     if (%pcspeaker_priviknel) { /netzbeep query }
     if (%tooltip_priviknel) && (!$appactive) {
-      var %a $tip(highlight, Query: $nick, * $nick $strip(%tempszoveg), $null, system\img\query.ico, $null, /q $nick )
+      var %a $tip(highlight, Query: $nick,  $+ $color(action) $+ * $nick %tempszoveg, $null, system\img\query.ico, $null, /q $nick )
     }
   }
   ; lastmsg (idle detekt)
@@ -886,6 +887,12 @@ on ^1:ACTION:*:?:{
 on ^1:TEXT:*:#:{
   /haltdef
   var %tempszoveg = $1-
+  ; bitlbee csatis dolgok
+  if ( $chan == &bitlbee ) || ( $chan == #bitlbee ) || ( $chan == &msn ) || ( $chan == #msn ) {
+    if ( %tempszoveg == MSN - Error: Could not allocate memory for 'sha1c' in msn_imagefullpath $+ $chr(40) $+ $chr(41) ) { halt }
+    if ( %tempszoveg == MSN - Error: Please check your 'msn_images_path_buddy' setting. It doesn't seem to be a valid directory! ) { halt }
+    if ( %tempszoveg == MSN - Error: Please check your 'msn_images_path_emoticon' setting. It doesn't seem to be a valid directory! ) { halt }
+  }
   ; webchat unicode karakterek
   %tempszoveg = $replace($1-,√ú,‹,√ü,¸,√≥,Û,≈,ı,√∫,˙,√ä,È,√•,·,≈π,˚,√≠,Ì,√°,·,√ñ,÷,√ì,”,√â,…,√Å,¡,ı∞,€,√ç,Õ,√©,È,ı±,˚,√º,¸,√∂,ˆ,√ö,⁄,ıë,ı,ıê,’)
   ; plusz jelek
@@ -932,7 +939,7 @@ on ^1:TEXT:*:#:{
           }
           if (%pcspeaker_priviknel) { /netzbeep highlight }
           if (%highlight_tooltip) {
-            var %a $tip(highlight, Highlight: $chan, %mas_bal $+ $nick $+ %mas_jobb $strip(%tempszoveg), $null, system\img\chanmsg.ico, $null, /j $chan )
+            var %a $tip(highlight, Highlight: $chan, %mas_bal $+ $nick $+ %mas_jobb $+  %tempszoveg, $null, system\img\chanmsg.ico, $null, /j $chan )
           }
         }
       }
@@ -1035,7 +1042,7 @@ on ^1:TEXT:*:?:{
       }
       if (%pcspeaker_priviknel) { /netzbeep query }
       if (%tooltip_priviknel) && (!$appactive) {
-        var %a $tip(query, Query: $nick, %mas_bal $+ $nick $+ %mas_jobb $strip(%tempszoveg), $null, system\img\query.ico, $null, /q $nick )
+        var %a $tip(query, Query: $nick, %mas_bal $+ $nick $+ %mas_jobb $+  %tempszoveg, $null, system\img\query.ico, $null, /q $nick )
       }
     }
   }
