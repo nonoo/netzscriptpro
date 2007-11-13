@@ -491,7 +491,7 @@
 
 ;JOBOK
 /job {
-  if ($2 == $null) { /echo $color(info2) -atng *** /job hiba: túl kevés paraméter! használat: /job (dátum (pl. 2007/11/06)) [idõ (pl. 0:25)] [parancs] | halt }
+  if ($2 == $null) { /jobhasznalat | halt }
 
   if ($2 == off) || ($2 == stop) {
     if ($hget(jobs,$1) != $null) {
@@ -506,21 +506,41 @@
     }
   }
 
+  if ($hget(jobs,$1) != $null) {
+    var %ido $gettok($hget(jobs,$1),1,32)
+    hdel jobs $1
+    hadd jobs $1 %ido $2-
+    hsave jobs system\jobs.dat
+
+    /echo $color(info) -atng *** Job $+ $1 parancs átírva: $2-
+    return
+  }
+
   var %datum
   var %ido
   var %parancs
+  var %holnap 0
   if ( / isin $1 ) {
     %datum = $1
-    if (: !isin $2) { /echo $color(info2) -atng *** /job hiba: túl kevés paraméter! használat: /job (dátum (pl. 2007/11/06)) [idõ (pl. 0:25)] [parancs] | halt }
+    if (: !isin $2) { /jobhasznalat | halt }
     %ido = $2
-    if ($3 == $null) { /echo $color(info2) -atng *** /job hiba: túl kevés paraméter! használat: /job (dátum (pl. 2007/11/06)) [idõ (pl. 0:25)] [parancs] | halt }
+    if ($3 == $null) { /jobhasznalat | halt }
     %parancs = $3-
   }
   else {
-    if (: !isin $1) { /echo $color(info2) -atng *** /job hiba: túl kevés paraméter! használat: /job (dátum (pl. 2007/11/06)) [idõ (pl. 0:25)] [parancs] | halt }
-    %datum = $asctime(yyyy/mm/dd)
-    %ido = $1
-    %parancs = $2-
+    if ($1 == holnap) {
+      if (: !isin $2) { /jobhasznalat | halt }
+      %holnap = 86400
+      %datum = $asctime(yyyy/mm/dd)
+      %ido = $2
+      %parancs = $3-
+    }
+    else {
+      if (: !isin $1) { /jobhasznalat | halt }
+      %datum = $asctime(yyyy/mm/dd)
+      %ido = $1
+      %parancs = $2-
+    }
   }
 
   ; szabad job num kereses
@@ -528,14 +548,14 @@
   while ($hget(jobs,%tnum) != $null) {
     inc %tnum 1
   }
-  hadd jobs %tnum $ctime($gettok(%datum,3,47) $+ / $+ $gettok(%datum,2,47) $+ / $+ $gettok(%datum,1,47) %ido) %parancs
+  hadd jobs %tnum $calc( $ctime($gettok(%datum,3,47) $+ / $+ $gettok(%datum,2,47) $+ / $+ $gettok(%datum,1,47) %ido) + %holnap ) %parancs
   hsave jobs system\jobs.dat
 
   if ($gettok(%parancs,1,32) == /onalarm) {
-    echo $color(info) -atngq *** Alarm $+ %tnum bekapcsolva ( $+ %datum %ido $+ ): %parancs
+    echo $color(info) -atngq *** Alarm $+ %tnum bekapcsolva ( $+ $asctime($hget(jobs,%tnum),yyyy/mm/dd HH:nn) $+ ): $remove(%parancs,/onalarm)
   }
   else {
-    echo $color(info) -atngq *** Job $+ %tnum bekapcsolva ( $+ %datum %ido $+ ): %parancs
+    echo $color(info) -atngq *** Job $+ %tnum bekapcsolva ( $+ $asctime($hget(jobs,%tnum),yyyy/mm/dd HH:nn) $+ ): %parancs
   }
 }
 
@@ -600,8 +620,16 @@
   hsave jobs system\jobs.dat
 }
 
+/jobhasznalat {
+  /echo $color(info2) -atng *** /job hiba: túl kevés paraméter! használat: /job (dátum (pl. 2007/11/06 vagy holnap)) [idõ (pl. 0:25)] [parancs]
+}
+
+/alarmhasznalat {
+  /echo $color(info2) -atng *** /alarm hiba: túl kevés paraméter! használat: /alarm (dátum (pl. 2007/11/06 vagy holnap)) [idõ (pl. 0:25)] [üzenet]
+}
+
 /alarm {
-  if ($2 == $null) { /echo $color(info2) -atng *** /alarm hiba: túl kevés paraméter! használat: /alarm (dátum (pl. 2007/11/06)) [idõ (pl. 0:25)] [üzenet] | halt }
+  if ($2 == $null) { /alarmhasznalat | halt }
 
   if ($2 == off) || ($2 == stop) {
     if (/onalarm isin $hget(jobs,$1)) {
@@ -616,18 +644,28 @@
     }
   }
 
+  if (/onalarm isin $hget(jobs,$1)) {
+    var %ido $gettok($hget(jobs,$1),1,32)
+    hdel jobs $1
+    hadd jobs $1 %ido /onalarm $2-
+    hsave jobs system\jobs.dat
+
+    /echo $color(info) -atng *** Alarm $+ $1 üzenet átírva: $2-
+    return
+  }
+
   var %datum
   var %ido
   var %uzenet
-  if ( / isin $1 ) {
+  if ( / isin $1 ) || ( $1 == holnap ) {
     %datum = $1
-    if (: !isin $2) { /echo $color(info2) -atng *** /alarm hiba: túl kevés paraméter! használat: /alarm (dátum (pl. 2007/11/06)) [idõ (pl. 0:25)] [üzenet] | halt }
+    if (: !isin $2) { /alarmhasznalat | halt }
     %ido = $2
-    if ($3 == $null) { /echo $color(info2) -atng *** /alarm hiba: túl kevés paraméter! használat: /alarm (dátum (pl. 2007/11/06)) [idõ (pl. 0:25)] [üzenet] | halt }
+    if ($3 == $null) { /alarmhasznalat | halt }
     %uzenet = $3-
   }
   else {
-    if (: !isin $1) { /echo $color(info2) -atng *** /alarm hiba: túl kevés paraméter! használat: /alarm (dátum (pl. 2007/11/06)) [idõ (pl. 0:25)] [üzenet] | halt }
+    if (: !isin $1) { /alarmhasznalat | halt }
     %datum = $asctime(yyyy/mm/dd)
     %ido = $1
     %uzenet = $2-
