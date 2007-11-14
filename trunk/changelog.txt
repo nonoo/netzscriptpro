@@ -1,5 +1,5 @@
 [2.105]
-- orignicket ezentúl automatára is lehet kapcsolni (köszi Zoo)
+- orignicket ezentúl automatára is lehet kapcsolni (alapból az) (köszi Zoo)
 - tooltip állítási lehetõségek kibõvítve
 - setupban néhány cucc rossz helyen jelent meg - javítva
 - /alarmnak, /jobnak már meg lehet adni dátum helyett hogy "holnap",

@@ -17,6 +17,8 @@
 ;ONAWAY
 raw 305:*: {
   aecho $color(info) -tng *** Away kikapcsolva.
+  unset %away_memoria_ $+ $cid
+  unset %away_memoria_msg_ $+ $cid
   unset %autoaway
   if (%awaynick_hasznalat) { .nick %away_eredeti_nick }
   if (%awayback_hasznalat) {
@@ -71,7 +73,7 @@ raw 306:*: {
   else {
     var %awaymsg
     if ($awaymsg != gone) { %awaymsg = ( $+ $awaymsg $+ ) }
-    if (%awaymessage_hasznalat) {
+    if (%awaymessage_hasznalat) && (!%away_silent) {
       if (%awaymessage_mindencsatira) { /ame %awaymessage %awaymsg %awaypagermsg }
       else {
         if (%awaymessage_csatik) {
@@ -87,6 +89,9 @@ raw 306:*: {
       }
     }
   }
+  %away_memoria_ $+ $cid = 1
+  %away_memoria_msg_ $+ $cid = $awaymsg
+  unset %away_silent
   halt
 }
 ;END
