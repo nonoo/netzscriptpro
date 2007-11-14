@@ -44,7 +44,7 @@ alias /onhotlink {
     dec %i 1
   }
   ; ha nem volt match
-  if (!%volthotlink) { /dll system/netz.dll sysopen %mit }
+  if (!%volthotlink) { .timer 1 0 /dll system/netz.dll sysopen %mit }
 }
 ;END
 
@@ -472,6 +472,10 @@ alias /onconnect {
   if (%quitmessage_random) { %quitmessage = 15,14[netZ] $+ $chr(32) $+ $read system\quit.txt }
 
   %away_eredeti_nick = $me
+  if (%away_memoria) && (%away_memoria_ [ $+ [ $cid ] ]) {
+    %away_silent = 1 ; ha ez be van allitva, nem jelenik meg az away uzenet
+    /away %away_memoria_msg_ [ $+ [ $cid ] ]
+  }
 
   %legutobbiszerver5 = %legutobbiszerver4
   %legutobbiszerver4 = %legutobbiszerver3

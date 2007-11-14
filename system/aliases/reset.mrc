@@ -236,7 +236,8 @@
   %checkmail_tooltip = 1
   %tooltip_dccnel = 1
   ; 2.105
-  %auto_orignick = 0
+  %auto_orignick = 1
+  %away_memoria = 1
 
   /echo $color(info) -atng *** Reset done.
 }
@@ -444,9 +445,10 @@
   if (%checkmail_tooltip == $null) { %checkmail_tooltip = 1 }
   if (%tooltip_dccnel == $null) { %tooltip_dccnel = 1 }
   ; 2.105
-  if (%auto_orignick == $null) { %auto_orignick = 0 }
+  if (%auto_orignick == $null) { %auto_orignick = 1 }
   if (%tooltip_pagenel == $null) { %tooltip_pagenel = 1 }
   if (%tooltip_noticenal == $null) { %tooltip_noticenal = 1 }
+  if (%away_memoria == $null) { %away_memoria = 1 }
 }
 ;END
 

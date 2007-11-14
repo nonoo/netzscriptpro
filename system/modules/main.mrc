@@ -75,6 +75,9 @@ on *:START: {
     ; frissites keresese
     if (%autoupdate) { .timer 1 1 update -quiet }
     ; auto connect
+    ; away memorias cuccok resetelese
+    unset %away_memoria_*
+    unset %away_memoria_msg_*
     if (%autoconnect) {
       var %i 2
       ; az elso szervert az aktiv ablakba csatlakoztatjuk
