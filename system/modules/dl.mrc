@@ -228,7 +228,7 @@ alias /dl_done {
     if ($exists(%dl_downloaddir $+ %dl_filename)) {
       echo $color(info) -atng *** netZ Downloader: F8 - %dl_filename megnyitása
       .hdel data $cid $+ doit $+ $replace($active,Status Window,status)
-      .hadd data $cid $+ doit $+ $replace($active,Status Window,status) /run %dl_downloaddir $+ %dl_filename
+      .hadd data $cid $+ doit $+ $replace($active,Status Window,status) .timer 1 0 /run %dl_downloaddir $+ %dl_filename
     }
   }
 

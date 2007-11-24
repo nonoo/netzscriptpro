@@ -89,8 +89,8 @@ raw 306:*: {
       }
     }
   }
-  %away_memoria_ $+ $cid = 1
-  %away_memoria_msg_ $+ $cid = $awaymsg
+  /set %away_memoria_ $+ $cid 1
+  /set %away_memoria_msg_ $+ $cid $awaymsg
   unset %away_silent
   halt
 }
