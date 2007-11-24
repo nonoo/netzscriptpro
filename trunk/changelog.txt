@@ -11,6 +11,10 @@
   'msn_images_path_emoticon' setting. It doesn't seem to be a valid directory!
   tartalmú sorokat (igazából ezek idegesítõ, felesleges hibaüzenetek, ha az
   általam vagy Akke által patchelt bitlbeet használod)
+- urlekre kattintás ezentúl nem fagyasztja le a mircet, ha sokáig tölt a
+  böngészõ
+- flac és m4a kiterjesztések hozzáadva alapból a downloaderhez
+- /date parancs (mai dátum kiírása)
 
 [2.104] 2007. 11. 06. 15:15
 - tooltipek (buborékok a tálcán) használata highlightkor, privát üzenetnél,

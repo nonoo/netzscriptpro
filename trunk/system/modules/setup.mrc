@@ -607,7 +607,7 @@ on *:DIALOG:setupdialog:sclick:190: {
   }
   if (%prog) { did -ra $dname 188 %prog }
 }
-on *:DIALOG:setupdialog:sclick:192: { /run notepad.exe system\greetings.txt }
+on *:DIALOG:setupdialog:sclick:192: { .timer 1 0 /run notepad.exe system\greetings.txt }
 on *:DIALOG:setupdialog:sclick:221: {
   if ($did(221).state) { did -e $dname 223 | did -e $dname 225 | did -e $dname 227 | did -e $dname 308 }
   else { did -b $dname 223 | did -b $dname 225 | did -b $dname 227 | did -b $dname 308 }

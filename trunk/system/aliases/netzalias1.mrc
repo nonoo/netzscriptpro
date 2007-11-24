@@ -72,7 +72,7 @@
 /paint /run mspaint
 /emailer {
   if (!%emailezo_prog) { /mailsetup }
-  else { /dll system/netz.dll sysopen %emailezo_prog }
+  else { .timer 1 0 /dll system/netz.dll sysopen %emailezo_prog }
   if (%checkmail_deletecounter) { %checkmail_lastnum = 0 }
 }
 /page /ctcp $$1 page
@@ -89,6 +89,8 @@
 
   if (%uptime_record != $null) { echo $color(info) -atng * system uptime rekord: $hossz(%uptime_record) %urecd }
 }
+/date { /echo $color(info) -atng *** Mai dátum: $asctime(yyyy/mm/dd) }
+/datum /date
 ;END
 
 ;ALAP PARANCSOK
@@ -532,10 +534,10 @@
   if (%aaway_f10) { /aaway }
   else { /away }
 }
-/f11 { if ($exists(system\guildftpd\guildftpd.exe)) { /run system\guildftpd\guildftpd.exe } }
+/f11 { if ($exists(system\guildftpd\guildftpd.exe)) { .timer 1 0 /run system\guildftpd\guildftpd.exe } }
 /f12 { /setup }
 /cf3 {
-  .run mirc.exe
+  .timer 1 0 .run mirc.exe
   /echo $color(info) -atng *** Új netZ Script Pro betöltve.
 }  
 ;END
@@ -759,9 +761,9 @@
 ;VIEWLOG
 /viewlog {
   ;megnezzuk hogy letezik-e a log
-  if ($exists($logdir $+ # $+ .log)) { /run $logdir $+ # $+ .log | return }
+  if ($exists($logdir $+ # $+ .log)) { .timer 1 0 /run $logdir $+ # $+ .log | return }
   ;ha nem, megprobaljuk megnyitni ugy hogy a network is benne van a pathban
-  if ($exists($logdir $+ $network $+ \ $+ # $+ .log)) { /run $logdir $+ $network $+ \ $+ # $+ .log | return }
+  if ($exists($logdir $+ $network $+ \ $+ # $+ .log)) { .timer 1 0 /run $logdir $+ $network $+ \ $+ # $+ .log | return }
   /echo $color(info2) -atng *** /viewlog hiba: az aktív ablakhoz nincs log fájl!
 }
 ;END

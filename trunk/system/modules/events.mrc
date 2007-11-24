@@ -1065,9 +1065,9 @@ on 1:FILERCVD:*.*: {
   if (.jpg isin $nopath($filename)) || (.jpeg isin $nopath($filename)) || (.gif isin $nopath($filename)) || (.png isin $nopath($filename)) || (.bmp isin $nopath($filename)) || (.mpg isin $nopath($filename)) || (.mpeg isin $nopath($filename)) || (.avi isin $nopath($filename)) || (.wmv isin $nopath($filename)) || (.mov isin $nopath($filename)) || (.mp3 isin $nopath($filename)) || (.wav isin $nopath($filename)) || (.ogg isin $nopath($filename)) || (.txt isin $nopath($filename)) || (.pdf isin $nopath($filename)) || (.exe isin $nopath($filename)) || (.mpe isin $nopath($filename)) {
     echo $color(info) -atng *** F8 - $nopath($filename) megnyitása
     .hdel data $cid $+ doit $+ $replace($active,Status Window,status)
-    .hadd data $cid $+ doit $+ $replace($active,Status Window,status) /run $filename
+    .hadd data $cid $+ doit $+ $replace($active,Status Window,status) .timer 1 0 /run $filename
     if (!$appactive) {
-      var %a $tip(dcc, DCC: $nick, Megjött $laz($nopath($filename)) $nopath($filename), $null, system\img\dcc.ico, $null, /run $filename )
+      var %a $tip(dcc, DCC: $nick, Megjött $laz($nopath($filename)) $nopath($filename), $null, system\img\dcc.ico, $null, .timer 1 0 /run $filename )
     }
   }
   else {

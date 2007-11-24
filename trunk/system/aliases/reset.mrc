@@ -125,7 +125,7 @@
   %autoupdate = 1
   %update_url = http://netz.nonoo.hu/update/
   %dl_hotlink = 1
-  %dl_hotlink_kiterjesztesek = *.bz2 *.zip *.gz *.mp3 *.tar *.tar.bz2 *.wav *.txt *.nfo *.rar *.diz *.avi *.mpg *.mpeg *.wmv *.asf *.mov *.doc *.mid *.pdf *.ps *.ini *.exe *.ace *.mpe
+  %dl_hotlink_kiterjesztesek = *.bz2 *.zip *.gz *.mp3 *.tar *.tar.bz2 *.wav *.txt *.nfo *.rar *.diz *.avi *.mpg *.mpeg *.wmv *.asf *.mov *.doc *.mid *.pdf *.ps *.ini *.exe *.ace *.mpe *.flac *.m4a
   %dl_downloaddir = C:\Downloads\
   %dl_letoltott_adatmennyiseg = 0
   %flash_priviknel = 1
@@ -349,7 +349,7 @@
   if (%autoupdate == $null) { %autoupdate = 1 }
   if (%update_url == $null) { %update_url = http://netz.nonoo.hu/update/ }
   if (%dl_hotlink == $null) { %dl_hotlink = 1 }
-  if (%dl_hotlink_kiterjesztesek == $null) { %dl_hotlink_kiterjesztesek = *.bz2 *.zip *.gz *.mp3 *.tar *.tar.bz2 *.wav *.txt *.nfo *.rar *.diz *.avi *.mpg *.mpeg *.wmv *.asf *.mov *.doc *.mid *.pdf *.ps *.ini *.exe *.ace *.mpe }
+  if (%dl_hotlink_kiterjesztesek == $null) { %dl_hotlink_kiterjesztesek = *.bz2 *.zip *.gz *.mp3 *.tar *.tar.bz2 *.wav *.txt *.nfo *.rar *.diz *.avi *.mpg *.mpeg *.wmv *.asf *.mov *.doc *.mid *.pdf *.ps *.ini *.exe *.ace *.mpe *.flac *.m4a }
   if (%dl_downloaddir == $null) { %dl_downloaddir = C:\Downloads\ }
   if (%dl_letoltott_adatmennyiseg == $null) { %dl_letoltott_adatmennyiseg = 0 }
   if (%flash_priviknel == $null) { %flash_priviknel = 1 }
