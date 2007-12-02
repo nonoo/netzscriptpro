@@ -448,6 +448,12 @@
   if ($1 == query) { .timer 1 0 /dll system\netz.dll beep 3000 10 2 80 | return }
   if ($1 == highlight) { .timer 1 0 /dll system\netz.dll beep 3000 10 2 80 | return }
   if ($1 == mail) { .timer 1 0 /dll system\netz.dll beep 1000 10 1 10 | return }
+  if ($1 == ebreszto) {
+    .timer 1 0 /dll system\netz.dll beep 1000 100 3 30
+    .timer -m 1 300 /dll system\netz.dll beep 1000 100 3 30
+    .timer -m 1 600 /dll system\netz.dll beep 1000 100 3 30
+    return
+  }
   if ($4 == $null ) { /echo $color(info2) -atng *** /netzbeep hiba: túl kevés paraméter! használat: /netzbeep (pager/query/mail/highlight) vagy [freki] [hossz] [hányszor] [szünet] | halt }
   .timer 1 0 /dll system\netz.dll beep $1 $2 $3 $4
 }
@@ -462,7 +468,8 @@
   }
   if ( %i == 0 ) {
     return $null
-    } else {
+  }
+  else {
     return $mid( $1, %i, $len( $1 ) - %i )
   }
 }
@@ -490,102 +497,37 @@
 ;END
 
 ;JOBOK
-/job {
-  if ($2 == $null) { /jobhasznalat | halt }
-
-  if ($2 == off) || ($2 == stop) {
-    if ($hget(jobs,$1) != $null) {
-      hdel jobs $1
-      hsave jobs system\jobs.dat
-      echo $color(info) -atng *** Job $+ $1 törölve.
-      return
-    }
-    else {
-      echo $color(info2) -atng *** Job $+ $1 nem létezik.
-      return
-    }
-  }
-
-  if ($hget(jobs,$1) != $null) {
-    var %ido $gettok($hget(jobs,$1),1,32)
-    hdel jobs $1
-    hadd jobs $1 %ido $2-
-    hsave jobs system\jobs.dat
-
-    /echo $color(info) -atng *** Job $+ $1 parancs átírva: $2-
-    return
-  }
-
-  var %datum
-  var %ido
-  var %parancs
-  var %holnap 0
-  if ( / isin $1 ) {
-    %datum = $1
-    if (: !isin $2) { /jobhasznalat | halt }
-    %ido = $2
-    if ($3 == $null) { /jobhasznalat | halt }
-    %parancs = $3-
-  }
-  else {
-    if ($1 == holnap) {
-      if (: !isin $2) { /jobhasznalat | halt }
-      %holnap = 86400
-      %datum = $asctime(yyyy/mm/dd)
-      %ido = $2
-      %parancs = $3-
-    }
-    else {
-      if (: !isin $1) { /jobhasznalat | halt }
-      %datum = $asctime(yyyy/mm/dd)
-      %ido = $1
-      %parancs = $2-
-    }
-  }
-
-  ; szabad job num kereses
-  var %tnum 1
-  while ($hget(jobs,%tnum) != $null) {
-    inc %tnum 1
-  }
-  hadd jobs %tnum $calc( $ctime($gettok(%datum,3,47) $+ / $+ $gettok(%datum,2,47) $+ / $+ $gettok(%datum,1,47) %ido) + %holnap ) %parancs
-  hsave jobs system\jobs.dat
-
-  if ($gettok(%parancs,1,32) == /onalarm) {
-    echo $color(info) -atngq *** Alarm $+ %tnum bekapcsolva ( $+ $asctime($hget(jobs,%tnum),yyyy/mm/dd HH:nn) $+ ): $remove(%parancs,/onalarm)
-  }
-  else {
-    echo $color(info) -atngq *** Job $+ %tnum bekapcsolva ( $+ $asctime($hget(jobs,%tnum),yyyy/mm/dd HH:nn) $+ ): %parancs
-  }
+/jobhasznalat {
+  /echo $color(info2) -atng *** /job hiba: túl kevés paraméter! használat: /job (dátum (pl. 2007/11/06, 11/06, holnap vagy nap neve)) [idõ (pl. 0:25)] [parancs]
 }
 
-/jobs {
-  if ($hget(jobs,0).item == 0) {
-    echo $color(info) -atng *** Nincs aktív job.
-    return
-  }
-
-  if ($1 == off) || ($1 == stop) {
-    hdel -w jobs *
-    hsave jobs system\jobs.dat
-    echo $color(info) -atng *** Jobok törölve.
-    return
-  }
-
-  var %i $hget(jobs,0).item
-  echo $color(info) -atng *** Aktív jobok:
-  while (%i > 0) {
-    tokenize 32 $hget(jobs,%i).data
-    echo $color(info) -atng * $hget(jobs,%i).item $+ . $asctime($1,yyyy/mm/dd HH:nn) - $2-
-    dec %i 1
-  }
+/alarmhasznalat {
+  /echo $color(info2) -atng *** /alarm hiba: túl kevés paraméter! használat: /alarm (dátum (pl. 2007/11/06, 11/06, holnap vagy nap neve)) [idõ (pl. 0:25)] [üzenet]
 }
 
-/onalarm {
-  echo $color(highlight) -atng *** ALARM: $1-
-  var %a $tip(alarm, Alarm, $1-, 60, system\img\warning.ico )
-  /beep 5 100
-  /netzbeep pager
+/ebresztohasznalat {
+  /echo $color(info2) -atng *** /ebreszto hiba: túl kevés paraméter! használat: /ebreszto (-NUM NUM=hányszor aktiválódjon az ébresztõ) (dátum (pl. 2007/11/06, 11/06, mindennap, holnap, vagy nap neve)) [idõ (pl. 0:25)] [üzenet]
+}
+
+; kiszamolja hogy a megadott napnal a jelenlegi datumhoz meg hany masodpercet kell hozzaadni hogy megkapjuk az adott napot
+/getdayshift {
+  if ($1 == holnap) {
+    return 86400
+  }
+  var %napnev
+  if ( $1 == hétfõ || $1 == hetfo ) { %napnev = mon }
+  if ( $1 == kedd ) { %napnev = tue }
+  if ( $1 == szerda ) { %napnev = wed }
+  if ( $1 == csütörtök || $1 == csutortok ) { %napnev = thu }
+  if ( $1 == péntek || $1 == pentek ) { %napnev = fri }
+  if ( $1 == szombat ) { %napnev = sat }
+  if ( $1 == vasárnap || $1 == vasarnap ) { %napnev = sun }
+  if ( %napnev == $null ) { return 0 } ; hibas napnev
+  var %napshift 86400
+  while ($asctime($calc($ctime + %napshift),ddd) != %napnev) {
+    inc %napshift 86400
+  }
+  return %napshift
 }
 
 /initjobs {
@@ -606,12 +548,20 @@
   var %i $hget(jobs,0).item
   while (%i > 0) {
     tokenize 32 $hget(jobs,%i).data
-    if ($ctime >= $1) {
-      if ($2 != /onalarm) {
-        echo $color(info) -atng *** Job $+ $hget(jobs,%i).item indítása: $2-
+    var %ido $1
+    var %mindennap $2
+    if ($ctime >= %ido) {
+      if ($3 != /onalarm) && ($3 != /onebreszto) {
+        echo $color(info) -atng *** Job $+ $hget(jobs,%i).item indítása: $3-
       }
-      $2-
-      hdel jobs $hget(jobs,%i).item
+      $3-
+      var %jobnum $hget(jobs,%i).item
+      hdel jobs %jobnum
+      ; ha minden nap vegre kell hajtani, ujra hozzaadjuk
+      if (%mindennap) {
+        hadd jobs %jobnum $calc( %ido + $getdayshift(holnap) ) %mindennap $3-
+        hsave jobs system\jobs.dat
+      }
       %i = $hget(jobs,0).item
       continue
     }
@@ -620,17 +570,141 @@
   hsave jobs system\jobs.dat
 }
 
-/jobhasznalat {
-  /echo $color(info2) -atng *** /job hiba: túl kevés paraméter! használat: /job (dátum (pl. 2007/11/06 vagy holnap)) [idõ (pl. 0:25)] [parancs]
+/job {
+  if ($2 == $null) { /jobhasznalat | halt }
+
+  ; job torles
+  if ($2 == off) || ($2 == stop) {
+    if ($hget(jobs,$1) != $null) {
+      hdel jobs $1
+      hsave jobs system\jobs.dat
+      echo $color(info) -atng *** Job $+ $1 törölve.
+      return
+    }
+    else {
+      echo $color(info2) -atng *** Job $+ $1 nem létezik.
+      return
+    }
+  }
+
+  ; job parancs atiras
+  if ($hget(jobs,$1) != $null) {
+    var %ido $gettok($hget(jobs,$1),1,32)
+    var %mindennap $gettok($hget(jobs,$1),2,32)
+    hdel jobs $1
+    hadd jobs $1 %ido %mindennap $2-
+    hsave jobs system\jobs.dat
+
+    /echo $color(info) -atng *** Job $+ $1 parancs átírva: $2-
+    return
+  }
+
+  var %datum
+  var %ido
+  var %parancs
+  var %napshift 0
+  var %mindennap 0
+  if ( / isin $1 ) { ; datum is meg lett adva
+    if ($count($1,/) == 2) {
+      ; normal datum lett megadva
+      %datum = $1
+    }
+    if ($count($1,/) == 1) {
+      ; evszam nelkuli datum lett megadva
+      %datum = $asctime(yyyy) $+ / $+ $1
+    }
+    if ($count($1,/) > 2) { /jobhasznalat | halt }
+    if (: !isin $2) { /jobhasznalat | halt }
+    %ido = $2
+    if ($3 == $null) { /jobhasznalat | halt }
+    %parancs = $3-
+  }
+  else {
+    if ($getdayshift($1)) { ; datumnak nap van megadva
+      if (: !isin $2) { /jobhasznalat | halt }
+      %napshift = $getdayshift($1)
+      %datum = $asctime(yyyy/mm/dd)
+      %ido = $2
+      %parancs = $3-
+    }
+    else {
+      if ( $1 == mindennap ) { ; minden nap vegre kell hajtani
+        if (: !isin $2) { /jobhasznalat | halt }
+        %mindennap = 1
+        %datum = $asctime(yyyy/mm/dd)
+        %ido = $2
+        if ( $ctime(%datum %ido) < $ctime ) {
+          %napshift = $getdayshift(holnap)
+        }
+        %parancs = $3-
+      }
+      else { ; egyaltalan nincs megadva datum
+        if (: !isin $1) { /jobhasznalat | halt }
+        %datum = $asctime(yyyy/mm/dd)
+        %ido = $1
+        %parancs = $2-
+      }
+    }
+  }
+
+  ; szabad job num kereses
+  var %tnum 1
+  while ($hget(jobs,%tnum) != $null) {
+    inc %tnum 1
+  }
+
+  hadd jobs %tnum $calc( $ctime($gettok(%datum,3,47) $+ / $+ $gettok(%datum,2,47) $+ / $+ $gettok(%datum,1,47) %ido) + %napshift ) %mindennap %parancs
+  hsave jobs system\jobs.dat
+
+  if ($gettok(%parancs,1,32) == /onalarm) {
+    if (%mindennap) { echo $color(info) -atngq *** Alarm $+ %tnum bekapcsolva (minden nap $asctime($gettok($hget(jobs,%tnum),1,32),HH:nn) $+ ): $remove(%parancs,/onalarm) }
+    else { echo $color(info) -atngq *** Alarm $+ %tnum bekapcsolva ( $+ $asctime($gettok($hget(jobs,%tnum),1,32),yyyy/mm/dd HH:nn) $+ ): $remove(%parancs,/onalarm) }
+  }
+  else {
+    if ($gettok(%parancs,1,32) == /onebreszto) {
+      if (%mindennap) { echo $color(info) -atngq *** Ébresztõ $+ %tnum bekapcsolva (minden nap $asctime($gettok($hget(jobs,%tnum),1,32),HH:nn) $+ ): $gettok(%parancs,3-,32) }
+      else { echo $color(info) -atngq *** Ébresztõ $+ %tnum bekapcsolva ( $+ $asctime($gettok($hget(jobs,%tnum),1,32),yyyy/mm/dd HH:nn) $+ ): $gettok(%parancs,3-,32) }
+    }
+    else {
+      if (%mindennap) { echo $color(info) -atngq *** Job $+ %tnum bekapcsolva (minden nap $asctime($gettok($hget(jobs,%tnum),1,32),HH:nn) $+ ) $+ ): %parancs }
+      else { echo $color(info) -atngq *** Job $+ %tnum bekapcsolva ( $+ $asctime($gettok($hget(jobs,%tnum),1,32),yyyy/mm/dd HH:nn) $+ ): %parancs }
+    }
+  }
 }
 
-/alarmhasznalat {
-  /echo $color(info2) -atng *** /alarm hiba: túl kevés paraméter! használat: /alarm (dátum (pl. 2007/11/06 vagy holnap)) [idõ (pl. 0:25)] [üzenet]
+/jobs {
+  if ($hget(jobs,0).item == 0) {
+    echo $color(info) -atng *** Nincs aktív job.
+    return
+  }
+
+  if ($1 == off) || ($1 == stop) {
+    hdel -w jobs *
+    hsave jobs system\jobs.dat
+    echo $color(info) -atng *** Jobok törölve.
+    return
+  }
+
+  var %i $hget(jobs,0).item
+  echo $color(info) -atng *** Aktív jobok:
+  while (%i > 0) {
+    tokenize 32 $hget(jobs,%i).data
+    var %datum $1
+    var %mindennap $2
+    if (%mindennap) {
+      echo $color(info) -atng * $hget(jobs,%i).item $+ . minden nap $asctime(%datum,HH:nn) - $3-
+    }
+    else {
+      echo $color(info) -atng * $hget(jobs,%i).item $+ . $asctime(%datum,yyyy/mm/dd HH:nn) - $3-
+    }
+    dec %i 1
+  }
 }
 
 /alarm {
   if ($2 == $null) { /alarmhasznalat | halt }
 
+  ; alarm leallitasa
   if ($2 == off) || ($2 == stop) {
     if (/onalarm isin $hget(jobs,$1)) {
       hdel jobs $1
@@ -644,10 +718,12 @@
     }
   }
 
+  ; alarm uzenet atirasa
   if (/onalarm isin $hget(jobs,$1)) {
     var %ido $gettok($hget(jobs,$1),1,32)
+    var %mindennap $gettok($hget(jobs,$1),2,32)
     hdel jobs $1
-    hadd jobs $1 %ido /onalarm $2-
+    hadd jobs $1 %ido %mindennap /onalarm $2-
     hsave jobs system\jobs.dat
 
     /echo $color(info) -atng *** Alarm $+ $1 üzenet átírva: $2-
@@ -657,7 +733,7 @@
   var %datum
   var %ido
   var %uzenet
-  if ( / isin $1 ) || ( $1 == holnap ) {
+  if ( / isin $1 ) || ($getdayshift($1)) || ( $1 == mindennap ) {
     %datum = $1
     if (: !isin $2) { /alarmhasznalat | halt }
     %ido = $2
@@ -685,7 +761,7 @@
   var %ac 0
   while (%i > 0) {
     tokenize 32 $hget(jobs,%i).data
-    if ($2 == /onalarm) {
+    if ($3 == /onalarm) {
       inc %ac 1
     }
     dec %i 1
@@ -699,7 +775,7 @@
     var %i $hget(jobs,0).item
     while (%i > 0) {
       tokenize 32 $hget(jobs,%i).data
-      if ($2 == /onalarm) {
+      if ($3 == /onalarm) {
         hdel jobs $hget(jobs,%i).item
       }
       dec %i 1
@@ -713,8 +789,178 @@
   echo $color(info) -atng *** Aktív alarmok:
   while (%i > 0) {
     tokenize 32 $hget(jobs,%i).data
-    if ($2 == /onalarm) {
-      echo $color(info) -atng * $hget(jobs,%i).item $+ . $asctime($1,yyyy/mm/dd HH:nn) - $remove($2-,/onalarm)
+    if ($3 == /onalarm) {
+      var %datum $1
+      var %mindennap $2
+      if (%mindennap) {
+        echo $color(info) -atng * $hget(jobs,%i).item $+ . minden nap $asctime(%datum,HH:nn) - $gettok($3-,2-,32)
+      }
+      else {
+        echo $color(info) -atng * $hget(jobs,%i).item $+ . $asctime(%datum,yyyy/mm/dd HH:nn) - $gettok($3-,2-,32)
+      }
+    }
+    dec %i 1
+  }
+}
+
+/onalarm {
+  echo $color(highlight) -atng *** ALARM: $1-
+  var %a $tip(alarm, Alarm, $1-, 60, system\img\warning.ico )
+  /beep 5 100
+  /netzbeep pager
+}
+
+/onebreszto {
+  if ($1 == -off) {
+    .timerEbreszto off
+    var %ebresztotimes $calc( $2 - 1 )
+    if (%ebresztotimes > 0) {
+      /echo $color(info) -atng *** Ébresztõ leállítva, még %ebresztotimes alkalommal lesz aktív.
+      .timerEbreszto 1 120 /onebreszto %ebresztotimes $3-
+      return
+    }
+    /echo $color(info) -atng *** Ébresztõ leállítva.
+    return
+  }
+  echo $color(highlight) -atng *** ÉBRESZTÕ: $2- (F8 - leállítás)
+  .hdel data $cid $+ doit $+ $replace($active,Status Window,status)
+  .hadd data $cid $+ doit $+ $replace($active,Status Window,status) /onebreszto -off $1-
+  if (!$tip(ebreszto)) {
+    var %a $tip(ebreszto, Ébresztõ, $2-, 60, system\img\warning.ico )
+  }
+  /beep 5 100
+  /netzbeep ebreszto
+  .timerEbreszto 1 5 /onebreszto $1-
+}
+
+/ebreszto {
+  ; aktiv ebreszto leallitasa
+  if ($1 == off) {
+    if (!$timer(ebreszto)) {
+      echo $color(info2) -atng *** Jelenleg nincs ébresztés folyamatban.
+      return
+    }
+    .timerEbreszto off
+    echo $color(info) -atng *** Ébresztés leállítva.
+    return
+  }
+
+  if ($2 == $null) { /ebresztohasznalat | halt }
+
+  ; ebreszto leallitasa
+  if ($2 == off) || ($2 == stop) {
+    if (/onebreszto isin $hget(jobs,$1)) {
+      hdel jobs $1
+      hsave jobs system\jobs.dat
+      echo $color(info) -atng *** Ébresztõ $+ $1 törölve.
+      return
+    }
+    else {
+      echo $color(info2) -atng *** Ébresztõ $+ $1 nem létezik.
+      return
+    }
+  }
+
+  ; ebreszto uzenet atirasa
+  if (/onebreszto isin $hget(jobs,$1)) {
+    var %ido $gettok($hget(jobs,$1),1,32)
+    var %mindennap $gettok($hget(jobs,$1),2,32)
+    hdel jobs $1
+    hadd jobs $1 %ido %mindennap /onebreszto $2-
+    hsave jobs system\jobs.dat
+
+    /echo $color(info) -atng *** Ébresztõ $+ $1 üzenet átírva: $2-
+    return
+  }
+
+  var %datum
+  var %ido
+  var %uzenet
+  var %times 1
+  if ( - isin $1 ) {
+    %times = $remove($1,-)
+
+    if ( / isin $2 ) || ($getdayshift($2)) || ( $2 == mindennap ) {
+      %datum = $2
+      if (: !isin $3) { /ebresztohasznalat | halt }
+      %ido = $3
+      if ($4 == $null) { /ebresztohasznalat | halt }
+      %uzenet = $4-
+    }
+    else {
+      if (: !isin $2) { /ebresztohasznalat | halt }
+      %datum = $asctime(yyyy/mm/dd)
+      %ido = $2
+      %uzenet = $3-
+    }
+  }
+  else {
+    if ( / isin $1 ) || ($getdayshift($1)) || ( $1 == mindennap ) {
+      %datum = $1
+      if (: !isin $2) { /ebresztohasznalat | halt }
+      %ido = $2
+      if ($3 == $null) { /ebresztohasznalat | halt }
+      %uzenet = $3-
+    }
+    else {
+      if (: !isin $1) { /ebresztohasznalat | halt }
+      %datum = $asctime(yyyy/mm/dd)
+      %ido = $1
+      %uzenet = $2-
+    }
+  }
+
+  job %datum %ido /onebreszto %times %uzenet
+}
+
+/ebresztok {
+  var %off 0
+  if ($1 == off) || ($1 == stop) {
+    %off = 1
+  }
+
+  ; ebresztok megszamolasa
+  var %i $hget(jobs,0).item
+  var %ac 0
+  while (%i > 0) {
+    tokenize 32 $hget(jobs,%i).data
+    if ($3 == /onebreszto) {
+      inc %ac 1
+    }
+    dec %i 1
+  }
+  if (%ac == 0) {
+    echo $color(info) -atng *** Nincs aktív ébresztõ.
+    return
+  }
+
+  if (%off) {
+    var %i $hget(jobs,0).item
+    while (%i > 0) {
+      tokenize 32 $hget(jobs,%i).data
+      if ($3 == /onebreszto) {
+        hdel jobs $hget(jobs,%i).item
+      }
+      dec %i 1
+    }
+    hsave jobs system\jobs.dat
+    echo $color(info) -atng *** Ébresztõk törölve.
+    return
+  }
+
+  var %i $hget(jobs,0).item
+  echo $color(info) -atng *** Aktív ébresztõk:
+  while (%i > 0) {
+    tokenize 32 $hget(jobs,%i).data
+    if ($3 == /onebreszto) {
+      var %datum $1
+      var %mindennap $2
+      if (%mindennap) {
+        echo $color(info) -atng * $hget(jobs,%i).item $+ . minden nap $asctime(%datum,HH:nn) - $5-
+      }
+      else {
+        echo $color(info) -atng * $hget(jobs,%i).item $+ . $asctime(%datum,yyyy/mm/dd HH:nn) - $5-
+      }
     }
     dec %i 1
   }

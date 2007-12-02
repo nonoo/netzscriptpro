@@ -102,14 +102,14 @@ dialog firstsetup {
   text "Itt láthatod a legfontosabb beállításokat. Ezeket késõbb is megváltoztathatod.", 2, 12 32 201 29
   text "Az idented a hostodhoz való felhasználó azonosításra szolgál. Alapból ez maradhat a kisbetûs nicked. Kapcsolódás után az F2 lenyomására a script a kedvenc csatijaidra fog belépni.", 3, 12 72 201 67
   text "Nicked:", 4, 24 164 50 20
-  edit "", 5, 95 160 100 20
+  edit "", 5, 95 160 100 20, autohs
   text "Idented:", 6, 24 184 50 20
-  edit "", 7, 95 180 100 20
+  edit "", 7, 95 180 100 20, autohs
   text "Awaynicked:", 8, 24 204 60 20
-  edit "", 9, 95 200 100 20
+  edit "", 9, 95 200 100 20, autohs
   text "Kedvenc", 10, 24 288 60 20
   text "csatijaid:", 11, 24 302 60 20
-  edit "", 12, 95 298 100 20
+  edit "", 12, 95 298 100 20, autohs
   box "", 13, 2 324 222 39
   button "OK", 100, 5 334 215 25, ok
   box "", 14, 2 0 220 147
