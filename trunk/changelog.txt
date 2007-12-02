@@ -3,7 +3,14 @@
 - tooltip állítási lehetõségek kibõvítve
 - setupban néhány cucc rossz helyen jelent meg - javítva
 - /alarmnak, /jobnak már meg lehet adni dátum helyett hogy "holnap",
-  pl. /alarm holnap 20:00 kezdodik a dallas
+  vagy "szombat", "vasárnap" stb. pl. /alarm holnap 20:00 kezdodik a dallas
+- /alarmot, /jobot már minden napra is be lehet ütemezni,
+  pl. /alarm mindennap 18:15 kezdodik a szomszedok
+- /ebreszto parancs, ugyanúgy mûködik mint pl. az /alarm, pluszban még annyi,
+  hogy be lehet állítani hogy hányszor aktiválódjon, pl.
+  /ebreszto -3 holnap 7:00 ebreszto
+  Ekkor az lesz, hogy ébreszt 7-kor, majd ha ezt lenyomtuk, 2 percre rá
+  megint, aztán ha azt is lenyomtuk, 2 percre rá megint.
 - át lehet írni az alarm üzeneteket és job parancsokat (lásd commands.txt)
 - bitlbee csatikon ezentúl nem jeleníti meg a MSN - Error: Could not allocate
   memory for 'sha1c' in msn_imagefullpath(), MSN - Error: Please check
@@ -14,7 +21,8 @@
 - urlekre kattintás ezentúl nem fagyasztja le a mircet, ha sokáig tölt a
   böngészõ
 - flac és m4a kiterjesztések hozzáadva alapból a downloaderhez
-- /date parancs (mai dátum kiírása)
+- /date és /datum parancs (mai dátum kiírása)
+- firstsetupnál már kiférnek hosszabb csatinevek is (köszi Eman)
 
 [2.104] 2007. 11. 06. 15:15
 - tooltipek (buborékok a tálcán) használata highlightkor, privát üzenetnél,

@@ -151,9 +151,11 @@ vagy on-t, vagy offot írsz oda.
 /amoba [nick] - amõbázás
 /domain [domain(pl. hu)] - országkód visszafejtés
 /viewlog - aktív csati logjának megnyitása
-/job (dátum (pl. 2007/11/06 vagy holnap)) [idõ (pl. 0:25)] [parancs] - parancs végrehajtása a megadott idõpontban, ezeket elmenti, újraindítás után is megmaradnak. Ha elsõ paraméternek egy aktív job sorszámát adjuk meg, a második paraméterrel írja felül az eredeti job parancsot.
+/job (dátum (pl. 2007/11/06, 11/06, holnap, mindennap vagy nap neve)) [idõ (pl. 0:25)] [parancs] - parancs végrehajtása a megadott idõpontban, ezeket elmenti, újraindítás után is megmaradnak. Ha elsõ paraméternek egy aktív job sorszámát adjuk meg, a második paraméterrel írja felül az eredeti job parancsot.
 /jobs (off) - aktív jobok listázása, off paraméter megadására törli az összes aktív jobot, FIGYELEM: mivel az alarmok is jobok, ezért ez azokat is törölni fogja
-/alarm (dátum (pl. 2007/11/06) vagy holnap) [idõ (pl. 0:25)] [üzenet] - emlékeztetõ beállítása a megadott idõpontra, ezeket elmenti, újraindítás után is megmaradnak. Ha elsõ paraméternek egy aktív alarm sorszámát adjuk meg, a második paraméterrel írja felül az eredeti alarm üzenetet.
+/alarm (dátum (pl. 2007/11/06, 11/06, holnap, mindennap vagy nap neve)) [idõ (pl. 0:25)] [üzenet] - emlékeztetõ beállítása a megadott idõpontra, ezeket elmenti, újraindítás után is megmaradnak. Ha elsõ paraméternek egy aktív alarm sorszámát adjuk meg, a második paraméterrel írja felül az eredeti alarm üzenetet.
 /alarms (off) - aktív alarmok listázása, off paraméter megadására törli az összes aktív alarmot
+/ebreszto (-NUM NUM=hányszor aktiválódjon az ébresztõ) (dátum (pl. 2007/11/06, 11/06, holnap, mindennap vagy nap neve)) [idõ (pl. 0:25)] [üzenet] - ébresztõ beállítása a megadott idõpontra, ezeket elmenti, újraindítás után is megmaradnak. Ha elsõ paraméternek egy aktív ébresztõ sorszámát adjuk meg, a második paraméterrel írja felül az eredeti ébresztõ üzenetet.
+/ebresztok (off) - aktív ébresztõk listázása, off paraméter megadására törli az összes aktív ébresztõt
 /date - mai dátum kiírása
 /datum - ugyanaz mint a /date
