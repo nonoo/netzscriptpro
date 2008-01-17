@@ -276,7 +276,7 @@
   var %nicklist
   while (%i <= $nick(%csati,0)) {
     if ($me != $nick(%csati,%i)) { %nicklist = %nicklist $+ $chr(32) $+ $nick(%csati,%i) }
-    if ($len(%nicklist) > 180) { /msg %csati %nicklist | %nicklist = $null }
+    if ($len(%nicklist) > 200) { /msg %csati %nicklist | %nicklist = $null }
     inc %i 1
   }
   /msg %csati %nicklist
