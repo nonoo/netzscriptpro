@@ -134,9 +134,8 @@ alias checkmail_gmail {
   }
 
   ; elsore megprobaljuk lekerni az emailek szamat
-  %gmail_location = /mail/?ik=&search=inbox&view=tl&start=0&init=1&ui=1&zx=
-  %gmail_host = mail.google.com
-  %gmail_port = 80
+  %gmail_location = http://mail.google.com/mail/?ik=&search=inbox&view=tl&start=0&init=1&ui=1&zx=&hl=en
+  gmail_locationconv
 
   %gmail_emailnum = -1
   ;%gmail_debug = 1
@@ -145,17 +144,13 @@ alias checkmail_gmail {
     %gmail_login = 1
     .window -c @gmail_debug
     /window -e @gmail_debug Fixedsys
-    .remove c:\1.txt
-    .remove c:\2.txt
-    .remove c:\3.txt
-    .remove c:\4.txt
-    .remove c:\5.txt
-    .remove c:\6.txt
-    .remove c:\7.txt
+    .remove c:\gmaildbg_1.txt | .remove c:\gmaildbg_2.txt | .remove c:\gmaildbg_3.txt
+    .remove c:\gmaildbg_4.txt | .remove c:\gmaildbg_5.txt | .remove c:\gmaildbg_6.txt
+    .remove c:\gmaildbg_7.txt | .remove c:\gmaildbg_8.txt | .remove c:\gmaildbg_9.txt
+    .remove c:\gmaildbg_10.txt | .remove c:\gmaildbg_11.txt | .remove c:\gmaildbg_12.txt
   }
 
-  sockclose gmail
-  sockopen gmail %gmail_host %gmail_port
+  gmail_sockclose
 }
 
 on 1:sockopen:gmail: {
@@ -201,14 +196,18 @@ alias gmail_cookiedel {
   .remove system\gmailcookies.dat
 }
 
-alias gmail_locationconv {
-  ; http://www.nonoo.hu/lofasz/valami -> www.nonoo.hu
-  %gmail_host = $remove(%gmail_location,http://,https://)
-  var %cp $pos(%gmail_host,/,1)
+; http://www.nonoo.hu/lofasz/valami -> www.nonoo.hu
+alias gmail_getdomain {
+  var %domain = $remove($1-,http://,https://)
+  var %cp $pos(%domain,/,1)
   if (%cp != $null) {
-    %gmail_host = $left(%gmail_host,$calc(%cp - 1))
+    %domain = $left(%domain,$calc(%cp - 1))
   }
+  return %domain
+}
 
+alias gmail_locationconv {
+  %gmail_host = $gmail_getdomain(%gmail_location)
   if (https:// isin %gmail_location) {
     %gmail_port = 443
   }
@@ -217,7 +216,7 @@ alias gmail_locationconv {
   }
 
   ; http://www.nonoo.hu/lofasz/valami -> /lofasz/valami
-  %cp = $pos(%gmail_location,/,3)
+  var %cp = $pos(%gmail_location,/,3)
   if (%cp != $null) {
     %gmail_location = $remove(%gmail_location,$left(%gmail_location,$calc(%cp - 1)))
   }
@@ -232,8 +231,20 @@ alias gmail_locationconv {
 alias gmail_sendcookies {
   var %gmail_cookiecount = $hget(gmailcookies,0).item
   while (%gmail_cookiecount > 0) {
-    sockwrite -n gmail Cookie: $hget(gmailcookies,%gmail_cookiecount).item $+ = $+ $hget(gmailcookies,%gmail_cookiecount).data
-    if (%gmail_debug) { echo -tng @gmail_debug %gmail_login - sent cookie: $hget(gmailcookies,%gmail_cookiecount).item $+ = $+ $hget(gmailcookies,%gmail_cookiecount).data }
+    var %cookie $hget(gmailcookies,%gmail_cookiecount).item
+    var %cookiename $left(%cookie,$calc($pos(%cookie,$chr(59),1) - 1))
+    var %cookiepath $mid(%cookie,$calc($len(%cookiename) + 2),$calc($pos(%cookie,$chr(59),2) - $len(%cookiename) - 2))
+    var %cookiedomain $mid(%cookie,$calc($pos(%cookie,$chr(59),2) + 1),$calc($len(%cookie) - $pos(%cookie,$chr(59),2) + 2))
+    var %cookiedata $hget(gmailcookies,%gmail_cookiecount).data
+    if (%cookiepath !isin %gmail_location || %cookiedomain !isin %gmail_host) {
+      if (%gmail_debug) {
+        echo -tng @gmail_debug %gmail_login - cookie ' $+ %cookiename $+ ' is not in location ( $+ %cookiepath $+ , %cookiedomain $+ ), not sending
+      }
+      dec %gmail_cookiecount 1
+      continue
+    }
+    sockwrite -n gmail Cookie: %cookiename $+ = $+ %cookiedata
+    if (%gmail_debug) { echo -tng @gmail_debug %gmail_login - sent cookie: %cookiename $+ = $+ %cookiedata }
     dec %gmail_cookiecount 1
   }
 }
@@ -249,9 +260,37 @@ alias gmail_setcookie {
   var %cc $pos($1-,$chr(59),1)
   if (%cc == $null) { %cc = $calc($len($1-) + 1) }
   var %cookiedata = $mid($1-,$calc(%ce + 1),$calc( %cc - %ce - 1 ) )
-  if (%gmail_debug) { echo -tng @gmail_debug %gmail_login - got cookie: %cookiename $+ = $+ %cookiedata }
-  if (%cookiedata == EXPIRED) { hdel gmailcookies %cookiename }
-  else { hadd gmailcookies %cookiename %cookiedata }
+
+  %cs = $calc($pos($1-,;Path=,1) + 6)
+  if (%cs == 6) {
+    ; nincs path
+    %cookiepath = /
+  }
+  else {
+    var %pathstr = $mid($1-,%cs,$calc($len($1-) - %cs))
+    %ce = $calc($pos(%pathstr,$chr(59),1) - 1)
+    var %cookiepath = $mid(%pathstr,0,%ce)
+  }
+
+  var %cookiedomain
+  %cs = $calc($pos($1-,;Domain=,1) + 8)
+  if (%cs == 8) {
+    ; nincs domain
+    %cookiedomain = %gmail_host
+  }
+  else {
+    var %domainstr = $mid($1-,%cs,$calc($len($1-) - %cs))
+    %ce = $calc($pos(%domainstr,$chr(59),1) - 1)
+    %cookiedomain = $mid(%domainstr,0,%ce)
+  }
+
+  if (%gmail_debug) { echo -tng @gmail_debug %gmail_login - got cookie: %cookiename $+ = $+ %cookiedata path: %cookiepath domain: %cookiedomain }
+  if (%cookiedata == EXPIRED) {
+    hdel gmailcookies %cookiename $+ ; $+ %cookiepath $+ ; $+ %cookiedomain
+  }
+  else {
+    hadd gmailcookies %cookiename $+ ; $+ %cookiepath $+ ; $+ %cookiedomain %cookiedata
+  }
 }
 
 ; kivagja a parameterkent megadott sorbol a location-t
@@ -276,13 +315,14 @@ on 1:sockread:gmail: {
   }
 
   if ($left(%temp,10) == Set-Cookie) {
-    if (GV=EXPIRED; isin %temp) {
+    if (GV1=EXPIRED; isin %temp) {
       %gmail_location = https://www.google.com/accounts/ServiceLoginAuth
       gmail_locationconv
       if (%gmail_debug) { echo -tng @gmail_debug %gmail_login - cookie expired, relogging }
+      gmail_sockclose
+      return
     }
     gmail_setcookie %temp
-    if (!%gmail_debug) { goto ujraolvas }
   }
 
   if ($left(%temp,8) == Location) {
@@ -295,7 +335,7 @@ on 1:sockread:gmail: {
   }
 
   ; ha nem http headerben jon a location, a html head-bol ollozzuk ki
-  if (%gmail_location == $null) && (meta $+ $chr(32) $+ content= $+ $chr(34) $+ 0; $+ $chr(32) $+ url=' isin %temp) {
+  if (%gmail_location == $null) && ( (meta $+ $chr(32) $+ content= $+ $chr(34) $+ 0; $+ $chr(32) $+ url=' isin %temp) || (meta $+ $chr(32) $+ http-equiv= $+ $chr(34) $+ refresh $+ $chr(34) $+ $chr(32) $+ content= $+ $chr(34) $+ 0; $+ $chr(32) $+ url=' isin %temp) ) {
     var %cs $calc($pos(%temp,$chr(34) $+ 0; $+ $chr(32) $+ url=',1)+9)
     var %ce $calc($pos(%temp,' $+ $chr(34)) - %cs)
     %gmail_location = $mid(%temp,%cs,%ce)
@@ -310,13 +350,11 @@ on 1:sockread:gmail: {
   ; ez a szoveg a rendes gmail oldalon van, ha ez jon,
   ; lekerjuk a javascript oldalt amiben benne lesz az olvasatlan levelek szama
   if (indexOf $+ $chr(40) $+ 'nocheckbrowser' $+ $chr(41) isin %temp) {
-    %gmail_location = http://mail.google.com/mail/?ik=&search=inbox&view=tl&start=0&init=1&ui=1&zx=
+    %gmail_location = http://mail.google.com/mail/?ik=&search=inbox&view=tl&start=0&init=1&ui=1&zx=&hl=en
     gmail_locationconv
     if (%gmail_debug) { echo -tng @gmail_debug %gmail_login - getting number of unread mails }
-    else {
-      gmail_sockclose
-      halt
-    }
+    gmail_sockclose
+    halt
   }
 
   ; megkeressuk a sort amiben az inboxban levo emailek szama van
@@ -331,7 +369,7 @@ on 1:sockread:gmail: {
     }
   }
 
-  if (%gmail_debug) { write c:\ $+ %gmail_login $+ .txt %temp }
+  if (%gmail_debug) { write c:\gmaildbg_ $+ %gmail_login $+ .txt %temp }
   goto ujraolvas
 }
 
@@ -340,7 +378,10 @@ on 1:sockclose:gmail: { gmail_sockclose }
 alias gmail_sockclose {
   sockclose gmail
   if ($len(%gmail_location) > 0) {
-    if (%gmail_debug) { inc %gmail_login 1 }
+    if (%gmail_debug) {
+      inc %gmail_login 1
+      echo -tng @gmail_debug %gmail_login - connecting to: %gmail_host $+ : $+ %gmail_port
+    }
     if (%gmail_port == 443) {
       sockopen -e gmail %gmail_host %gmail_port
     }

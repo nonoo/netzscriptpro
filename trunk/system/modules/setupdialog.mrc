@@ -60,17 +60,17 @@ dialog setupdialog {
   check "Auto away", 38, 14 85 74 17, tab 2
   edit "", 39, 96 85 30 20, tab 2 disable autohs
   text "perc után", 40, 131 85 52 17, tab 2
-  edit "", 42, 136 108 183 20, tab 2 disable autohs
-  check "Away-backnél: /me", 43, 14 132 115 17, tab 2
-  edit "", 44, 136 132 182 20, tab 2 disable autohs
-  check "Szöveg beírására away kikapcsolása", 45, 14 159 213 17, tab 2
-  check "Away esetén pager bekapcsolása (csak akkor engedélyezett ha az alap pager nem aktív)", 46, 14 183 309 30, tab 2 multi
+  edit "", 42, 130 163 189 20, tab 2 disable autohs
+  check "Away-backnél: /me", 43, 14 188 111 17, tab 2
+  edit "", 44, 130 187 188 20, tab 2 disable autohs
+  check "Szöveg beírására away kikapcsolása", 45, 14 212 213 17, tab 2
+  check "Away esetén pager bekapcsolása (csak akkor engedélyezett ha az alap pager nem aktív)", 46, 14 234 309 30, tab 2 multi
   box " Page esetén (/ctcp nick page) (/page nick) ", 47, 17 147 304 129, tab 166
   check "jelzés a PC speakeren", 48, 28 231 135 17, tab 166
   check "windows beep", 49, 28 210 92 17, tab 166
   check "pager állandóan aktív", 51, 28 167 134 17, tab 166
   button "Away kapcsolása az összes kapcsolaton (/aaway)", 52, 35 360 271 25, tab 2
-  check "Auto awaynél: /me", 41, 14 108 115 17, tab 2 disable
+  check "Auto awaynél: /me", 41, 14 164 111 17, tab 2 disable
   box " Away üzenetek kiírása: ", 50, 17 270 303 63, tab 2
   radio "Minden csatira", 53, 28 290 93 17, tab 2
   radio "Csak ezekre:", 54, 28 308 86 17, tab 2
@@ -202,7 +202,7 @@ dialog setupdialog {
   edit "", 188, 112 312 139 20, tab 145 autohs
   text "Ide töltsön:", 189, 22 314 81 17, tab 145 right
   button "tallóz", 190, 253 313 58 17, tab 145
-  box " Köszönések ", 191, 187 340 134 42, tab 145
+  box " Köszönések ", 191, 187 340 134 41, tab 145
   button "szerkesztés", 192, 194 356 118 21, tab 145
   check "flash:", 193, 28 55 52 17, tab 166
   edit "", 197, 88 54 109 20, tab 166 disable autohs
@@ -250,7 +250,7 @@ dialog setupdialog {
   edit "", 244, 74 53 241 20, tab 145 disable autohs
   check "60 perc idle:", 237, 25 327 100 17, tab 218
   check "Lag kijelzés csíkkal", 245, 204 71 114 17, tab 306 disable
-  text "A script az auto-away idõt a rendszer idle idejébõl számolja, tehát ha nem mozgatod az egeret 20 percig, akkor fog bekapcsolni az auto-away (értelemszerûen ha 20 percre van állítva)", 246, 15 218 310 53, tab 2
+  text "Ha nem mozgatod az egeret 20 percig, akkor fog bekapcsolni az auto-away (értelemszerûen ha 20 percre van állítva)", 246, 15 107 310 29, tab 2
   check "CTCP védelem", 247, 19 280 92 17, tab 33 disable
   edit "", 248, 148 278 30 20, tab 33 disable autohs
   text "/", 249, 181 279 4 17, tab 33 disable
@@ -319,4 +319,5 @@ dialog setupdialog {
   check "Aktív", 315, 129 360 88 17, tab 251
   check "Page-nél", 316, 22 170 108 17, tab 306
   check "Notice-nál", 317, 204 170 108 17, tab 306
+  check "Away memória használata", 318, 14 139 154 17, tab 2
 }

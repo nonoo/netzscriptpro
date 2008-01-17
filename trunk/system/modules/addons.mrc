@@ -131,15 +131,15 @@ on *:DIALOG:tfsetup:init:*: {
 
 ;TEXTFORMAT
 alias /textformat {
-  var %tempszoveg $1
-  if (%onrandomcase) { %tempszoveg = $randomcase(%tempszoveg) }
-  if (%ontopten) { %tempszoveg = $topten(%tempszoveg) }
-  if (%onelite) { %tempszoveg = $elite(%tempszoveg) }
-  if (%onreverse) { %tempszoveg = $reverse(%tempszoveg) }
-  if (%onrcolor) { %tempszoveg = $randomcolor(%tempszoveg)    }
-  if (%onbold) { %tempszoveg =  $+ %tempszoveg }
-  if (%oninverse) { %tempszoveg =  $+ %tempszoveg }
-  if (%onunderline) { %tempszoveg =  $+ %tempszoveg }
+  /set -n %tempszoveg $1
+  if (%onrandomcase) { /set -n %tempszoveg $randomcase(%tempszoveg) }
+  if (%ontopten) { /set -n %tempszoveg $topten(%tempszoveg) }
+  if (%onelite) { /set -n %tempszoveg $elite(%tempszoveg) }
+  if (%onreverse) { /set -n %tempszoveg $reverse(%tempszoveg) }
+  if (%onrcolor) { /set -n %tempszoveg $randomcolor(%tempszoveg)    }
+  if (%onbold) { /set -n %tempszoveg  $+ %tempszoveg }
+  if (%oninverse) { /set -n %tempszoveg  $+ %tempszoveg }
+  if (%onunderline) { /set -n %tempszoveg  $+ %tempszoveg }
   return %tempszoveg
 }
 ;END

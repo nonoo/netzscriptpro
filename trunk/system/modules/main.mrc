@@ -37,6 +37,7 @@ alias moduleload {
   if (!$alias(winamp.mrc)) { .load -a system\aliases\winamp.mrc }
   if (!$alias(reset.mrc)) { .load -a system\aliases\reset.mrc }
   if (!$alias(mass.mrc)) { .load -a system\aliases\mass.mrc }
+  if (!$alias(job.mrc)) { .load -a system\aliases\job.mrc }
 }
 
 on *:START: {

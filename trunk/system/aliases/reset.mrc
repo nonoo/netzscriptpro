@@ -168,7 +168,12 @@
   %idleszin_20perce = 14
   %idleszin_10perce = 15
   %idleszin_0perce = 0
-  %nick_highlight_szin = 9
+  if (%szintema == eredeti) {
+    %nick_highlight_szin = 9
+  }
+  else {
+    %nick_highlight_szin = 8
+  }
   %szintema = eredeti
   ; 2.95
   %idleszin_hasznalat = 1
@@ -526,6 +531,7 @@
   .timer 1 0 .reload -a system\aliases\winamp.mrc
   .timer 1 0 .reload -a system\aliases\reset.mrc
   .timer 1 0 .reload -a system\aliases\mass.mrc
+  .timer 1 0 .reload -a system\aliases\job.mrc
   .timer 1 0 .reload -ps system\popups.ini
   .timer 1 0 .reload -pc system\popups.ini
   .timer 1 0 .reload -pq system\popups.ini

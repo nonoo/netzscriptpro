@@ -20,7 +20,10 @@ raw 305:*: {
   unset %away_memoria_ $+ $cid
   unset %away_memoria_msg_ $+ $cid
   unset %autoaway
-  if (%awaynick_hasznalat) { .nick %away_eredeti_nick }
+  if (%awaynick_hasznalat) {
+    if (%away_eredeti_nick === $me) { .orignick off }
+    .nick %away_eredeti_nick
+  }
   if (%awayback_hasznalat) {
     if (%awaymessage_mindencsatira) { /ame %awayback_message }
     else {
@@ -89,8 +92,10 @@ raw 306:*: {
       }
     }
   }
-  /set %away_memoria_ $+ $cid 1
-  /set %away_memoria_msg_ $+ $cid $awaymsg
+  if (%away_memoria) {
+    /set %away_memoria_ $+ $cid 1
+    /set %away_memoria_msg_ $+ $cid $awaymsg
+  }
   unset %away_silent
   halt
 }
@@ -132,6 +137,11 @@ raw 311:* {
   echo $color(background) %whois_ablak -
   echo $color(other) %whois_ablak  $+ whois $2
   echo %whois_ablak  $+ $color(gray) $+ host: $3 $+ @ $+ $4 %orszag
+  if ($4 == webchat.xs4all.nl) {
+    echo %whois_ablak  $+ $color(gray) $+ webchat ip: $hextoipc($3) (F8 - host lekérése)
+    .hdel data $cid $+ doit $+ $replace($chan,Status Window,status)
+    .hadd data $cid $+ doit $+ $replace($chan,Status Window,status) /dns $hextoipc($remove($address,@webchat.xs4all.nl))
+  }
   echo %whois_ablak  $+ $color(gray) $+ realname: $6-
   halt
 }

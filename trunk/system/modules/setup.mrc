@@ -86,6 +86,7 @@ on *:DIALOG:setupdialog:init:*: {
   else { did -c $dname 53 }
   did -a $dname 55 %awaymessage_csatik
   if (%aaway_f10) { did -c $dname 257 }
+  if (%away_memoria) { did -c $dname 318 }
 
   ; regi vindoz alatt nem megy az auto away
   if ($os == 95) || ($os == 98) || ($os == me) { did -b $dname 38 }
@@ -842,6 +843,8 @@ on *:DIALOG:setupdialog:sclick:3: {
   %awaymessage_csatik = $did(55)
   if ($did(257).state) { %aaway_f10 = 1 }
   else { %aaway_f10 = 0 }
+  if ($did(318).state) { %away_memoria = 1 }
+  else { %away_memoria = 0 }
   ;END
 
   ;FLOOD
