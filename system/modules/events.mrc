@@ -215,10 +215,13 @@ on ^*:notice:*:*: {
           }
           if (%pcspeaker_priviknel) { /netzbeep highlight }
           if (%tooltip_noticenal) && (!$appactive) {
-            var %a $tip(notice, Notice: $nick, $1-, $null, system\img\notice.ico, $null, /q $nick )
+            var %tip $tip(notice_ $+ $nick, Notice: $nick, $1-, $null, system\img\notice.ico, $null, /q $nick )
           }
         }
       }
+    }
+    if ($tip(notice_ $+ $nick)) && (!%tip) && (!$appactive) {
+      var %tip $tip(notice_ $+ $nick, Notice: $nick, $1-, $null, system\img\notice.ico, $null, /q $nick )
     }
     ; lastmsg (idle detekt)
     .hadd lastmsg $cid $+ $nick $ctime
@@ -326,7 +329,7 @@ ctcp ^1:PAGE: {
     if (%pager_speaker) { /netzbeep pager }
     if (%pager_flash) { /flash %pager_flash_szoveg }
     if (%tooltip_pagenel) && (!$appactive) {
-      var %a $tip(pager, Pager: $nick, $nick paget küldött!, $null, system\img\warning.ico, $null, /q $nick )
+      var %tip $tip(pager_ $+ $nick, Pager: $nick, $nick paget küldött!, $null, system\img\warning.ico, $null, /q $nick )
     }
   }
   halt
@@ -457,13 +460,6 @@ on 1:CLOSE:=: { /window -c =$nick | /echo $color(info) -st *** $nick befejezte a
 on 1:EXIT: {
   ; ürítjük a temp könyvtárat
   var %a $findfile(system\temp,*.*,0,.remove $1-)
-  ; hash tablakat toroljuk
-  .hfree dl_urllist
-  .hfree flood
-  .hfree data
-  .hfree lastmsg
-  .hfree patchfiles
-  .hfree uzenet
 }
 ;END
 
@@ -819,11 +815,14 @@ on ^1:ACTION:*:#:{
           }
           if (%pcspeaker_priviknel) { /netzbeep highlight }
           if (%highlight_tooltip) {
-            var %a $tip(highlight, Highlight: $chan,  $+ $color(action) $+ * $nick %tempszoveg, $null, system\img\chanmsg.ico, $null, /j $chan )
+            var %tip $tip(highlight_ $+ $chan, Highlight: $chan,  $+ $color(action) $+ * $nick %tempszoveg, $null, system\img\chanmsg.ico, $null, /j $chan )
           }
         }
       }
     }
+  }
+  if ($tip(highlight_ $+ $chan)) && (!%tip) {
+    var %tip $tip(highlight_ $+ $chan, Highlight: $chan,  $+ $color(action) $+ * $nick %tempszoveg, $null, system\img\chanmsg.ico, $null, /j $chan )
   }
   ; lastmsg (idle detekt)
   .hadd lastmsg $cid $+ $nick $ctime
@@ -876,8 +875,11 @@ on ^1:ACTION:*:?:{
     }
     if (%pcspeaker_priviknel) { /netzbeep query }
     if (%tooltip_priviknel) && (!$appactive) {
-      var %a $tip(highlight, Query: $nick,  $+ $color(action) $+ * $nick %tempszoveg, $null, system\img\query.ico, $null, /q $nick )
+      var %tip $tip(highlight_ $+ $nick, Query: $nick,  $+ $color(action) $+ * $nick %tempszoveg, $null, system\img\query.ico, $null, /q $nick )
     }
+  }
+  if ($tip(highlight_ $+ $nick)) && (!%tip) && (!$appactive) {
+    var %tip $tip(highlight_ $+ $nick, Query: $nick,  $+ $color(action) $+ * $nick %tempszoveg, $null, system\img\query.ico, $null, /q $nick )
   }
   ; lastmsg (idle detekt)
   .hadd lastmsg $cid $+ $nick $ctime
@@ -943,13 +945,16 @@ on ^1:TEXT:*:#:{
           }
           if (%pcspeaker_priviknel) { /netzbeep highlight }
           if (%highlight_tooltip) {
-            var %a $tip(highlight, Highlight: $chan, %mas_bal $+ $nick $+ %mas_jobb $+  %tempszoveg, $null, system\img\chanmsg.ico, $null, /j $chan )
+            var %tip $tip(highlight_ $+ $chan, Highlight: $chan, %mas_bal $+ $nick $+ %mas_jobb $+  %tempszoveg, $null, system\img\chanmsg.ico, $null, /j $chan )
           }
         }
       }
     }
   }
   else { /echo $color(normal) -tm $chan %mas_bal $+  $+ $color(nick) $+ %plusz $+ $nick $+ %mas_jobb $+  $+ $color(normal) %tempszoveg }
+  if ($tip(highlight_ $+ $chan)) && (!%tip) {
+    var %tip $tip(highlight_ $+ $chan, Highlight: $chan, %mas_bal $+ $nick $+ %mas_jobb $+  %tempszoveg, $null, system\img\chanmsg.ico, $null, /j $chan )
+  }
   ; lastmsg (idle detekt)
   .hadd lastmsg $cid $+ $nick $ctime
   /idlecheck
@@ -1046,9 +1051,12 @@ on ^1:TEXT:*:?:{
       }
       if (%pcspeaker_priviknel) { /netzbeep query }
       if (%tooltip_priviknel) && (!$appactive) {
-        var %a $tip(query, Query: $nick, %mas_bal $+ $nick $+ %mas_jobb $+  %tempszoveg, $null, system\img\query.ico, $null, /q $nick )
+        var %tip $tip(query_ $+ $nick, Query: $nick, %mas_bal $+ $nick $+ %mas_jobb $+  %tempszoveg, $null, system\img\query.ico, $null, /q $nick )
       }
     }
+  }
+  if ($tip(query_ $+ $nick)) && (!%tip) && (!$appactive) {
+    var %tip $tip(query_ $+ $nick, Query: $nick, %mas_bal $+ $nick $+ %mas_jobb $+  %tempszoveg, $null, system\img\query.ico, $null, /q $nick )
   }
   ; lastmsg (idle detekt)
   .hadd lastmsg $cid $+ $nick $ctime
@@ -1067,12 +1075,12 @@ on 1:FILERCVD:*.*: {
     .hdel data $cid $+ doit $+ $replace($active,Status Window,status)
     .hadd data $cid $+ doit $+ $replace($active,Status Window,status) .timer 1 0 /run $filename
     if (!$appactive) {
-      var %a $tip(dcc, DCC: $nick, Megjött $laz($nopath($filename)) $nopath($filename), $null, system\img\dcc.ico, $null, .timer 1 0 /run $filename )
+      var %a $tip(dccrcvd_ $+ $nick, DCC: $nick, Megjött $laz($nopath($filename)) $nopath($filename), $null, system\img\dcc.ico, $null, .timer 1 0 /run $filename )
     }
   }
   else {
     if (!$appactive) && (%tooltip_dccnel) {
-      var %a $tip(dcc, DCC: $nick, Megjött $laz($nopath($filename)) $nopath($filename), $null, system\img\dcc.ico )
+      var %a $tip(dccrcvd_ $+ $nick, DCC: $nick, Megjött $laz($nopath($filename)) $nopath($filename), $null, system\img\dcc.ico )
     }
   }
   halt
@@ -1080,21 +1088,21 @@ on 1:FILERCVD:*.*: {
 on 1:FILESENT:*: {
   /echo $color(info) -atg *** Átment $laz($nopath($filename)) $nopath($filename) $+  $+ $color(nick) $nick $+  $+ $color(info) $+ $toldalek($nick,-nak,-nek) $+ !
   if (!$appactive) && (%tooltip_dccnel) {
-    var %a $tip(dcc, DCC: $nick, Átment $laz($nopath($filename)) $nopath($filename), $null, system\img\dcc.ico )
+    var %tip $tip(dccsent_ $+ $nick, DCC: $nick, Átment $laz($nopath($filename)) $nopath($filename), $null, system\img\dcc.ico )
   }
   halt
 }
 on 1:SENDFAIL:*: {
   echo $color(info2) -atg *** Nem sikerült elküldeni $+  $+ $color(nick) $nick $+  $+ $color(info2) $+ $toldalek($nick,-nak,-nek) $laz($nopath($filename)) $nopath($filename) fájlt!
   if (!$appactive) && (%tooltip_dccnel) {
-    var %a $tip(dcc, DCC hiba: $nick, Nem sikerült elküldeni $+  $+ $color(nick) $nick $+ $toldalek($nick,-nak,-nek) $laz($nopath($filename)) $nopath($filename) fájlt!, $null, system\img\warning.ico )
+    var %tip $tip(dccsendfail_ $+ $nick, DCC hiba: $nick, Nem sikerült elküldeni $+  $+ $color(nick) $nick $+ $toldalek($nick,-nak,-nek) $laz($nopath($filename)) $nopath($filename) fájlt!, $null, system\img\warning.ico )
   }
   halt
 }
 on 1:GETFAIL:*: {
   echo $color(info2) -atg *** Nem sikerült fogadni $laz($nopath($filename)) $nopath($filename) fájlt $+  $+ $color(nick) $nick $+  $+ $color(info2) $+ $toldalek($nick,-tól,tõl) $+ !
   if (!$appactive) && (%tooltip_dccnel) {
-    var %a $tip(dcc, DCC hiba: $nick, Nem sikerült fogadni $laz($nopath($filename)) $nopath($filename) fájlt $nick $+ $toldalek($nick,-tól,tõl) $+ !, $null, system\img\warning.ico )
+    var %tip $tip(dccgetfail_ $+ nick, DCC hiba: $nick, Nem sikerült fogadni $laz($nopath($filename)) $nopath($filename) fájlt $nick $+ $toldalek($nick,-tól,tõl) $+ !, $null, system\img\warning.ico )
   }
   halt
 }
