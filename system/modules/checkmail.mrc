@@ -315,13 +315,6 @@ on 1:sockread:gmail: {
   }
 
   if ($left(%temp,10) == Set-Cookie) {
-    if (GV1=EXPIRED; isin %temp) {
-      %gmail_location = https://www.google.com/accounts/ServiceLoginAuth
-      gmail_locationconv
-      if (%gmail_debug) { echo -tng @gmail_debug %gmail_login - cookie expired, relogging }
-      gmail_sockclose
-      return
-    }
     gmail_setcookie %temp
   }
 
@@ -377,6 +370,13 @@ on 1:sockclose:gmail: { gmail_sockclose }
 
 alias gmail_sockclose {
   sockclose gmail
+
+  var %gmail_cookiecount = $hget(gmailcookies,0).item
+  if (%gmail_cookiecount == 0) {
+    %gmail_location = https://mail.google.com/accounts/ServiceLoginAuth
+    gmail_locationconv
+  }
+
   if ($len(%gmail_location) > 0) {
     if (%gmail_debug) {
       inc %gmail_login 1

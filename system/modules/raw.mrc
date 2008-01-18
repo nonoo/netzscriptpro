@@ -471,6 +471,6 @@ raw *:*no message delivered*: { halt }
 raw *:*is connecting from*: { echo %whois_ablak  $+ $color(gray) $+ valós host: $6- | halt }
 on ^1:ERROR:*server full*: /echo $color(info2) -sn *** A szerver teljesen megtelt felhasználókkal! Próbálj másikat!
 raw 302:*: halt
-raw 020:*: { echo $color(info) -stng *** Kérlek várj amíg a szerver feldolgozza a kapcsolódási kérelmed... | halt }
+raw 020:*: { echo $color(info) -stng *** Kérlek várj amíg a szerver feldolgozza a kapcsolódási kérelmed (ez több percig is eltarthat)... | halt }
 raw 042:*: { echo $color(info) -stng *** A szerver által adott egyedi azonosítód: $2 | halt }
 ;END
