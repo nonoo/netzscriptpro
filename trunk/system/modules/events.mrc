@@ -272,7 +272,7 @@ on ^*:notice:*:?: {
 ;DCC FLOOD DETEKT
 ctcp ^1:DCC:*: {
   if (%flooddetekt) {
-    if ($2 = CHAT) {
+    if ($2 == CHAT) {
       var %kutya = $hget(flood,$cid $+ $nick $+ chats)
       if (!%kutya) { %kutya = 1 }
       else { inc %kutya 1 }
@@ -285,7 +285,7 @@ ctcp ^1:DCC:*: {
       }
       .hadd -u $+ %time_chat flood $cid $+ $nick $+ chats %kutya
     }
-    if ($2 = SEND) {
+    if ($2 == SEND) {
       var %kutya = $hget(flood,$cid $+ $nick $+ sends)
       if (!%kutya) { %kutya = 1 }
       else { inc %kutya 1 }
@@ -297,6 +297,27 @@ ctcp ^1:DCC:*: {
         halt
       }
       .hadd -u $+ %time_send flood $cid $+ $nick $+ sends %kutya
+    }
+  }
+  if ($2 == SEND) {
+    if (!$appactive) {
+      if (%flash_priviknel) { /flash DCC }
+      if (%beep_priviknel) {
+        if ($os == 95) || ($os == 98) || ($os == me) { /beep 2 100 }
+        else {
+          if (!%beep_priviknel_winamp) || ($dll(system/netz.dll, winamp, GetCurrentWinampSong) == 0) { /beep 2 100 }
+          else {
+            if ($dll(system\netz.dll, winamp, isplaying)) { /beep 2 100 }
+          }
+        }
+      }
+      if (%pcspeaker_priviknel) { /netzbeep query }
+      if (%tooltip_dccnel) && (!$appactive) {
+        var %tip $tip(dccget_ $+ $nick, DCC GET: $nick, $nick $laz($3) $+  $3 fájlt szeretné elküldeni neked, $null, system\img\query.ico, $null, /dcc get $nick $3)
+      }
+    }
+    if ($tip(dccget_ $+ $nick)) && (!%tip) && (!$appactive) {
+      var %tip $tip(dccget_ $+ $nick, DCC GET: $nick, $nick $laz($3) $+  $3 fájlt szeretné elküldeni neked, $null, system\img\query.ico, $null, /dcc get $nick $3)
     }
   }
 }
@@ -1086,21 +1107,21 @@ on 1:FILERCVD:*.*: {
 on 1:FILESENT:*: {
   /echo $color(info) -atg *** Átment $laz($nopath($filename)) $nopath($filename) $+  $+ $color(nick) $nick $+  $+ $color(info) $+ $toldalek($nick,-nak,-nek) $+ !
   if (!$appactive) && (%tooltip_dccnel) {
-    var %tip $tip(dccsent_ $+ $nick, DCC: $nick, Átment $laz($nopath($filename)) $nopath($filename), $null, system\img\dcc.ico )
+    var %tip $tip(dccsent_ $+ $nick, DCC SEND: $nick, Átment $laz($nopath($filename))  $+ $nopath($filename), $null, system\img\dcc.ico )
   }
   halt
 }
 on 1:SENDFAIL:*: {
   echo $color(info2) -atg *** Nem sikerült elküldeni $+  $+ $color(nick) $nick $+  $+ $color(info2) $+ $toldalek($nick,-nak,-nek) $laz($nopath($filename)) $nopath($filename) fájlt!
   if (!$appactive) && (%tooltip_dccnel) {
-    var %tip $tip(dccsendfail_ $+ $nick, DCC hiba: $nick, Nem sikerült elküldeni $+  $+ $color(nick) $nick $+  $+ $toldalek($nick,-nak,-nek) $laz($nopath($filename)) $nopath($filename) fájlt!, $null, system\img\warning.ico )
+    var %tip $tip(dccsendfail_ $+ $nick, DCC hiba: $nick, Nem sikerült elküldeni $nick $+ $toldalek($nick,-nak,-nek) $laz($nopath($filename))  $+ $nopath($filename) fájlt!, $null, system\img\warning.ico )
   }
   halt
 }
 on 1:GETFAIL:*: {
   echo $color(info2) -atg *** Nem sikerült fogadni $laz($nopath($filename)) $nopath($filename) fájlt $+  $+ $color(nick) $nick $+  $+ $color(info2) $+ $toldalek($nick,-tól,tõl) $+ !
   if (!$appactive) && (%tooltip_dccnel) {
-    var %tip $tip(dccgetfail_ $+ nick, DCC hiba: $nick, Nem sikerült fogadni $laz($nopath($filename)) $nopath($filename) fájlt $nick $+ $toldalek($nick,-tól,tõl) $+ !, $null, system\img\warning.ico )
+    var %tip $tip(dccgetfail_ $+ nick, DCC hiba: $nick, Nem sikerült fogadni $laz($nopath($filename))  $+ $nopath($filename) fájlt $nick $+ $toldalek($nick,-tól,tõl) $+ !, $null, system\img\warning.ico )
   }
   halt
 }
