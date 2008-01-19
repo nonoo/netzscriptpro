@@ -508,9 +508,7 @@ on ^1:nick: {
   ; idlecheckben atirjuk az adatait
   if ($hget(lastmsg,$cid $+ $nick)) { .hadd lastmsg $cid $+ $newnick $hget(lastmsg,$cid $+ $nick) }
   /wndback $newnick
-  if ( $nick = $me ) {
-    ;/aecho $color(join) -tn --nostatus *** Az új nicked: $+ $color(highlight) $newnick
-    ;if ($active !ischan) { echo $color(join) -atn *** Az új nicked: $+ $color(highlight) $newnick }
+  if ($nick == $me) {
     /aecho $color(join) -tn *** Az új nicked: $+ $color(highlight) $newnick
     if ($newnick == %orig_nick) && ($timer(OrigNick $+ $cid).type) { /echo $color(info) -atng *** OrigNick: $newnick visszaszerezve. | .timerOrigNick $+ $cid off | halt }
     halt
@@ -589,7 +587,7 @@ on ^1:nick: {
 on ^1:PART:*: {
   /haltdef
   if ($nick = $me) { /echo $color(part) -t $chan *** Kiléptél a csatiról. | /halt }
-  if (($nick($chan,0) = 2) && ($me !isop $chan)) { /echo $color(info) -st *** OpHop a $chan csatin | .timer 1 0 /hop $chan 1 | /halt }
+  if (%ophop) && (($nick($chan,0) = 2) && ($me !isop $chan)) { /echo $color(info) -st *** OpHop a $chan csatin | .timer 1 0 /hop $chan 1 | /halt }
   if ($1) {
     /echo $color(part) -tn $chan *** $+ $color(gray) $nick ( $+ $address $+ ) kilépett a csatiról. ( $+ $color(other) $+ $1- $+ )
   }
@@ -614,7 +612,7 @@ on ^1:QUIT: {
       if ($nick ison $chan(%i)) {
         /echo $color(quit) -tn $chan(%i) *** $+ $color(gray) $nick ( $+ $address $+ ) kilépett az ircrõl. %rizon
         ; ophop
-        if ($chan(%i) != &servers) && ($nick($chan(%i),0) = 2) && ($me !isop $chan(%i)) { /echo $color(info) -st *** OpHop a $chan(%i) csatin | /hop $chan(%i) 1 }
+        if (%ophop) && ($chan(%i) != &servers) && ($nick($chan(%i),0) = 2) && ($me !isop $chan(%i)) { /echo $color(info) -st *** OpHop a $chan(%i) csatin | /hop $chan(%i) 1 }
       }
       dec %i 1
     }
@@ -1095,7 +1093,7 @@ on 1:FILESENT:*: {
 on 1:SENDFAIL:*: {
   echo $color(info2) -atg *** Nem sikerült elküldeni $+  $+ $color(nick) $nick $+  $+ $color(info2) $+ $toldalek($nick,-nak,-nek) $laz($nopath($filename)) $nopath($filename) fájlt!
   if (!$appactive) && (%tooltip_dccnel) {
-    var %tip $tip(dccsendfail_ $+ $nick, DCC hiba: $nick, Nem sikerült elküldeni $+  $+ $color(nick) $nick $+ $toldalek($nick,-nak,-nek) $laz($nopath($filename)) $nopath($filename) fájlt!, $null, system\img\warning.ico )
+    var %tip $tip(dccsendfail_ $+ $nick, DCC hiba: $nick, Nem sikerült elküldeni $+  $+ $color(nick) $nick $+  $+ $toldalek($nick,-nak,-nek) $laz($nopath($filename)) $nopath($filename) fájlt!, $null, system\img\warning.ico )
   }
   halt
 }

@@ -19,6 +19,7 @@ raw 305:*: {
   aecho $color(info) -tng *** Away kikapcsolva.
   unset %away_memoria_ $+ $cid
   unset %away_memoria_msg_ $+ $cid
+  unset %away_memoria_onick_ $+ $cid
   unset %autoaway
   if (%awaynick_hasznalat) {
     if (%away_eredeti_nick === $me) { .orignick off }
@@ -45,12 +46,14 @@ raw 305:*: {
 raw 306:*: {
   aecho $color(info) -tng *** Away bekapcsolva.
   if (%awaynick_hasznalat) {
-    %away_eredeti_nick = $me
+    if (%away_memoria) && (%away_memoria_ [ $+ [ $cid ] ]) { %away_eredeti_nick = %away_memoria_onick_ [ $+ [ $cid ] ] }
+    else { %away_eredeti_nick = $me }
+    .orignick off
     if (%awaynick_kisbetusre) {
-      .nick $lower(%away_eredeti_nick)
+      .timer 1 0 .nick $lower(%away_eredeti_nick)
     }
     else {
-      .nick %awaynick
+      .timer 1 0 .nick %awaynick
     }
   }
   var %awaypagermsg
@@ -95,6 +98,7 @@ raw 306:*: {
   if (%away_memoria) {
     /set %away_memoria_ $+ $cid 1
     /set %away_memoria_msg_ $+ $cid $awaymsg
+    /set %away_memoria_onick_ $+ $cid %away_eredeti_nick
   }
   unset %away_silent
   halt
