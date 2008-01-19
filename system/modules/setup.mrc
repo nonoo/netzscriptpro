@@ -224,6 +224,7 @@ on *:DIALOG:setupdialog:init:*: {
   if (%netsplit_detect) { did -c $dname 271 | did -e $dname 272 }
   if (%netsplit_detect_onlyhu) { did -c $dname 272 }
   if (%auto_orignick) { did -c $dname 315 }
+  if (%ophop) { did -c $dname 320 }
   ;END
 
   ;DESIGN3
@@ -990,6 +991,8 @@ on *:DIALOG:setupdialog:sclick:3: {
   else { %netsplit_detect_onlyhu = 0 }
   if ($did(315).state) { %auto_orignick = 1 }
   else { %auto_orignick = 0 }
+  if ($did(320).state) { %ophop = 1 }
+  else { %ophop = 0 }
   ;END
 
   ;DESIGN3

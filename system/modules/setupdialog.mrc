@@ -315,9 +315,11 @@ dialog setupdialog {
   check "Priviknél", 311, 204 136 108 17, tab 306
   check "Email érkezésekor", 312, 22 154 108 17, tab 306
   check "DCC-nél", 313, 204 154 108 17, tab 306
-  box " Automata OrigNick ", 314, 15 350 308 31, tab 251
-  check "Aktív", 315, 129 360 88 17, tab 251
+  box " Automata OrigNick ", 314, 15 350 122 35, tab 251
+  check "Aktív", 315, 25 364 88 17, tab 251
   check "Page-nél", 316, 22 170 108 17, tab 306
   check "Notice-nál", 317, 204 170 108 17, tab 306
   check "Away memória használata", 318, 14 139 154 17, tab 2
+  box " OpHop ", 319, 211 350 112 35, tab 251
+  check "Aktív", 320, 221 364 88 17, tab 251
 }

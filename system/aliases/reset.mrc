@@ -243,6 +243,7 @@
   ; 2.105
   %auto_orignick = 1
   %away_memoria = 1
+  %ophop = 1
 
   /echo $color(info) -atng *** Reset done.
 }
@@ -454,6 +455,7 @@
   if (%tooltip_pagenel == $null) { %tooltip_pagenel = 1 }
   if (%tooltip_noticenal == $null) { %tooltip_noticenal = 1 }
   if (%away_memoria == $null) { %away_memoria = 1 }
+  if (%ophop == $null) { %ophop = 1 }
 }
 ;END
 
