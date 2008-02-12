@@ -46,6 +46,7 @@ raw 305:*: {
 raw 306:*: {
   aecho $color(info) -tng *** Away bekapcsolva.
   if (%awaynick_hasznalat) {
+    ; ha aktiv az away memoria es jelenleg away memoria szerinti awaybe megyunk (pl. disconnect utani kapcsolodasnal)
     if (%away_memoria) && (%away_memoria_ [ $+ [ $cid ] ]) { %away_eredeti_nick = %away_memoria_onick_ [ $+ [ $cid ] ] }
     else { %away_eredeti_nick = $me }
     .orignick off
