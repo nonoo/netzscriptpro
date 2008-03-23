@@ -239,6 +239,7 @@ on *:DIALOG:setupdialog:init:*: {
   if (%tooltip_dccnel) { did -c $dname 313 }
   if (%tooltip_pagenel) { did -c $dname 316 }
   if (%tooltip_noticenal) { did -c $dname 317 }
+  if (%tooltip_multiline) { did -c $dname 321 }
   ;END
 
   ;BEEP
@@ -1037,6 +1038,8 @@ on *:DIALOG:setupdialog:sclick:3: {
   else { %tooltip_pagenel = 0 }
   if ($did(317).state) { %tooltip_noticenal = 1 }
   else { %tooltip_noticenal = 0 }
+  if ($did(321).state) { %tooltip_multiline = 1 }
+  else { %tooltip_multiline = 0 }
   ;END
 
   ;BEEP

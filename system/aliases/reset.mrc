@@ -125,7 +125,7 @@
   %autoupdate = 1
   %update_url = http://netz.nonoo.hu/update/
   %dl_hotlink = 1
-  %dl_hotlink_kiterjesztesek = *.bz2 *.zip *.gz *.mp3 *.tar *.tar.bz2 *.wav *.txt *.nfo *.rar *.diz *.avi *.mpg *.mpeg *.wmv *.asf *.mov *.doc *.mid *.pdf *.ps *.ini *.exe *.ace *.mpe *.flac *.m4a
+  %dl_hotlink_kiterjesztesek = *.bz2 *.zip *.gz *.mp3 *.tar *.tar.bz2 *.wav *.nfo *.rar *.diz *.avi *.mpg *.mpeg *.wmv *.asf *.mov *.doc *.mid *.pdf *.ps *.ini *.exe *.ace *.mpe *.flac *.m4a
   %dl_downloaddir = C:\Downloads\
   %dl_letoltott_adatmennyiseg = 0
   %flash_priviknel = 1
@@ -244,6 +244,8 @@
   %auto_orignick = 1
   %away_memoria = 1
   %ophop = 1
+  ; 2.106
+  %tooltip_multiline = 1
 
   /echo $color(info) -atng *** Reset done.
 }
@@ -252,7 +254,7 @@
 ;VARCHECK
 /varcheck {
   ; vegignezi a netz valtozoit es ha valamelyik hianyzik, default ertekre allitja
-  %ver = 2.105
+  %ver = 2.106
   %update_php = update.ini
   if (%nemvoltinditva == $null) { %nemvoltinditva = 0 }
   if (%url == $null) { %url = netz.nonoo.hu }
@@ -355,7 +357,7 @@
   if (%autoupdate == $null) { %autoupdate = 1 }
   if (%update_url == $null) { %update_url = http://netz.nonoo.hu/update/ }
   if (%dl_hotlink == $null) { %dl_hotlink = 1 }
-  if (%dl_hotlink_kiterjesztesek == $null) { %dl_hotlink_kiterjesztesek = *.bz2 *.zip *.gz *.mp3 *.tar *.tar.bz2 *.wav *.txt *.nfo *.rar *.diz *.avi *.mpg *.mpeg *.wmv *.asf *.mov *.doc *.mid *.pdf *.ps *.ini *.exe *.ace *.mpe *.flac *.m4a }
+  if (%dl_hotlink_kiterjesztesek == $null) { %dl_hotlink_kiterjesztesek = *.bz2 *.zip *.gz *.mp3 *.tar *.tar.bz2 *.wav *.nfo *.rar *.diz *.avi *.mpg *.mpeg *.wmv *.asf *.mov *.doc *.mid *.pdf *.ps *.ini *.exe *.ace *.mpe *.flac *.m4a }
   if (%dl_downloaddir == $null) { %dl_downloaddir = C:\Downloads\ }
   if (%dl_letoltott_adatmennyiseg == $null) { %dl_letoltott_adatmennyiseg = 0 }
   if (%flash_priviknel == $null) { %flash_priviknel = 1 }
@@ -456,6 +458,8 @@
   if (%tooltip_noticenal == $null) { %tooltip_noticenal = 1 }
   if (%away_memoria == $null) { %away_memoria = 1 }
   if (%ophop == $null) { %ophop = 1 }
+  ; 2.106
+  if (%tooltip_multiline == $null) { %tooltip_multiline = 1 }
 }
 ;END
 

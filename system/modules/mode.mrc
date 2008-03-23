@@ -262,27 +262,27 @@ on ^1:UNBAN:*: {
 ;ONBAN
 on ^1:BAN:*: {
   /haltdef
-  if ($nick = $me) { /echo $color(kick) -tn $chan *** Bannoltad $laz($banmask) $+  $+ $color(other) $banmask hostot! }
+  if ($nick = $me) { /echo $color(kick) -tn $chan *** Banoltad $laz($banmask) $+  $+ $color(other) $banmask hostot! }
   else { 
-    /echo $color(kick) -tn $chan *** $+ $color(other) $nick ( $+ $address $+ ) bannolta $laz($banmask) $+  $+ $color(other) $banmask hostot!
-    ; ha minket bannoltak
+    /echo $color(kick) -tn $chan *** $+ $color(other) $nick ( $+ $address $+ ) banolta $laz($banmask) $+  $+ $color(other) $banmask hostot!
+    ; ha minket banoltak
     if ($me isop $chan) {
       if ($banmask iswm $address($me,5)) {
         .timer 1 0 /mode $chan -bo $banmask $nick
-        /echo $color(other) -tg $chan *** $nick bannolt téged! (F8 - KickBan $nick $+ )
+        /echo $color(other) -tg $chan *** $nick banolt téged! (F8 - KickBan $nick $+ )
         .hdel data $cid $+ doit $+ $replace($active,Status Window,status)
         .hadd data $cid $+ doit $+ $replace($active,Status Window,status) /kickban $chan $nick
       }
       elseif ($bnick = $me) {
         .timer 1 0 /mode $chan -bo $banmask $nick
-        /echo $color(other) -tg $chan *** $nick bannolt téged! (F8 - KickBan $nick $+ )
+        /echo $color(other) -tg $chan *** $nick banolt téged! (F8 - KickBan $nick $+ )
         .hdel data $cid $+ doit $+ $replace($active,Status Window,status)
         .hadd data $cid $+ doit $+ $replace($active,Status Window,status) /kickban $chan $nick
       }
     }
     else {
       if ($banmask iswm $address($me,5)) || ($bnick = $me) {
-        /echo $color(other) -tg $chan *** $nick bannolt téged!
+        /echo $color(other) -tg $chan *** $nick banolt téged!
       }
     }
   }
@@ -292,10 +292,10 @@ on ^1:BAN:*: {
     else { inc %kutya 1 }
     if (%kutya >= %max_ban) {
       if (%flooddetekt_csatikra) && ($chan isin %flooddetekt_csatik) {
-        echo $color(other) -tg $chan *** $nick massbannolt!
+        echo $color(other) -tg $chan *** $nick massbanolt!
       }
       if (!%flooddetekt_csatikra) {
-        echo $color(other) -tg $chan *** $nick massbannolt!
+        echo $color(other) -tg $chan *** $nick massbanolt!
       }
 
       if (%flooddetekt_csatikra) && ($chan !isin %flooddetekt_csatik) {

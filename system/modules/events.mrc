@@ -214,13 +214,13 @@ on ^*:notice:*:*: {
             }
           }
           if (%pcspeaker_priviknel) { /netzbeep highlight }
-          if (%tooltip_noticenal) && (!$appactive) {
+          if (%tooltip_noticenal) && (!$appactive) && (($1 != DCC) && ($2 != Send)) {
             var %tip $tip(notice_ $+ $nick, Notice: $nick, $1-, $null, system\img\notice.ico, $null, /q $nick )
           }
         }
       }
     }
-    if ($tip(notice_ $+ $nick)) && (!%tip) && (!$appactive) {
+    if ($tip(notice_ $+ $nick)) && (!%tip) && (!$appactive) && (%tooltip_multiline) {
       var %tip $tip(notice_ $+ $nick, Notice: $nick, $1-, $null, system\img\notice.ico, $null, /q $nick )
     }
     ; lastmsg (idle detekt)
@@ -840,7 +840,7 @@ on ^1:ACTION:*:#:{
       }
     }
   }
-  if ($tip(highlight_ $+ $chan)) && (!%tip) {
+  if ($tip(highlight_ $+ $chan)) && (!%tip) && (%tooltip_multiline) {
     var %tip $tip(highlight_ $+ $chan, Highlight: $chan,  $+ $color(action) $+ * $nick %tempszoveg, $null, system\img\chanmsg.ico, $null, /j $chan )
   }
   ; lastmsg (idle detekt)
@@ -897,7 +897,7 @@ on ^1:ACTION:*:?:{
       var %tip $tip(highlight_ $+ $nick, Query: $nick,  $+ $color(action) $+ * $nick %tempszoveg, $null, system\img\query.ico, $null, /q $nick )
     }
   }
-  if ($tip(highlight_ $+ $nick)) && (!%tip) && (!$appactive) {
+  if ($tip(highlight_ $+ $nick)) && (!%tip) && (!$appactive) && (%tooltip_multiline) {
     var %tip $tip(highlight_ $+ $nick, Query: $nick,  $+ $color(action) $+ * $nick %tempszoveg, $null, system\img\query.ico, $null, /q $nick )
   }
   ; lastmsg (idle detekt)
@@ -971,7 +971,7 @@ on ^1:TEXT:*:#:{
     }
   }
   else { /echo $color(normal) -tm $chan %mas_bal $+  $+ $color(nick) $+ %plusz $+ $nick $+ %mas_jobb $+  $+ $color(normal) %tempszoveg }
-  if ($tip(highlight_ $+ $chan)) && (!%tip) {
+  if ($tip(highlight_ $+ $chan)) && (!%tip) && (%tooltip_multiline) {
     var %tip $tip(highlight_ $+ $chan, Highlight: $chan, %mas_bal $+ $nick $+ %mas_jobb $+  %tempszoveg, $null, system\img\chanmsg.ico, $null, /j $chan )
   }
   ; lastmsg (idle detekt)
@@ -1074,7 +1074,7 @@ on ^1:TEXT:*:?:{
       }
     }
   }
-  if ($tip(query_ $+ $nick)) && (!%tip) && (!$appactive) {
+  if ($tip(query_ $+ $nick)) && (!%tip) && (!$appactive) && (%tooltip_multiline) {
     var %tip $tip(query_ $+ $nick, Query: $nick, %mas_bal $+ $nick $+ %mas_jobb $+  %tempszoveg, $null, system\img\query.ico, $null, /q $nick )
   }
   ; lastmsg (idle detekt)

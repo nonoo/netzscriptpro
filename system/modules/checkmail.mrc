@@ -342,7 +342,7 @@ on 1:sockread:gmail: {
 
   ; ez a szoveg a rendes gmail oldalon van, ha ez jon,
   ; lekerjuk a javascript oldalt amiben benne lesz az olvasatlan levelek szama
-  if (indexOf $+ $chr(40) $+ 'nocheckbrowser' $+ $chr(41) isin %temp) {
+  if (indexOf $+ $chr(40) $+ "nocheckbrowser" $+ $chr(41) isin %temp) {
     %gmail_location = http://mail.google.com/mail/?ik=&search=inbox&view=tl&start=0&init=1&ui=1&zx=&hl=en
     gmail_locationconv
     if (%gmail_debug) { echo -tng @gmail_debug %gmail_login - getting number of unread mails }

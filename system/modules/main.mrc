@@ -1,6 +1,6 @@
 ;  This file is part of netZ Script Pro.
 ;
-;  netZ Script Pro 2 © Nonoo 1999-2007
+;  netZ Script Pro 2 © Nonoo 1999-2008
 ;  http://netz.nonoo.hu/
 ;
 ;  netZ Script Pro is free software; you can redistribute it and/or modify

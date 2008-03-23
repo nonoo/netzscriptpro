@@ -443,7 +443,7 @@ raw 404:* {
       echo $color(info2) -atng *** $az($2) $2 csati moderált, nem tudsz üzenni rá!
     }
     else {
-      echo $color(info2) -atng *** Nem tudsz üzenni $laz($2) $2 csatira! Valószínûleg moderált (és nincsen voiceod), nem vagy bennt a csatin vagy bannolva vagy.
+      echo $color(info2) -atng *** Nem tudsz üzenni $laz($2) $2 csatira! Valószínûleg moderált (és nincsen voiceod), nem vagy bennt a csatin vagy banolva vagy.
     }
   }
   halt
@@ -464,7 +464,7 @@ raw 465:* { echo $color(info2) -atng *** Klineod van ezen a szerveren. Próbálozz
 raw 471:* { echo $color(info2) -atng *** $az($2) $2 csatornára nem férsz be a limit miatt! (+l - limit) | halt }
 raw 472:* { echo $color(info2) -atng *** Hibás mode parancs! | halt }
 raw 473:* { echo $color(info2) -atng *** $az($2) $2 csatira csak meghívóval lehet belépni. (+i - invite only) | /halt }
-raw 474:* { echo $color(info2) -atng *** Nem tudsz belépni $laz($2) $2 csatira mert bannolva vagy! | /halt }
+raw 474:* { echo $color(info2) -atng *** Nem tudsz belépni $laz($2) $2 csatira mert banolva vagy! | /halt }
 raw 475:* { echo $color(info2) -atng *** $az($2) $2 csatira csak jelszóval léphetsz be! Ha tudod a jelszót írd be: /join $2 [jelszó] | halt }
 raw 481:*:{ echo $color(info2) -atng *** Nem vagy ircop módban! | /halt }
 raw 502:*:{ echo $color(info2) -atng *** Nem tudod más felhasználók modeját állítani! | /halt }

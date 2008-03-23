@@ -310,7 +310,7 @@ dialog setupdialog {
   text "Ezeken a csatikon nincs kijelzés (vesszõvel elválasztva):", 305, 26 133 270 17, tab 218
   edit "", 308, 25 150 288 20, tab 218 disable
   text "Színtéma váltás:", 228, 26 355 100 17, tab 218
-  box " Tooltipek ", 309, 16 118 306 74, tab 306
+  box " Tooltipek ", 309, 16 118 306 90, tab 306
   check "Highlight esetén", 310, 22 136 108 17, tab 306
   check "Priviknél", 311, 204 136 108 17, tab 306
   check "Email érkezésekor", 312, 22 154 108 17, tab 306
@@ -322,4 +322,5 @@ dialog setupdialog {
   check "Away memória használata", 318, 14 139 154 17, tab 2
   box " OpHop ", 319, 211 350 112 35, tab 251
   check "Aktív", 320, 221 364 88 17, tab 251
+  check "Többsoros tooltipek", 321, 22 188 138 17, tab 306
 }
