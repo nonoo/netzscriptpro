@@ -1,3 +1,10 @@
+[2.106] 2008. 03. 22. 20:30
+- ban nem hosszú n, javítva mindenhol (pl. bannolás -> banolás) (köszi rulez)
+- kapcsolható a setupból: ha újabb üzenet/notice/highlight érkezik és van már
+  neki nyitott tooltip, akkor hozzáadódik (de csak mindig a legfelsõhöz tud
+  hozzáadódni, mirc dolog)
+- gmail protokoll változott, újra mûködik az email check
+
 [2.105] 2008. 02. 12. 14:30
 - orignicket ezentúl automatára is lehet kapcsolni (alapból az) (köszi Zoo)
 - tooltip állítási lehetõségek kibõvítve
