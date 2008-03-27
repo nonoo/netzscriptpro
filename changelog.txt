@@ -1,3 +1,9 @@
+[2.107]
+- ha noticet küldtünk valakinek és volt nyitva vele query, 2x küldte
+  el azt - javítva
+- gmail check a magyar nyelvu gmailre nem mûködött, erre Zoo hívta fel a
+  figyelmem - javítva
+
 [2.106] 2008. 03. 22. 20:30
 - ban nem hosszú n, javítva mindenhol (pl. bannolás -> banolás) (köszi rulez)
 - kapcsolható a setupból: ha újabb üzenet/notice/highlight érkezik és van már
