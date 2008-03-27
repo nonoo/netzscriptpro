@@ -221,6 +221,7 @@
     echo $color(info2) -atng *** /notice hiba: kevés paraméter! használat: /notice [nick] [msg]
     return
   }
+  .notice $1-
   var %i 1
   :loop
   ; ha van megfelelo ablak akkor abba irjuk a noticet
@@ -228,7 +229,6 @@
   if (%i >= $query(0)) && (%i >= $chat(0)) {
     ; egyebkent meg az aktiv ablakba irjuk
     /echo $color(notice) -atngm -n-o-t-i-c-e-> - $+ $1 $+ - $2-
-    .notice $1-
     return
   }
   inc %i
