@@ -414,10 +414,10 @@ raw 332:*: {
   ; &serversel nem szarakodunk
   if ($2 == &servers) { halt }
   .hadd data $cid $+ channeltopic $+ $2 $3-
-  .timertopic $+ $2 $+ $cid 1 5 /echo $color(highlight) -tn $2  $+ $color(topic) $+ *** A csati topicja: ' $+ $color(highlight) $+ $3- $+ '
+  .timertopic $+ $2 $+ $cid 1 5 /echo $color(highlight) -tn $2  $+ $color(topic) $+ *** A csati topicja: ' $+ $color(highlight) $+  $+ $3- $+ '
   halt
 }
-raw 333:*: { .timertopic $+ $2 $+ $cid off | /echo $color(highlight) -tn $2  $+ $color(topic) $+ *** A csati topicja: ' $+ $color(highlight) $+ $hget(data,$cid $+ channeltopic $+ $2) $+  $+ $color(topic) $+ ' * beállítója: $3 @ $asctime($calc($4-)) | halt }
+raw 333:*: { .timertopic $+ $2 $+ $cid off | /echo $color(highlight) -tn $2  $+ $color(topic) $+ *** A csati topicja: ' $+ $color(highlight) $+  $+ $hget(data,$cid $+ channeltopic $+ $2) $+  $+ $color(topic) $+ ' * beállítója: $3 @ $asctime($calc($4-)) | halt }
 raw 341:*: { echo $color(info) -atng *** Meghívás elküldve $+ $color(nick) $2 $+  $+ $color(info) $+ $toldalek($nick,-nak,-nek) a $3 csatira! | halt }
 raw 353:*: { halt }
 raw 366:*: { halt }

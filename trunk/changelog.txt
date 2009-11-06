@@ -1,8 +1,10 @@
-[2.107]
+[2.107] 2009. 11.
+- A csati topicja: '60gb-s, 160 helyett ezt írta - javítva (köszi Zoo)
 - ha noticet küldtünk valakinek és volt nyitva vele query, 2x küldte
   el azt - javítva
-- gmail check a magyar nyelvu gmailre nem mûködött, erre Zoo hívta fel a
-  figyelmem - javítva
+- gmail check javítva
+- sztaki szótár javítva
+- új, 6.35-ös mirc.exe
 
 [2.106] 2008. 03. 22. 20:30
 - ban nem hosszú n, javítva mindenhol (pl. bannolás -> banolás) (köszi rulez)

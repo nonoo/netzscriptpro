@@ -336,7 +336,8 @@ on 1:sockopen:szotar: {
   %resfigy = 0
   /echo $color(background) -ang -
   /echo $color(info) -atng *** $+ $color(nick) %nyelvfrom $+ 2 $+ %nyelvto  $+ $color(info) $+ listázás $+ : $+ $color(nick) %szo
-  sockwrite -n szotar GET http://szotar.sztaki.hu/dict_search.php?L= $+ %nyelvfrom $+ : $+ %nyelvto $+ : $+ %szotar $+ &S=W&M=3&MR=30&O=HUN&wap_exp=1&C=1&W= $+ $replace(%szo,$chr(32),+)
+  sockwrite -n szotar GET http://szotar.sztaki.hu/dict_search.php?L= $+ %nyelvfrom $+ : $+ %nyelvto $+ : $+ %szotar $+ &S=W&M=3&wap_exp=1&W= $+ $replace(%szo,$chr(32),+) HTTP/1.1
+  sockwrite -n szotar Host: szotar.sztaki.hu:80
   sockwrite -n szotar $crlf
 }
 

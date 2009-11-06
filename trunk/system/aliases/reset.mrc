@@ -135,7 +135,7 @@
   %pcspeaker_priviknel = 1
   %telnetcrlf = 1
   %telnetlecho = 1
-  %emailezo_prog = $null
+  %emailezo_prog = https://mail.google.com/mail/#inbox
   %checkmail = 0
   %checkmail_szerver = freemail.hu
   %checkmail_port = 110

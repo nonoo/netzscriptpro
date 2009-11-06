@@ -225,7 +225,7 @@
   var %i 1
   :loop
   ; ha van megfelelo ablak akkor abba irjuk a noticet
-  if ( $chat(%i) == $remove($1,=) ) || ( $query(%i) == $1 ) { /echo $color(notice) -tm $1 -n-o-t-i-c-e-> $2- | .notice $1- }
+  if ( $chat(%i) == $remove($1,=) ) || ( $query(%i) == $1 ) { /echo $color(notice) -tnm $1 -n-o-t-i-c-e-> $2- | .notice $1- }
   if (%i >= $query(0)) && (%i >= $chat(0)) {
     ; egyebkent meg az aktiv ablakba irjuk
     /echo $color(notice) -atngm -n-o-t-i-c-e-> - $+ $1 $+ - $2-
