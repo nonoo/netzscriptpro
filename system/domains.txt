@@ -1,0 +1,73 @@
+du Egyetem/Iskola
+et Internic Domain
+rg Non-profit szervezet
+hu Magyarország
+de Németország
+es Spanyolország	
+it Olaszország
+jp Japán
+ar Argentina
+se Svédország
+au Ausztrália
+mx Mexico
+fr Franciaország
+uk Nagy-Britannia
+ca Kanada
+br Brazília
+nl Hollandia
+ch Svájc
+at Ausztria
+dk Dánia
+gr Görögország
+pl Lengyelország
+be Belgium
+sk Szlovákia
+ro Románia
+no Norvégia
+cl Chile
+pt Portuglia
+my Malayzia
+fi Finnország
+il Izrael
+uy Uruguay
+ru Oroszország
+cy Ciprus
+cz Cseh Köztársaság
+nz Új-Zéland
+is Izland
+za Dél Afrika
+th Thaiföld
+sa Szaud-Arábia
+yu Jugoszlávia
+sg Szingapur
+id Indonézia
+co Kolumbia
+pe Peru
+ie Irország
+mk Macedónia
+lt Litvánia
+tw Taiwan
+si Szlovénia
+us USA
+hr Horvátország
+mu Mauritius
+bg Bulgária
+tr Törökország
+gt Guatemala
+ec Ecuador
+do Dominikai Köztársaság
+ba Bosznia & Hercegovina
+eg Egyiptom
+bn Brunei Darussalam
+lv Litvánia
+ni Nicaragua
+ag Antigua & Barbuda
+cu Kuba
+nu Niue
+kw Kuwait
+mg Magadaszkár
+lb Libanon
+sm San Marino
+ua Ukrajna
+tt Trinidad & Tobago
+lu Luxemburg
