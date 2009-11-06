@@ -8,6 +8,7 @@
 - éjfélkor minden ablakba kiíródik egy napváltást jelzõ sor, ez a logba is
   bekerül
 - /viewlog parancsnak már megadható, hogy milyen csati logját nyissa meg
+- új verziójú OpenSSL DLL-ek
 
 [2.106] 2008. 03. 22. 20:30
 - ban nem hosszú n, javítva mindenhol (pl. bannolás -> banolás) (köszi rulez)
