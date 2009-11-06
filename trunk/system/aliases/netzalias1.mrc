@@ -760,10 +760,14 @@
 
 ;VIEWLOG
 /viewlog {
+  var %csati #
+  if ( $1 != $null ) {
+    %csati = $1
+  }
   ;megnezzuk hogy letezik-e a log
-  if ($exists($logdir $+ # $+ .log)) { .timer 1 0 /run $logdir $+ # $+ .log | return }
+  if ($exists($logdir $+ %csati $+ .log)) { .timer 1 0 /run $logdir $+ %csati $+ .log | return }
   ;ha nem, megprobaljuk megnyitni ugy hogy a network is benne van a pathban
-  if ($exists($logdir $+ $network $+ \ $+ # $+ .log)) { .timer 1 0 /run $logdir $+ $network $+ \ $+ # $+ .log | return }
+  if ($exists($logdir $+ $network $+ \ $+ %csati $+ .log)) { .timer 1 0 /run $logdir $+ $network $+ \ $+ %csati $+ .log | return }
   /echo $color(info2) -atng *** /viewlog hiba: az aktív ablakhoz nincs log fájl!
 }
 ;END
