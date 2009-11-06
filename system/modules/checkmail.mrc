@@ -296,6 +296,7 @@ alias gmail_setcookie {
   var %cc $pos($1-,$chr(59),1)
   if (%cc == $null) { %cc = $calc($len($1-) + 1) }
   var %cookiedata = $mid($1-,$calc(%ce + 1),$calc( %cc - %ce - 1 ) )
+  var %cookiepath
 
   %cs = $calc($pos($1-,;Path=,1) + 6)
   if (%cs == 6) {

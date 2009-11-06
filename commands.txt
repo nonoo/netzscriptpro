@@ -150,7 +150,7 @@ vagy on-t, vagy offot írsz oda.
 /sakk [nick] - sakkozás
 /amoba [nick] - amõbázás
 /domain [domain(pl. hu)] - országkód visszafejtés
-/viewlog - aktív csati logjának megnyitása
+/viewlog (csati) - megadott/aktív csati logjának megnyitása
 /job (dátum (pl. 2007/11/06, 11/06)) vagy holnap vagy (nap(ok) neve(i), retrig, vesszõvel elválasztva)) [idõ (pl. 0:25)] [parancs] - parancs végrehajtása a megadott idõpontban, ezeket elmenti, újraindítás után is megmaradnak. Ha elsõ paraméternek egy aktív job sorszámát adjuk meg, a második paraméterrel írja felül az eredeti job parancsot.
 /alarm (paraméterezése ugyanaz, mint a /job-nak) - emlékeztetõ beállítása a megadott idõpontra, ezeket elmenti, újraindítás után is megmaradnak. Ha elsõ paraméternek egy aktív alarm sorszámát adjuk meg, a második paraméterrel írja felül az eredeti alarm üzenetet.
 /ebreszto (off) vagy (-NUM(,DELAY) NUM=hányszor aktiválódjon az ébresztõ,DELAY=hány perc legyen a késleltetés) (többi paraméter ugyanaz lehet, mint a /job-nál) - ébresztõ beállítása a megadott idõpontra, ezeket elmenti, újraindítás után is megmaradnak. Ha elsõ paraméternek egy aktív ébresztõ sorszámát adjuk meg, a második paraméterrel írja felül az eredeti ébresztõ üzenetet.

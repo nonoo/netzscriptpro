@@ -498,3 +498,10 @@
   return $mid($1-,%s,$calc(%e - %s + 1))
 }
 ;END
+
+;EJFEL
+/ejfel {
+  /aecho $color(highlight) -tnq *** Új nap: $fulldate
+  .timerEjfel $+ $cid 00:00 1 0 /ejfel
+}
+;END

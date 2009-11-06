@@ -5,6 +5,9 @@
 - gmail check javítva
 - sztaki szótár javítva
 - új, 6.35-ös mirc.exe
+- éjfélkor minden ablakba kiíródik egy napváltást jelzõ sor, ez a logba is
+  bekerül
+- /viewlog parancsnak már megadható, hogy milyen csati logját nyissa meg
 
 [2.106] 2008. 03. 22. 20:30
 - ban nem hosszú n, javítva mindenhol (pl. bannolás -> banolás) (köszi rulez)
