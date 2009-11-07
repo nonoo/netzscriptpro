@@ -246,6 +246,8 @@
   %ophop = 1
   ; 2.106
   %tooltip_multiline = 1
+  ; 2.107
+  %ejfel_lastreport = $null
 
   /echo $color(info) -atng *** Reset done.
 }
