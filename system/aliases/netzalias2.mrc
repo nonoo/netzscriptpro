@@ -416,8 +416,8 @@
     var %nap $2
     tokenize 32 %nevnap
     unset %nevnap
-    if ($0 > 1) { /echo $color(info) -atng *** Névnapok ( $+ %honap %nap $+ ): $1- }
-    else { /echo $color(info) -atng *** Névnap ( $+ %honap %nap $+ ): $1- }
+    if ($0 > 1) { /echo $color(info) -atngq *** Névnapok ( $+ %honap %nap $+ ): $1- }
+    else { /echo $color(info) -atngq *** Névnap ( $+ %honap %nap $+ ): $1- }
   }
   else {
     %nevnap = $readini system\nevnapok.ini $asctime(m) $asctime(d) 
@@ -425,12 +425,12 @@
     tokenize 32 %nevnap
     unset %nevnap
     if (%param == -s) {
-      if ($0 > 1) { /echo $color(info) -sn Mai névnap(ok): $1- }
-      else { /echo $color(info) -sn Mai névnap: $1- }
+      if ($0 > 1) { /echo $color(info) -snq Mai névnap(ok): $1- }
+      else { /echo $color(info) -snq Mai névnap: $1- }
     }
     else {
-      if ($0 > 1) { /echo $color(info) -atng *** A mai névnap(ok): $1- }
-      else { /echo $color(info) -atng *** A mai névnap: $1- }
+      if ($0 > 1) { /echo $color(info) -atngq *** A mai névnap(ok): $1- }
+      else { /echo $color(info) -atngq *** A mai névnap: $1- }
     }
   }
 }
@@ -502,9 +502,13 @@
 ;EJFEL
 /ejfel {
   /aecho $color(highlight) -tnq *** Új nap: $fulldate
-  if ( (%ejfel_lastreport != $date) || ($1 == --init) ) {
-    .timerEjfel $+ $cid 00:00 1 0 /ejfel
+  /nevnap
+  if ( %ejfel_lastreport != $date ) {
+    .timerEjfel -oi 00:01 1 0 /ejfel --init
     %ejfel_lastreport = $date
+  }
+  if ( $1 == --init ) {
+    .timerEjfel -oi 00:00 1 0 /ejfel
   }
 }
 ;END
