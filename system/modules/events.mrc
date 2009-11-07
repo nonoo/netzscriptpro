@@ -514,7 +514,7 @@ alias /onconnect {
     }
   }
   if (%idleszin_hasznalat) { .timeridlecheck $+ $cid 0 60 /idlecheck }
-  .ejfel
+  .ejfel --init
   ; hash tablakat uritjuk
   .hdel -w data $cid $+ *
   if (%flooddetekt) { .hdel -w flood $cid $+ * }

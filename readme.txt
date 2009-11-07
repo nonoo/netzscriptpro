@@ -40,7 +40,7 @@
 netZ Script Pro v2.107
 ^^^^^^^^^^^^^^^^^^^^^^
 Magyar script a mIRC-hez.
-Ez a verzió a v6.34-es mIRC32.exe-t használja.
+Ez a verzió a v6.35-ös mIRC32.exe-t használja.
 A scriptben a fejlesztés során történt változásokról a changelog.txt-ben
 olvashatsz, a parancsok listáját a commands.txt-ben találod meg.
 
@@ -66,7 +66,7 @@ A script a GPL licence szerint módosítható és terjeszthetõ. Lásd copying.txt.
 A fejlesztés alatt lévõ változatot elérheted Subversion segítségével, bõvebb
 info itt: http://code.google.com/p/netzscriptpro/source
 
-netZ Script Pro © Nonoo 1999-2008
+netZ Script Pro © Nonoo 1999-2009
 
 netZ Script Pro is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

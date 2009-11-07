@@ -502,6 +502,9 @@
 ;EJFEL
 /ejfel {
   /aecho $color(highlight) -tnq *** Új nap: $fulldate
-  .timerEjfel $+ $cid 00:00 1 0 /ejfel
+  if ( (%ejfel_lastreport != $date) || ($1 == --init) ) {
+    .timerEjfel $+ $cid 00:00 1 0 /ejfel
+    %ejfel_lastreport = $date
+  }
 }
 ;END
