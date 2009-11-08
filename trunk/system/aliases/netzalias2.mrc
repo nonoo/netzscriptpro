@@ -501,7 +501,14 @@
 
 ;EJFEL
 /ejfel {
-  /aecho $color(highlight) -tnq *** Új nap: $fulldate
+  ; minden kapcsolatra
+  var %j $scon(0)
+  while (%j > 0) {
+    scon %j
+    /aecho $color(highlight) -tnq *** Új nap: $fulldate
+    scon -r
+    dec %j 1
+  }
   /nevnap
   if ( %ejfel_lastreport != $date ) {
     .timerEjfel -oi 00:01 1 0 /ejfel --init

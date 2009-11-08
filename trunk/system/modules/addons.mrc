@@ -338,6 +338,10 @@ on 1:sockopen:szotar: {
   /echo $color(info) -atng *** $+ $color(nick) %nyelvfrom $+ 2 $+ %nyelvto  $+ $color(info) $+ listázás $+ : $+ $color(nick) %szo
   sockwrite -n szotar GET http://szotar.sztaki.hu/dict_search.php?L= $+ %nyelvfrom $+ : $+ %nyelvto $+ : $+ %szotar $+ &S=W&M=3&wap_exp=1&W= $+ $replace(%szo,$chr(32),+) HTTP/1.1
   sockwrite -n szotar Host: szotar.sztaki.hu:80
+  sockwrite -n szotar Accept: */*
+  sockwrite -n szotar Accept-Language: en-us
+  sockwrite -n szotar User-Agent: netZ Script Pro v $+ %ver
+  sockwrite -n szotar Connection: close
   sockwrite -n szotar $crlf
 }
 
