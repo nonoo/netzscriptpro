@@ -477,7 +477,7 @@ alias /utf8 {
   }
 }
 alias /base64 { ; by necronomi (aeternus_immortalis@hotmail.com)
-  set %b64 ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/
+  var %b64 ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/
   if (enc* iswm $prop) {
     var %x = $len($1-), %i = 0, %bstr = ""
     while (%i < %x) {
@@ -536,7 +536,7 @@ alias /urldecode {
       %msg2 = %msg2 $+ %outchar
     }
     else {
-      if ($right($left(%msg,%i),1) == $chr(32)) { %msg2 = %msg2 $+ $chr(32) $+  }
+      if ($right($left(%msg,%i),1) == $chr(32)) { %msg2 = %msg2 $+ $chr(32) $+  }
       else { %msg2 = %msg2 $+ $right($left(%msg,%i),1) }
     }
     inc %i 1
@@ -546,23 +546,25 @@ alias /urldecode {
 
 alias /twit {
   if (!%twitter_acc || !%twitter_pass) { echo $color(info2) -atng *** /twit hiba: add meg a Twitter elérésed az F12-es setupban! | halt }
+  if ($len($1-) > 140 ) { echo $color(info2) -atng *** /twit hiba: az üzenet max. 140 karakter hosszú lehet! | halt }
+  twit_destroy
   if ($len($1) == 0) {
     %twittmp_showstatus = 1
   }
   else {
     %twittmp_showstatus = 0
   }
-  if ($len($1-) > 140 ) { echo $color(info2) -atng *** /twit hiba: az üzenet max. 140 karakter hosszú lehet! | halt }
   %twittmp_msg = $1-
   sockopen twit twitter.com 80
   echo $color(info) -atng *** twitter: kapcsolódás...
 }
+alias /twit_destroy { unset %twittmp_* | sockclose twit | .remove system\temp\twit.xml }
 
 on 1:sockopen:twit: {
   if ($sockerr > 0) { /echo $color(info2) -atng *** twitter hiba: nem lehet kapcsolódni a twitter.com-ra! | halt }
   write -c system\temp\twit.xml
 
-  var %authtmp $base64(%twitter_acc $+ : $+ %twitter_pass).enc
+  var %authtmp $base64(%twitter_acc $+ : $+ $dekod(%twitter_pass)).enc
   if (!%twittmp_showstatus) {
     echo $color(info) -atng *** twitter: küldés...
     sockwrite -n twit POST http://twitter.com/statuses/update.xml HTTP/1.1
@@ -605,7 +607,7 @@ on 1:sockread:twit: {
   write system\temp\twit.xml $urldecode(%temp)
   goto ujraolvas
 }
-on 1:sockclose:twit: { twit_analyzeresponse | unset %twittmp_* | .remove system\temp\twit.xml }
+on 1:sockclose:twit: { twit_analyzeresponse | twit_destroy }
 
 alias /twit_analyzeresponse {
   if ( !$isfile(system\temp\twit.xml) ) { /echo $color(info2) -atng *** twitter hiba: nem érkezett válasz a szervertõl, próbáld újra! | return }
@@ -613,18 +615,21 @@ alias /twit_analyzeresponse {
   var %result = $dll(system\xml.dll,create_parser,twit)
   if (%result != S_OK) { /echo $color(info2) -atng *** twitter hiba: nem lehet betölteni az XML értelmezõt (xml.dll)! | return }
 
-  dll system\xml.dll set_handler_xmldecl twit twit_xml_hxmldecl
+  ;dll system\xml.dll set_handler_xmldecl twit twit_xml_hxmldecl
   dll system\xml.dll set_handler_startelement twit twit_xml_hstartelement
   dll system\xml.dll set_handler_endelement twit twit_xml_hendelement
-  dll system\xml.dll set_handler_attribute twit twit_xml_hattribute
+  ;dll system\xml.dll set_handler_attribute twit twit_xml_hattribute
   dll system\xml.dll set_handler_chardata twit twit_xml_hchardata
-  dll system\xml.dll set_handler_cdata twit twit_xml_hcdata
+  ;dll system\xml.dll set_handler_cdata twit twit_xml_hcdata
   dll system\xml.dll set_file twit system\temp\twit.xml
 
   %twittmp_position = $null
+  %twittmp_gotstatus = 0
   %twittmp_changedtextnotice = FIGYELEM: a státuszod a következõ lett (lehet, hogy már írtad korábban ezt a szöveget):
   %result = $dll(system\xml.dll,parse_file,twit)
   if (%result != S_OK) { /echo $color(info2) -atng *** twitter hiba: nem lehet értelmezni a szerver válaszát! }
+
+  if (!%twittmp_gotstatus) { /echo $color(info2) -atng *** twitter hiba: nem volt bent a státusz a szerver válaszában (valószínûleg privát vagy és rossz jelszót adtál meg)! }
 
   dll system\xml.dll free_parser twit
 }
@@ -648,6 +653,7 @@ alias twit_xml_hchardata {
       %twittmp_changedtextnotice = a státuszod a következõ lett:
     }
     if ( %twittmp_position == status/text ) {
+      %twittmp_gotstatus = 1
       if ( $2- != %twittmp_msg ) {
         /echo $color(nick) -atng *** twitter: %twittmp_changedtextnotice
         /echo $color(nick) -atng *** twitter: $2-
@@ -658,11 +664,362 @@ alias twit_xml_hchardata {
   else { ; statusz lekeres
     if ( %twittmp_position == user/status/text ) {
       /echo $color(nick) -atng *** twitter: a jelenlegi státuszod: $2-
+      %twittmp_gotstatus = 1
     }
   }
 
   if ( %twittmp_position == hash/error ) {
     /echo $color(info2) -atng *** twitter hibaüzenet: $2-
   }
+}
+;END
+
+;RSS
+alias /rss {
+  if ($hget(rss) == $null) {
+    hmake rss 100
+    if ($exists(system\rss_data.dat)) {
+      hload rss system\rss_data.dat
+    }
+  }
+
+  if (!$hget(rss,0).item || $file(system\rss.ini).mtime != %rss_ini_mtime) { rss_rehash }
+
+  if ($1 == --init) { .timerRSS 0 60 .rss }
+  else { rss_checkall }
+}
+alias /rss_rehash {
+  if (!$exists(system\rss.ini)) { echo $color(info2) -atng *** RSS hiba: a system\rss.ini fájl nem létezik! | halt }
+
+  if ($hget(rss) != $null) {
+    hdel -w rss *
+  }
+  else { hmake rss 100 }
+
+  .remove system\rss_data.dat
+
+  if ($fopen(rssconfig)) { .fclose rssconfig }
+
+  var %rsstmp_default_engedelyezes = $readini(system\rss.init,np,default,engedelyezes)
+  var %rsstmp_default_url = $readini(system\rss.init,np,default,url)
+  var %rsstmp_default_felhasznalonev = $readini(system\rss.init,np,default,felhasznalonev)
+  var %rsstmp_default_jelszo = $readini(system\rss.init,np,default,jelszo)
+  var %rsstmp_default_frissitesi_ido = $readini(system\rss.init,np,default,frissitesi_ido)
+  var %rsstmp_default_cim_kiirasa = $readini(system\rss.init,np,default,cim_kiirasa)
+  var %rsstmp_default_ido_kiirasa_a_cimbe = $readini(system\rss.init,np,default,ido_kiirasa_a_cimbe)
+  var %rsstmp_default_leiras_kiirasa = $readini(system\rss.init,np,default,leiras_kiirasa)
+  var %rsstmp_default_link_kiirasa = $readini(system\rss.init,np,default,link_kiirasa)
+  var %rsstmp_default_aktiv_ablakba = $readini(system\rss.init,np,default,aktiv_ablakba)
+  var %rsstmp_default_egyeb_ablakokba = $readini(system\rss.init,np,default,egyeb_ablakokba)
+
+  ; eloszor egyenkent vegigmegyunk a szekciokon
+  .fopen rssconfig system\rss.ini
+  var %line
+  var %section
+  while (!$feof) {
+    %line = $fread(rssconfig)
+    if ($left(%line,1) == $chr(35)) { continue } ; # char
+    if ($left(%line,1) == $chr(91)) { ; [ char
+      %section = $remove(%line,$chr(91),$chr(93))
+      if (%section == default) { continue }
+      if ($chr(59) isin %section) {
+        echo $color(info2) -atng *** RSS hiba: nem lehet ; karaktert használni a feed nevében, feed átugorva ( $+ %section $+ )!
+        continue
+      }
+
+      ; beletesszuk a szekcio nevet a feedek listajaba pontosvesszovel elvalasztva
+      if ($hget(rss,feeds)) { hadd rss feeds $hget(rss,feeds) $+ ; $+ %section }
+      else { hadd rss feeds %section }
+
+      var %rsstmp_engedelyezes = %rsstmp_default_engedelyezes
+      var %rsstmp_url = %rsstmp_default_url
+      var %rsstmp_felhasznalonev = %rsstmp_default_felhasznalonev
+      var %rsstmp_jelszo = %rsstmp_default_jelszo
+      var %rsstmp_frissitesi_ido = %rsstmp_default_frissitesi_ido
+      var %rsstmp_cim_kiirasa = %rsstmp_default_cim_kiirasa
+      var %rsstmp_ido_kiirasa_a_cimbe = %rsstmp_default_ido_kiirasa_a_cimbe
+      var %rsstmp_leiras_kiirasa = %rsstmp_default_leiras_kiirasa
+      var %rsstmp_link_kiirasa = %rsstmp_default_link_kiirasa
+      var %rsstmp_aktiv_ablakba = %rsstmp_default_aktiv_ablakba
+      var %rsstmp_egyeb_ablakokba = %rsstmp_default_egyeb_ablakokba
+
+      while (!$feof) {
+        var %fpos $fopen(rssconfig).pos
+        %line = $fread(rssconfig)
+        if ($left(%line,1) == $chr(35)) { continue } ; # char
+        if ($left(%line,1) == $chr(91)) { ; szekcio vege
+          .fseek rssconfig %fpos ; mivel mar beolvastuk az uj szekcio sorat, visszaugrunk 1 sort
+          break
+        }
+
+        var %param = $gettok(%line,1,61)
+        if (%param == engedelyezes) { %rsstmp_engedelyezes = $gettok(%line,2-,61) }
+        if (%param == url) { %rsstmp_url = $gettok(%line,2-,61) }
+        if (%param == felhasznalonev) { %rsstmp_felhasznalonev = $gettok(%line,2-,61) }
+        if (%param == jelszo) { %rsstmp_jelszo = $gettok(%line,2-,61) }
+        if (%param == frissitesi_ido) { %rsstmp_frissitesi_ido = $gettok(%line,2-,61) }
+        if (%param == cim_kiirasa) { %rsstmp_cim_kiirasa = $gettok(%line,2-,61) }
+        if (%param == ido_kiirasa_a_cimbe) { %rsstmp_ido_kiirasa_a_cimbe = $gettok(%line,2-,61) }
+        if (%param == leiras_kiirasa) { %rsstmp_leiras_kiirasa = $gettok(%line,2-,61) }
+        if (%param == link_kiirasa) { %rsstmp_link_kiirasa = $gettok(%line,2-,61) }
+        if (%param == aktiv_ablakba) { %rsstmp_aktiv_ablakba = $gettok(%line,2-,61) }
+        if (%param == egyeb_ablakokba) { %rsstmp_egyeb_ablakokba = $gettok(%line,2-,61) }
+      }
+
+      hadd rss %section $+ _engedelyezes %rsstmp_engedelyezes
+      hadd rss %section $+ _url %rsstmp_url
+      hadd rss %section $+ _felhasznalonev %rsstmp_felhasznalonev
+      hadd rss %section $+ _jelszo %rsstmp_jelszo
+      hadd rss %section $+ _frissitesi_ido %rsstmp_frissitesi_ido
+      hadd rss %section $+ _cim_kiirasa %rsstmp_cim_kiirasa
+      hadd rss %section $+ _ido_kiirasa_a_cimbe %rsstmp_ido_kiirasa_a_cimbe
+      hadd rss %section $+ _leiras_kiirasa %rsstmp_leiras_kiirasa
+      hadd rss %section $+ _link_kiirasa %rsstmp_link_kiirasa
+      hadd rss %section $+ _aktiv_ablakba %rsstmp_aktiv_ablakba
+      hadd rss %section $+ _egyeb_ablakokba %rsstmp_egyeb_ablakokba
+    }
+  }
+  .fclose rssconfig
+  %rss_ini_mtime = $file(system\rss.ini).mtime
+  hsave rss system\rss_data.dat
+  echo $color(info) -atng *** RSS: rss.ini újratöltve
+}
+alias /rss_checkall {
+  if ($gettok($hget(rss,feeds),0,59) == 0) {
+    echo $color(info2) -atngq *** RSS hiba: nincsenek beállítva feedek, szerkeszd a system\rss.ini fájlt!
+    return
+  }
+  echo $color(notice) -atngq *** RSS: feedek ellenõrzése...
+
+  ; vegigmegyunk a pontosvesszovel elvalasztott feedek listajan
+  var %i 1
+  var %feedname
+  while (%i <= $gettok($hget(rss,feeds),0,59)) {
+    %feedname = $gettok($hget(rss,feeds),%i,59))
+    if ($show || !$hget(rss,%feedname $+ _lastcheck) || $calc($ctime - $hget(rss,%feedname $+ _lastcheck)) >= $calc($hget(rss,%feedname $+ _frissitesi_ido) * 60) || $1 = -f) {
+      rss_check %feedname
+    }
+    inc %i 1
+  }
+}
+alias /rss_echo {
+  if (!$show) { return }
+
+  var %i 1
+  var %wndcount $gettok($hget(rss,$3 $+ _egyeb_ablakokba),0,32)
+  var %wndname
+
+  if (!%wndcount || $hget(rss,$3 $+ _aktiv_ablakba)) { ; aktiv ablakba
+    echo $1 $2 $+ a $4-
+  }
+
+  while (%i <= %wndcount) {
+    %wndname = @ $+ $gettok($hget(rss,$3 $+ _egyeb_ablakokba),%i,32)
+    if (%wndname != @) {
+      if (!$window(%wndname)) { /window -ekmhw3 %wndname Fixedsys }
+      echo $1 $2 %wndname $4-
+      /window -g1 %wndname
+    }
+    inc %i 1
+  }
+}
+alias /rss_check {
+  if ($1 == $null) { return }
+  if (!$hget(rss,$1 $+ _engedelyezes)) {
+    ;echo $color(info) -tngq *** RSS ( $+ $1 $+ ): a feed nincs engedélyezve, kihagyás
+    return
+  }
+  var %url = $hget(rss,$1 $+ _url)
+  var %proto = http
+  if (https:// isin %url) { %proto = https }
+
+  var %domain = $gethostnamefromurl(%url)
+  var %port = $getportfromurl(%url)
+  rss_echo $color(notice) -tngq $1 *** RSS ( $+ $1 $+ ): kapcsolódás ( $+ %domain $+ : $+ %port $+ )...
+
+  if (!$show) { % [ $+ rss_tmp_ $+ [ $1 ] $+ _quiet ] = 1 }
+  else { % [ $+ rss_tmp_ $+ [ $1 ] $+ _quiet ] = 0 }
+
+  hadd rss $1 $+ _lastcheck $ctime
+
+  if ($sock(rss_ $+ $1)) { sockclose rss_ $+ $1 }
+  if (%proto == https) { sockopen -e rss_ $+ $1 %domain %port }
+  else { sockopen rss_ $+ $1 %domain %port }
+}
+on 1:sockopen:rss_*: {
+  var %feedname = $remove($sockname,rss_)
+  if ($sockerr > 0) { if (!% [ $+ rss_tmp_ $+ [ %feedname ] $+ _quiet ]) { /rss_echo $color(info2) -tng %feedname *** RSS hiba ( $+ %feedname $+ ): nem lehet kapcsolódni a szerverre! } | return }
+  if (!% [ $+ rss_tmp_ $+ [ %feedname ] $+ _quiet ]) { /rss_echo $color(notice) -tng %feedname *** RSS ( $+ %feedname $+ ): letöltés... }
+  write -c system\temp\rss_ $+ %feedname $+ .xml
+
+  var %authtmp
+  if ($hget(rss,%feedname $+ _felhasznalonev) != $null) {
+    %authtmp = $base64($hget(rss,%feedname $+ _felhasznalonev) $+ : $+ $hget(rss,%feedname $+ _jelszo)).enc
+  }
+  var %url = $hget(rss,%feedname $+ _url)
+  sockwrite -n $sockname GET %url HTTP/1.0
+  sockwrite -n $sockname Accept: */*
+  if (%authtmp) { sockwrite -n $sockname Authorization: Basic %authtmp }
+  sockwrite -n $sockname User-Agent: netZ Script Pro v $+ %ver
+  sockwrite -n $sockname Connection: close
+  sockwrite -n $sockname Host: $gethostnamefromurl(%url) $+ : $+ $getportfromurl(%url)
+  sockwrite -n $sockname
+}
+on 1:sockread:rss_*: {
+  var %feedname = $remove($sockname,rss_)
+  var %temp
+  :ujraolvas
+  sockread %temp
+  if (!$sockbr) { return }
+  if ($left(%temp,9) == Location:) {
+    var %newurl = $mid(%temp,11,$calc($len(%temp) - 10))
+    var %oldurl = $hget(rss,%feedname $+ _url)
+    if (http:// !isin %newurl && https:// !isin %newurl) {
+      if ($left(%newurl,1) != /) { %newurl = / $+ %newurl }
+      %newurl = http:// $+ $gethostnamefromurl(%oldurl) $+ : $+ $getportfromurl(%oldurl) $+ %newurl
+    }
+    hadd rss %feedname $+ _url %newurl
+    if (!% [ $+ rss_tmp_ $+ [ %feedname ] $+ _quiet ]) { /rss_echo $color(info) -tng %feedname *** RSS ( $+ %feedname $+ ): átirányítás követése: %newurl }
+    .sockclose rss_ $+ %feedname
+    if (!% [ $+ rss_tmp_ $+ [ %feedname ] $+ _quiet ]) { .timer 1 0 /rss_check %feedname }
+    else { .timer 1 0 .rss_check %feedname }
+    halt
+  }
+  if (%temp == HTTP/1.0 $+ $chr(32) $+ 401 $+ $chr(32) $+ Unauthorized) {
+    if (!% [ $+ rss_tmp_ $+ [ %feedname ] $+ _quiet ]) { /rss_echo $color(info2) -tng %feedname *** RSS hiba ( $+ %feedname $+ ): nem lehet autentikálni, valószínûleg hibás a megadott felhasználónév/jelszó! }
+  }
+  if ($left(%temp,12) == HTTP/1.0 $+ $chr(32) $+ 403) {
+    if (!% [ $+ rss_tmp_ $+ [ %feedname ] $+ _quiet ]) { /rss_echo $color(info2) -tng %feedname *** RSS hiba ( $+ %feedname $+ ): elérési hiba! }
+  }
+  write system\temp\rss_ $+ %feedname $+ .xml $utf8($urldecode(%temp)).dec
+  goto ujraolvas
+}
+on 1:sockclose:rss_*: {
+  var %feedname = $remove($sockname,rss_)
+  rss_analyze %feedname
+  ;.remove system\temp\rss_ $+ %feedname $+ .xml
+}
+alias /rss_analyze {
+  if ( !$isfile(system\temp\rss_ $+ $1 $+ .xml) ) {
+    if (!% [ $+ rss_tmp_ $+ [ $1 ] $+ _quiet ]) { /rss_echo $color(info2) -tng $1 *** RSS hiba ( $+ $1 $+ ): nem érkezett válasz a szervertõl! }
+    return
+  }
+  if (!$file(system\temp\rss_ $+ $1 $+ .xml).size) { return }
+
+  var %result = $dll(system\xml.dll,create_parser,rss_ $+ $1)
+  if (%result != S_OK) { if (!% [ $+ rss_tmp_ $+ [ $1 ] $+ _quiet ]) { /rss_echo $color(info2) -tng $1 *** RSS hiba ( $+ $1 $+ ): nem lehet betölteni az XML értelmezõt (xml.dll)! } | return }
+
+  ;dll system\xml.dll set_handler_xmldecl rss_ $+ $1 rss_xml_hxmldecl
+  dll system\xml.dll set_handler_startelement rss_ $+ $1 rss_xml_hstartelement
+  dll system\xml.dll set_handler_endelement rss_ $+ $1 rss_xml_hendelement
+  ;dll system\xml.dll set_handler_attribute rss_ $+ $1 rss_xml_hattribute
+  dll system\xml.dll set_handler_chardata rss_ $+ $1 rss_xml_hchardata
+  dll system\xml.dll set_handler_cdata rss_ $+ $1 rss_xml_hcdata
+  dll system\xml.dll set_file rss_ $+ $1 system\temp\rss_ $+ $1 $+ .xml
+
+  % [ $+ rss_tmp_ $+ [ $1 ] $+ _position ] = $null
+  % [ $+ rss_tmp_ $+ [ $1 ] $+ _displayed ] = 0
+  %result = $dll(system\xml.dll,parse_file,rss_ $+ $1)
+  if (%result != S_OK) { if (!% [ $+ rss_tmp_ $+ [ $1 ] $+ _quiet ]) { /rss_echo $color(info2) -tng $1 *** RSS hiba ( $+ $1 $+ ): nem lehet értelmezni a szerver válaszát! } }
+  else {
+    if (!% [ $+ rss_tmp_ $+ [ $1 ] $+ _displayed ]) {
+      if (!% [ $+ rss_tmp_ $+ [ $1 ] $+ _quiet ]) { /rss_echo $color(notice) -tng $1 *** RSS ( $+ $1 $+ ): nincs új bejegyzés. }
+    }
+  }
+
+  dll system\xml.dll free_parser rss_ $+ $1
+
+  hadd rss $1 $+ _lastupdate $gmt
+  hsave rss system\rss_data.dat
+  unset % [ $+ rss_tmp_ $+ [ $1 ] $+ _* ]
+}
+
+alias rss_xml_hxmldecl {}
+alias rss_xml_hattribute {}
+alias rss_xml_hstartelement {
+  var %feedname = $remove($1,rss_)
+  if (% [ $+ rss_tmp_ $+ [ %feedname ] $+ _position ]) { % [ $+ rss_tmp_ $+ [ %feedname ] $+ _position ] = % [ $+ rss_tmp_ $+ [ %feedname ] $+ _position ] $+ / }
+  % [ $+ rss_tmp_ $+ [ %feedname ] $+ _position ] = % [ $+ rss_tmp_ $+ [ %feedname ] $+ _position ] $+ $2
+
+  if ($2 == item) {
+    % [ $+ rss_tmp_ $+ [ %feedname ] $+ _title ] = $null
+    % [ $+ rss_tmp_ $+ [ %feedname ] $+ _link ] = $null
+    % [ $+ rss_tmp_ $+ [ %feedname ] $+ _description ] = $null
+    % [ $+ rss_tmp_ $+ [ %feedname ] $+ _pubdate ] = $null
+  }
+}
+alias rss_xml_hendelement {
+  var %feedname = $remove($1,rss_)
+  % [ $+ rss_tmp_ $+ [ %feedname ] $+ _position ] = $left(% [ $+ rss_tmp_ $+ [ %feedname ] $+ _position ], $calc($len(% [ $+ rss_tmp_ $+ [ %feedname ] $+ _position ]) - ($len($2) + 1)) )
+
+  if ($2 == item) {
+    var %pubdate = % [ $+ rss_tmp_ $+ [ %feedname ] $+ _pubdate ]
+    if (!$hget(rss,%feedname $+ _lastupdate) || %pubdate > $hget(rss,%feedname $+ _lastupdate)) {
+      if (% [ $+ rss_tmp_ $+ [ %feedname ] $+ _displayed ]) { rss_echo $color(background) -ng %feedname - }
+      ; ha van alahuzas, reverz, bold a kiemeles styleban, akkor azokat a kiemeles vegen ki kell kapcsolnunk
+      var %url_kiemeles_unset
+      if ( isin %url_kiemeles_style) { %url_kiemeles_unset = %url_kiemeles_unset $+  }
+      if ( isin %url_kiemeles_style) { %url_kiemeles_unset = %url_kiemeles_unset $+  }
+      if ( isin %url_kiemeles_style) { %url_kiemeles_unset = %url_kiemeles_unset $+  }
+      if ( isin %url_kiemeles_style) { %url_kiemeles_unset = %url_kiemeles_unset $+  }
+      var %link = %url_kiemeles_style $+ % [ $+ rss_tmp_ $+ [ %feedname ] $+ _link ] $+ %url_kiemeles_unset
+
+      var %titleanddescmatch = 0
+      if (% [ $+ rss_tmp_ $+ [ %feedname ] $+ _title ] == % [ $+ rss_tmp_ $+ [ %feedname ] $+ _description ]) { %titleanddescmatch = 1 }
+      if ($hget(rss,%feedname $+ _cim_kiirasa)) {
+        var %timestring = $null
+        if ($hget(rss,%feedname $+ _ido_kiirasa_a_cimbe)) {
+          %timestring = ( $+ $asctime( $calc(%pubdate + (-1 * $timezone)),yyyy. mm. dd. HH:nn:ss) $+ )
+        }
+
+        if (%titleanddescmatch) {
+          rss_echo $color(notice) -tng %feedname *** RSS ( $+ $color(nick) $+  $+ %feedname $+ ): $+ $color(nick) % [ $+ rss_tmp_ $+ [ %feedname ] $+ _title ] %timestring
+        }
+        else {
+          rss_echo $color(notice) -tng %feedname *** RSS ( $+ $color(nick) $+  $+ %feedname $+ ): $+ $color(nick) % [ $+ rss_tmp_ $+ [ %feedname ] $+ _title ]  $+ %timestring
+        }
+      }
+      if ($hget(rss,%feedname $+ _leiras_kiirasa) && !%titleanddescmatch) {
+        rss_echo $color(notice) -tng %feedname *** RSS ( $+ $color(nick) $+  $+ %feedname $+ ): $+ $color(nick) % [ $+ rss_tmp_ $+ [ %feedname ] $+ _description ]
+      }
+      if ($hget(rss,%feedname $+ _link_kiirasa)) {
+        rss_echo $color(notice) -tng %feedname *** RSS ( $+ $color(nick) $+  $+ %feedname $+ ): %link
+      }
+      % [ $+ rss_tmp_ $+ [ %feedname ] $+ _displayed ] = 1
+    }
+  }
+}
+alias rss_xml_hcdata {
+  var %feedname = $remove($1,rss_)
+  var %tmppos = % [ $+ rss_tmp_ $+ [ %feedname ] $+ _position ]
+
+  if (%tmppos == rss/channel/item/title) { % [ $+ rss_tmp_ $+ [ %feedname ] $+ _title ] = $2- }
+  if (%tmppos == rss/channel/item/link) { % [ $+ rss_tmp_ $+ [ %feedname ] $+ _link ] = $2- }
+  if (%tmppos == rss/channel/item/description) { % [ $+ rss_tmp_ $+ [ %feedname ] $+ _description ] = $2- }
+}
+alias rss_xml_hchardata {
+  var %feedname = $remove($1,rss_)
+  var %tmppos = % [ $+ rss_tmp_ $+ [ %feedname ] $+ _position ]
+  if (!%tmppos) { return } ; nem erdekelnek a http fejlecek
+
+  if (%tmppos == rss/channel/item/pubDate) {
+    var %y = $5
+    var %m = $4
+    var %d = $3
+    var %time = $6
+    var %offset = $7
+    var %offset_sign = $left(%offset,1)
+    if (%offset_sign == $chr(43) || %offset_sign == $chr(45)) { %offset = $right(%offset,4) }
+    else { %offset_sign = $chr(43) }
+    if (%offset_sign == $chr(43)) { %offset_sign = $chr(45) }
+    elseif (%offset_sign == $chr(45)) { %offset_sign = $chr(43) }
+    var %o_h = $left(%offset,2)
+    var %o_m = $right(%offset,2)
+
+    % [ $+ rss_tmp_ $+ [ %feedname ] $+ _pubdate ] = $calc($ctime(%y %m %d %time) %offset_sign ( %o_h * 3600 + %o_m * 60 ))
+  }
+  if (%tmppos == rss/channel/item/title && % [ $+ rss_tmp_ $+ [ %feedname ] $+ _title ] == $null) { % [ $+ rss_tmp_ $+ [ %feedname ] $+ _title ] = $2- }
+  if (%tmppos == rss/channel/item/link && % [ $+ rss_tmp_ $+ [ %feedname ] $+ _link ] == $null) { % [ $+ rss_tmp_ $+ [ %feedname ] $+ _link ] = $2- }
+  if (%tmppos == rss/channel/item/description && % [ $+ rss_tmp_ $+ [ %feedname ] $+ _description ] == $null) { % [ $+ rss_tmp_ $+ [ %feedname ] $+ _description ] = $2- }
 }
 ;END
