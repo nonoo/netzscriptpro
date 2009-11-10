@@ -809,8 +809,7 @@ on ^1:TOPIC:*: {
 ;ONACTION
 on ^1:ACTION:*:#:{
   /set -n %tempszoveg $1-
-  ; webchat unicode karakterek
-  /set -n %tempszoveg $replace($1-,Ãœ,Ü,ÃŸ,ü,Ã³,ó,Å,õ,Ãº,ú,ÃŠ,é,Ã¥,á,Å¹,û,Ã­,í,Ã¡,á,Ã–,Ö,Ã“,Ó,Ã‰,É,Ã,Á,õ°,Û,Ã,Í,Ã©,é,õ±,û,Ã¼,ü,Ã¶,ö,Ãš,Ú,õ‘,õ,õ,Õ,ÃƒÂ¼,û)
+  /set -n %tempszoveg $utf8($1-).dec
   ; highlight
   if ($highlight_ok(%tempszoveg)) {
     echo $color(action) -tm $chan  $+ %nick_highlight_szin $+ * $nick %tempszoveg
@@ -919,8 +918,7 @@ on ^1:TEXT:*:#:{
     if ( %tempszoveg == MSN - Error: Please check your 'msn_images_path_buddy' setting. It doesn't seem to be a valid directory! ) { halt }
     if ( %tempszoveg == MSN - Error: Please check your 'msn_images_path_emoticon' setting. It doesn't seem to be a valid directory! ) { halt }
   }
-  ; webchat unicode karakterek
-  /set -n %tempszoveg $replace($1-,Ãœ,Ü,ÃŸ,ü,Ã³,ó,Å,õ,Ãº,ú,ÃŠ,é,Ã¥,á,Å¹,û,Ã­,í,Ã¡,á,Ã–,Ö,Ã“,Ó,Ã‰,É,Ã,Á,õ°,Û,Ã,Í,Ã©,é,õ±,û,Ã¼,ü,Ã¶,ö,Ãš,Ú,õ‘,õ,õ,Õ)
+  /set -n %tempszoveg $utf8($1-).dec
   ; plusz jelek
   var %plusz
   if ($nick isvo $chan) { %plusz = + }
@@ -1015,8 +1013,7 @@ on ^1:TEXT:*:#:{
 on ^1:TEXT:*:?:{
   /haltdef
   /set -n %tempszoveg $1-
-  ; webchat unicode karakterek
-  /set -n %tempszoveg $replace($1-,Ãœ,Ü,ÃŸ,ü,Ã³,ó,Å,õ,Ãº,ú,ÃŠ,é,Ã¥,á,Å¹,û,Ã­,í,Ã¡,á,Ã–,Ö,Ã“,Ó,Ã‰,É,Ã,Á,õ°,Û,Ã,Í,Ã©,é,õ±,û,Ã¼,ü,Ã¶,ö,Ãš,Ú,õ‘,õ,õ,Õ)
+  /set -n %tempszoveg $utf8($1-).dec
   ; bitlbee
   if (%tempszoveg == <<bitlbee>> $+ $chr(32) $+ *** $+ $chr(32) $+ This $+ $chr(32) $+ conversation $+ $chr(32) $+ has $+ $chr(32) $+ timed $+ $chr(32) $+ out. $+ $chr(32) $+ ***) {
     halt

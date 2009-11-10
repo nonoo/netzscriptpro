@@ -355,6 +355,13 @@
       dec %i 1
     }
   }
+  if ($query(0)) {
+    var %i $query(0)
+    while (%i > 0) {
+      /echo $1 $2 $query(%i) $remove($3-,--nostatus)
+      dec %i 1
+    }
+  }
   ; statusz ablakba is ha kell
   if (!%nostatus) { /echo $1 $2 $+ s $remove($3-,--nostatus) }
 }
@@ -501,17 +508,19 @@
 
 ;EJFEL
 /ejfel {
-  ; minden kapcsolatra
-  var %j $scon(0)
-  while (%j > 0) {
-    scon %j
-    /aecho $color(highlight) -tnq *** Új nap: $fulldate
-    scon -r
-    dec %j 1
-  }
-  /nevnap
   if ( %ejfel_lastreport != $date ) {
-    .timerEjfel -oi 00:01 1 0 /ejfel --init
+    ; minden kapcsolatra
+    var %j $scon(0)
+    while (%j > 0) {
+      scon %j
+      /aecho $color(highlight) -tnq *** Új nap: $asctime(yyyy. mm. dd. HH:mm:ss) ( $+ $daynameeng2hun($asctime(ddd)) $+ )
+      scon -r
+      dec %j 1
+    }
+    /nevnap
+    if ($asctime(yyyy) !isin %ejfel_lastreport) { /echo $color(highlight) -atngq *** Boldog új évet! :) }
+    if (04/12/ isin $date) { /echo $color(highlight) -atngq *** Ma van Nonoo szülinapja! ;) }
+    .timerEjfel -oi 00:01 1 0 .ejfel --init
     %ejfel_lastreport = $date
   }
   if ( $1 == --init ) {

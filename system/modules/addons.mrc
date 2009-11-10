@@ -466,3 +466,203 @@ alias /ml {
   sockopen szotar szotar.sztaki.hu 80
 }
 ;END
+
+;TWITTER
+alias /utf8 {
+  if (dec* iswm $prop) {
+    return $replace($1-,√ú,‹,√ü,¸,√≥,Û,≈,ı,√∫,˙,√ä,È,√•,·,≈π,˚,√≠,Ì,√°,·,√ñ,÷,√ì,”,√â,…,√Å,¡,ı∞,€,√ç,Õ,√©,È,ı±,˚,√º,¸,√∂,ˆ,√ö,⁄,ıë,ı,ıê,’)
+  }
+  if (enc* iswm $prop) {
+    return $replace($1-,¡,√Å,…,√â,Õ,√ç,”,√ì,’,≈ê,÷,√ñ,⁄,√ö,€,≈∞,‹,√ú,·,√°,È,√©,Ì,√≠,Û,√≥,ı,≈ë,ˆ,√∂,˙,√∫,˚,≈±,¸,√º)
+  }
+}
+alias /base64 { ; by necronomi (aeternus_immortalis@hotmail.com)
+  set %b64 ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/
+  if (enc* iswm $prop) {
+    var %x = $len($1-), %i = 0, %bstr = ""
+    while (%i < %x) {
+      inc %i 1
+      %bstr = %bstr $+ $base($asc($mid($1-,%i,1)),10,2,8)
+    }
+    var %x = $len(%bstr), %i = 1, %bc = "", %p = $calc($len(%bstr) % 6), %bits = ""
+    while (%i < %x) {
+      %bc = $mid(%bstr,%i,6)
+      if ($len(%bc) < 6) { %bc = %bc $+ $str(0,$calc(6 - $len(%bc))) }
+      %bits = %bits $+ $mid(%b64,$calc($base(%bc,2,10) + 1),1)
+      inc %i 6
+    }
+    if (%p > 0) {
+      if (%p == 2) %bits = %bits $+ ==
+      elseif (%p == 4) %bits = %bits $+ =
+    }
+    return %bits
+  }
+  elseif (dec* iswm $prop) {
+    var %x = $len($1), %i = 0, %bstr = "", %p = $numtok($1,$asc(=)), %pos = 0, %asc = 0
+    while (%i < %x) {
+      inc %i 1
+      %pos = $poscs(%b64,$mid($1,%i,1),1)
+      if (%pos > 0) { %pos = $calc(%pos - 1) }
+      %bstr = %bstr $+ $base(%pos,10,2,6)
+    }
+    var %x = $len(%bstr), %i = 1, %text = ""
+    while (%i < %x) {
+      %asc = $base($mid(%bstr,%i,8),2,10)
+      if (%asc == 32) { %text = %text $chr(%asc) }
+      else { %text = %text $+ $chr(%asc) }
+      inc %i 8
+    }
+    return %text
+  }
+}
+alias /urldecode {
+  ; vegigmegyunk az uzenet karakterein, a nem alfanumerikus (&#-vel kezdodo) karaktereket dekodoljuk
+  var %i = 1
+  var %msg $1-
+  var %msg2
+  while (%i <= $len(%msg)) {
+    if ($right($left(%msg,%i),1) == $chr(38) && $right($left(%msg,$calc(%i + 1)),1) == $chr(35)) {
+      inc %i 2
+      var %num
+      while (%i <= $len(%msg) && $right($left(%msg,%i),1) != ;) {
+        %num = %num $+ $right($left(%msg,%i),1)
+        inc %i
+      }
+      var %outchar $chr(%num)
+      if (%num == 337) { %outchar = ı }
+      if (%num == 369) { %outchar = ˚ }
+      if (%num == 336) { %outchar = ’ }
+      if (%num == 368) { %outchar = € }
+      %msg2 = %msg2 $+ %outchar
+    }
+    else {
+      if ($right($left(%msg,%i),1) == $chr(32)) { %msg2 = %msg2 $+ $chr(32) $+  }
+      else { %msg2 = %msg2 $+ $right($left(%msg,%i),1) }
+    }
+    inc %i 1
+  }
+  return $strip(%msg2)
+}
+
+alias /twit {
+  if (!%twitter_acc || !%twitter_pass) { echo $color(info2) -atng *** /twit hiba: add meg a Twitter elÈrÈsed az F12-es setupban! | halt }
+  if ($len($1) == 0) {
+    %twittmp_showstatus = 1
+  }
+  else {
+    %twittmp_showstatus = 0
+  }
+  if ($len($1-) > 140 ) { echo $color(info2) -atng *** /twit hiba: az ¸zenet max. 140 karakter hossz˙ lehet! | halt }
+  %twittmp_msg = $1-
+  sockopen twit twitter.com 80
+  echo $color(info) -atng *** twitter: kapcsolÛd·s...
+}
+
+on 1:sockopen:twit: {
+  if ($sockerr > 0) { /echo $color(info2) -atng *** twitter hiba: nem lehet kapcsolÛdni a twitter.com-ra! | halt }
+  write -c system\temp\twit.xml
+
+  var %authtmp $base64(%twitter_acc $+ : $+ %twitter_pass).enc
+  if (!%twittmp_showstatus) {
+    echo $color(info) -atng *** twitter: k¸ldÈs...
+    sockwrite -n twit POST http://twitter.com/statuses/update.xml HTTP/1.1
+    sockwrite -n twit Accept: */*
+    sockwrite -n twit Accept-Language: en-us
+    sockwrite -n twit Content-Type: application/x-www-form-urlencoded
+    var %tmp status= $+ $urlencode($utf8(%twittmp_msg).enc)
+    sockwrite -n twit Content-Length: $len(%tmp)
+    sockwrite -n twit Authorization: Basic %authtmp
+    sockwrite -n twit User-Agent: netZ Script Pro v $+ %ver
+    sockwrite -n twit Connection: close
+    sockwrite -n twit Host: twitter.com:80
+    sockwrite -n twit
+    sockwrite -n twit %tmp
+    sockwrite -n twit
+  }
+  else {
+    echo $color(info) -atng *** twitter: st·tusz lekÈrÈse...
+    sockwrite -n twit GET http://twitter.com/users/show/ $+ %twitter_acc $+ .xml HTTP/1.1
+    sockwrite -n twit Accept: */*
+    sockwrite -n twit Accept-Language: en-us
+    sockwrite -n twit Authorization: Basic %authtmp
+    sockwrite -n twit User-Agent: netZ Script Pro v $+ %ver
+    sockwrite -n twit Connection: close
+    sockwrite -n twit Host: twitter.com:80
+    sockwrite -n twit
+  }
+}
+on 1:sockread:twit: {
+  var %temp
+  :ujraolvas
+  sockread %temp
+  if (!$sockbr) { return }
+  if (%temp == HTTP/1.0 $+ $chr(32) $+ 401 $+ $chr(32) $+ Unauthorized) {
+    /echo $color(info2) -atng *** twitter hiba: nem lehet autentik·lni, valÛszÌn˚leg hib·s a megadott felhaszn·lÛnÈv/jelszÛ!
+  }
+  if ($left(%temp,12) == HTTP/1.0 $+ $chr(32) $+ 403) {
+    /echo $color(info2) -atng *** twitter hiba: elÈrÈsi hiba!
+  }
+  write system\temp\twit.xml $urldecode(%temp)
+  goto ujraolvas
+}
+on 1:sockclose:twit: { twit_analyzeresponse | unset %twittmp_* | .remove system\temp\twit.xml }
+
+alias /twit_analyzeresponse {
+  if ( !$isfile(system\temp\twit.xml) ) { /echo $color(info2) -atng *** twitter hiba: nem Èrkezett v·lasz a szervertıl, prÛb·ld ˙jra! | return }
+
+  var %result = $dll(system\xml.dll,create_parser,twit)
+  if (%result != S_OK) { /echo $color(info2) -atng *** twitter hiba: nem lehet betˆlteni az XML Èrtelmezıt (xml.dll)! | return }
+
+  dll system\xml.dll set_handler_xmldecl twit twit_xml_hxmldecl
+  dll system\xml.dll set_handler_startelement twit twit_xml_hstartelement
+  dll system\xml.dll set_handler_endelement twit twit_xml_hendelement
+  dll system\xml.dll set_handler_attribute twit twit_xml_hattribute
+  dll system\xml.dll set_handler_chardata twit twit_xml_hchardata
+  dll system\xml.dll set_handler_cdata twit twit_xml_hcdata
+  dll system\xml.dll set_file twit system\temp\twit.xml
+
+  %twittmp_position = $null
+  %twittmp_changedtextnotice = FIGYELEM: a st·tuszod a kˆvetkezı lett (lehet, hogy m·r Ìrtad kor·bban ezt a szˆveget):
+  %result = $dll(system\xml.dll,parse_file,twit)
+  if (%result != S_OK) { /echo $color(info2) -atng *** twitter hiba: nem lehet Èrtelmezni a szerver v·lasz·t! }
+
+  dll system\xml.dll free_parser twit
+}
+
+alias twit_xml_hxmldecl {}
+alias twit_xml_hattribute {}
+alias twit_xml_hcdata {}
+alias twit_xml_hstartelement {
+  if (%twittmp_position) { %twittmp_position = %twittmp_position $+ / }
+  %twittmp_position = %twittmp_position $+ $2
+}
+alias twit_xml_hendelement {
+  %twittmp_position = $left(%twittmp_position, $calc($len(%twittmp_position) - ($len($2) + 1)) )
+}
+alias twit_xml_hchardata {
+  if (!%twittmp_position) { return } ; nem erdekelnek a http fejlecek
+
+  if (!%twittmp_showstatus) { ; twit kuldes
+    if ( %twittmp_position == status/truncated && $2 == true ) {
+      /echo $color(nick) -atng *** twitter: FIGYELEM: t˙l hossz˙ volt az ¸zeneted!
+      %twittmp_changedtextnotice = a st·tuszod a kˆvetkezı lett:
+    }
+    if ( %twittmp_position == status/text ) {
+      if ( $2- != %twittmp_msg ) {
+        /echo $color(nick) -atng *** twitter: %twittmp_changedtextnotice
+        /echo $color(nick) -atng *** twitter: $2-
+      }
+      else { /echo $color(nick) -atng *** twitter: twit elk¸ldve! }
+    }
+  }
+  else { ; statusz lekeres
+    if ( %twittmp_position == user/status/text ) {
+      /echo $color(nick) -atng *** twitter: a jelenlegi st·tuszod: $2-
+    }
+  }
+
+  if ( %twittmp_position == hash/error ) {
+    /echo $color(info2) -atng *** twitter hiba¸zenet: $2-
+  }
+}
+;END

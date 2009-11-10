@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!--
+  xml.dll 0.1.1
+  demo xml file -->
+<config>
+ <server name="webnet">
+  <address port="6667-7000">irc.webmatser.com</address>
+  <nick>sax</nick>
+  <perform type="on connect">
+   <![CDATA[
+    mode $me -nMpe
+    ns identify sax mypass
+   ]]>
+  </perform>
+ </server>
+
+ <server name="localhost">
+  <address>127.0.0.1</address>
+ </server>
+
+</config>
