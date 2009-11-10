@@ -513,7 +513,7 @@
     var %j $scon(0)
     while (%j > 0) {
       scon %j
-      /aecho $color(highlight) -tnq *** Új nap: $asctime(yyyy. mm. dd. HH:mm:ss) ( $+ $daynameeng2hun($asctime(ddd)) $+ )
+      /aecho $color(highlight) -tnq *** Új nap: $asctime(yyyy. mm. dd. HH:nn:ss) ( $+ $daynameeng2hun($asctime(ddd)) $+ )
       scon -r
       dec %j 1
     }
@@ -526,5 +526,22 @@
   if ( $1 == --init ) {
     .timerEjfel -oi 00:00 1 0 /ejfel
   }
+}
+;END
+
+;URL FELDOLGOZÁS
+/gethostnamefromurl {
+  var %domain = $remove($1-,http://,https://)
+  var %cp $pos(%domain,/,1)
+  if (%cp != $null) { %domain = $left(%domain,$calc(%cp - 1)) }
+  if (: isin %domain) { %domain = $gettok(%domain,1,58) }
+  return %domain
+}
+/getportfromurl {
+  var %domain = $remove($1-,http://,https://)
+  var %cp $pos(%domain,/,1)
+  if (%cp != $null) { %domain = $left(%domain,$calc(%cp - 1)) }
+  if ( : isin %domain ) { return $gettok(%domain,2,58) }
+  else { return 80 }
 }
 ;END

@@ -127,7 +127,7 @@ alias checkmail_check {
 alias checkmail_gmail {
   ; ha nincs gmailcookies hash tabla, betoltjuk fajlbol (ha letezik)
   if ($hget(gmailcookies) == $null) {
-    hmake gmailcookies 1
+    hmake gmailcookies 10
     if ($exists(system\gmailcookies.dat)) {
       hload gmailcookies system\gmailcookies.dat
     }
