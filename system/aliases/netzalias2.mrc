@@ -513,7 +513,7 @@
     var %j $scon(0)
     while (%j > 0) {
       scon %j
-      /aecho $color(highlight) -tnq *** Új nap: $asctime(yyyy. mm. dd. HH:nn:ss) ( $+ $daynameeng2hun($asctime(ddd)) $+ )
+      /aecho $color(highlight) -tnq *** Új nap: $asctime(yyyy. mm. dd.) ( $+ $daynameeng2hun($asctime(ddd)) $+ )
       scon -r
       dec %j 1
     }
