@@ -717,7 +717,8 @@ alias /rss_rehash {
       hadd rss %section $+ _aktiv_ablakba %rsstmp_aktiv_ablakba
       hadd rss %section $+ _egyeb_ablakokba %rsstmp_egyeb_ablakokba
       hadd rss %section $+ _csatikra %rsstmp_csatikra
-      % [ $+ rss_tmp_ $+ [ %section ] $+ _rehashed ] = 1
+
+      if (%rsstmp_engedelyezes) { % [ $+ rss_tmp_ $+ [ %section ] $+ _rehashed ] = 1 }
     }
   }
   .fclose rssconfig

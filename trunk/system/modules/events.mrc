@@ -78,6 +78,7 @@ on 1:INPUT:=: {
   /set -n %tempszoveg $textformat(%tempszoveg)
   ; uzenet elkuldese
   /msg $active %tempszoveg
+  unset %tempszoveg
   /halt
 }
 ;END
@@ -116,6 +117,7 @@ on 1:INPUT:#: {
   /idlecheck
   ; uzenet elkuldese
   /msg $chan %tempszoveg
+  unset %tempszoveg
   /halt
 }
 
@@ -157,6 +159,7 @@ on 1:INPUT:?: {
   /idlecheck
   ; uzenet elkuldese
   /msg $active %tempszoveg
+  unset %tempszoveg
   /halt
 }
 ;END
@@ -808,7 +811,6 @@ on ^1:TOPIC:*: {
 
 ;ONACTION
 on ^1:ACTION:*:#:{
-  /set -n %tempszoveg $1-
   /set -n %tempszoveg $utf8($1-).dec
   ; highlight
   if ($highlight_ok(%tempszoveg)) {
@@ -843,6 +845,7 @@ on ^1:ACTION:*:#:{
   if ($tip(highlight_ $+ $chan)) && (!%tip) && (%tooltip_multiline) {
     var %tip $tip(highlight_ $+ $chan, Highlight: $chan,  $+ $color(action) $+ * $nick %tempszoveg, $null, system\img\chanmsg.ico, $null, /j $chan )
   }
+  unset %tempszoveg
   ; lastmsg (idle detekt)
   .hadd lastmsg $cid $+ $nick $ctime
   /idlecheck
@@ -904,6 +907,7 @@ on ^1:ACTION:*:?:{
   .hadd lastmsg $cid $+ $nick $ctime
   .hadd lastmsg $cid $+ $nick $+ privi $ctime
   /idlecheck
+  unset %tempszoveg
   /halt
 }
 ;END
@@ -973,6 +977,7 @@ on ^1:TEXT:*:#:{
   if ($tip(highlight_ $+ $chan)) && (!%tip) && (%tooltip_multiline) {
     var %tip $tip(highlight_ $+ $chan, Highlight: $chan, %mas_bal $+ $nick $+ %mas_jobb $+  %tempszoveg, $null, system\img\chanmsg.ico, $null, /j $chan )
   }
+  unset %tempszoveg
   ; lastmsg (idle detekt)
   .hadd lastmsg $cid $+ $nick $ctime
   /idlecheck
@@ -1012,7 +1017,6 @@ on ^1:TEXT:*:#:{
 
 on ^1:TEXT:*:?:{
   /haltdef
-  /set -n %tempszoveg $1-
   /set -n %tempszoveg $utf8($1-).dec
   ; bitlbee
   if (%tempszoveg == <<bitlbee>> $+ $chr(32) $+ *** $+ $chr(32) $+ This $+ $chr(32) $+ conversation $+ $chr(32) $+ has $+ $chr(32) $+ timed $+ $chr(32) $+ out. $+ $chr(32) $+ ***) {
@@ -1079,6 +1083,7 @@ on ^1:TEXT:*:?:{
   .hadd lastmsg $cid $+ $nick $ctime
   .hadd lastmsg $cid $+ $nick $+ privi $ctime
   /idlecheck
+  unset %tempszoveg
   /halt
 }
 ;END
