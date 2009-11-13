@@ -248,6 +248,10 @@
   %tooltip_multiline = 1
   ; 2.107
   %ejfel_lastreport = $null
+  %twitter_acc = $null
+  %twitter_pass = $null
+  %rss_auto_check = 0
+  %rss_ini_mtime = $null
 
   /echo $color(info) -atng *** Reset done.
 }
@@ -462,6 +466,8 @@
   if (%ophop == $null) { %ophop = 1 }
   ; 2.106
   if (%tooltip_multiline == $null) { %tooltip_multiline = 1 }
+  ; 2.107
+  if (%rss_auto_check == $null) { %rss_auto_check = 0 }
 }
 ;END
 
