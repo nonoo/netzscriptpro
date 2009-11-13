@@ -870,53 +870,11 @@ on 1:sockopen:rss_*: {
 }
 on 1:sockread:rss_*: {
   var %feedname = $remove($sockname,rss_)
-  var %temp
+  var &temp
   :ujraolvas
-  sockread %temp
+  sockread &temp
   if (!$sockbr) { return }
-  if (!% [ $+ rss_tmp_ $+ [ %feedname ] $+ _firstpubdatepassed ] && $chr(60) $+ pubDate $+ $chr(62) isin %temp) { ; feltetelezzuk, hogy a legujabb bejegyzes jon legeloszor
-    % [ $+ rss_tmp_ $+ [ %feedname ] $+ _firstpubdatepassed ] = 1
-    var %pubdatestart = $calc($pos(%temp,<pubDate,1) + 9)
-    var %pubdateend = $calc( $pos( $mid(%temp,%pubdatestart,$calc($len(%temp) - %pubdatestart)) ,</pubDate,1) - 1)
-    var %lastmodtime = $httpdate($mid(%temp,%pubdatestart,%pubdateend))
-    if (%lastmodtime && $hget(rss,%feedname $+ _lastupdate) && %lastmodtime <= $hget(rss,%feedname $+ _lastupdate)) {
-      if (!% [ $+ rss_tmp_ $+ [ %feedname ] $+ _quiet ]) { /rss_echo $color(notice) -tng $1 *** RSS ( $+ %feedname $+ ): nincs új bejegyzés. }
-      % [ $+ rss_tmp_ $+ [ %feedname ] $+ _noanalyze ] = 1
-      sockclose rss_ $+ %feedname
-      return
-    }
-  }
-  if ($left(%temp,14) == Last-Modified:) {
-    var %lastmodtime = $httpdate($mid(%temp,16,$calc($len(%temp) - 15)))
-    if (%lastmodtime && $hget(rss,%feedname $+ _lastupdate) && %lastmodtime <= $hget(rss,%feedname $+ _lastupdate)) {
-      if (!% [ $+ rss_tmp_ $+ [ %feedname ] $+ _quiet ]) { /rss_echo $color(notice) -tng $1 *** RSS ( $+ %feedname $+ ): nincs új bejegyzés. }
-      % [ $+ rss_tmp_ $+ [ %feedname ] $+ _noanalyze ] = 1
-      sockclose rss_ $+ %feedname
-      return
-    }
-  }
-  if ($left(%temp,9) == Location:) {
-    var %newurl = $mid(%temp,11,$calc($len(%temp) - 10))
-    var %oldurl = $hget(rss,%feedname $+ _url)
-    if (http:// !isin %newurl && https:// !isin %newurl) {
-      if ($left(%newurl,1) != /) { %newurl = / $+ %newurl }
-      %newurl = http:// $+ $gethostnamefromurl(%oldurl) $+ : $+ $getportfromurl(%oldurl) $+ %newurl
-    }
-    hadd rss %feedname $+ _url %newurl
-    if (!% [ $+ rss_tmp_ $+ [ %feedname ] $+ _quiet ]) { /rss_echo $color(info) -tng %feedname *** RSS ( $+ %feedname $+ ): átirányítás követése: %newurl }
-    % [ $+ rss_tmp_ $+ [ %feedname ] $+ _noanalyze ] = 1
-    sockclose rss_ $+ %feedname
-    if (!% [ $+ rss_tmp_ $+ [ %feedname ] $+ _quiet ]) { .timer 1 0 /rss_check %feedname }
-    else { .timer 1 0 .rss_check %feedname }
-    return
-  }
-  if (%temp == HTTP/1.0 $+ $chr(32) $+ 401 $+ $chr(32) $+ Unauthorized) {
-    if (!% [ $+ rss_tmp_ $+ [ %feedname ] $+ _quiet ]) { /rss_echo $color(info2) -tng %feedname *** RSS hiba ( $+ %feedname $+ ): nem lehet autentikálni, valószínûleg hibás a megadott felhasználónév/jelszó! }
-  }
-  if ($left(%temp,12) == HTTP/1.0 $+ $chr(32) $+ 403) {
-    if (!% [ $+ rss_tmp_ $+ [ %feedname ] $+ _quiet ]) { /rss_echo $color(info2) -tng %feedname *** RSS hiba ( $+ %feedname $+ ): elérési hiba! }
-  }
-  write system\temp\rss_ $+ %feedname $+ .xml $utf8($urldecode(%temp)).dec
+  bwrite system\temp\rss_ $+ %feedname $+ .xml -1 &temp
   goto ujraolvas
 }
 on 1:sockclose:rss_*: {
@@ -948,22 +906,23 @@ alias /rss_analyze {
   %result = $dll(system\xml.dll,parse_file,rss_ $+ $1)
   if (%result != S_OK) { if (!% [ $+ rss_tmp_ $+ [ $1 ] $+ _quiet ]) { /rss_echo $color(info2) -tng $1 *** RSS hiba ( $+ $1 $+ ): nem lehet értelmezni a szerver válaszát! } }
   else {
-    if (!% [ $+ rss_tmp_ $+ [ $1 ] $+ _displayed ]) {
+    if (!% [ $+ rss_tmp_ $+ [ $1 ] $+ _displayed ] && !% [ $+ rss_tmp_ $+ [ $1 ] $+ _jump ]) {
       if (!% [ $+ rss_tmp_ $+ [ $1 ] $+ _quiet ]) { /rss_echo $color(notice) -tng $1 *** RSS ( $+ $1 $+ ): nincs új bejegyzés. }
     }
   }
 
   dll system\xml.dll free_parser rss_ $+ $1
 
-  hadd rss $1 $+ _lastupdate $gmt
+  if (% [ $+ rss_tmp_ $+ [ $1 ] $+ _displayed ]) { hadd rss $1 $+ _lastupdate $gmt }
 }
 
 alias rss_xml_hstartelement {
   var %feedname = $remove($1,rss_)
+  var %element = $utf8($urldecode($2-)).dec
   if (% [ $+ rss_tmp_ $+ [ %feedname ] $+ _position ]) { % [ $+ rss_tmp_ $+ [ %feedname ] $+ _position ] = % [ $+ rss_tmp_ $+ [ %feedname ] $+ _position ] $+ / }
-  % [ $+ rss_tmp_ $+ [ %feedname ] $+ _position ] = % [ $+ rss_tmp_ $+ [ %feedname ] $+ _position ] $+ $2
+  % [ $+ rss_tmp_ $+ [ %feedname ] $+ _position ] = % [ $+ rss_tmp_ $+ [ %feedname ] $+ _position ] $+ %element
 
-  if ($2 == item) {
+  if (%element == item) {
     % [ $+ rss_tmp_ $+ [ %feedname ] $+ _title ] = $null
     % [ $+ rss_tmp_ $+ [ %feedname ] $+ _link ] = $null
     % [ $+ rss_tmp_ $+ [ %feedname ] $+ _description ] = $null
@@ -972,9 +931,10 @@ alias rss_xml_hstartelement {
 }
 alias rss_xml_hendelement {
   var %feedname = $remove($1,rss_)
-  % [ $+ rss_tmp_ $+ [ %feedname ] $+ _position ] = $left(% [ $+ rss_tmp_ $+ [ %feedname ] $+ _position ], $calc($len(% [ $+ rss_tmp_ $+ [ %feedname ] $+ _position ]) - ($len($2) + 1)) )
+  var %element = $utf8($urldecode($2-)).dec
+  % [ $+ rss_tmp_ $+ [ %feedname ] $+ _position ] = $left(% [ $+ rss_tmp_ $+ [ %feedname ] $+ _position ], $calc($len(% [ $+ rss_tmp_ $+ [ %feedname ] $+ _position ]) - ($len(%element) + 1)) )
 
-  if ($2 == item) {
+  if (%element == item) {
     var %pubdate = % [ $+ rss_tmp_ $+ [ %feedname ] $+ _pubdate ]
     if (!$hget(rss,%feedname $+ _lastupdate) || %pubdate > $hget(rss,%feedname $+ _lastupdate)) {
       if (% [ $+ rss_tmp_ $+ [ %feedname ] $+ _displayed ]) { rss_echo $color(background) -ng %feedname - }
@@ -1014,19 +974,61 @@ alias rss_xml_hendelement {
 alias rss_xml_hcdata {
   var %feedname = $remove($1,rss_)
   var %tmppos = % [ $+ rss_tmp_ $+ [ %feedname ] $+ _position ]
+  var %data = $utf8($urldecode($2-)).dec
 
-  if (%tmppos == rss/channel/item/title) { % [ $+ rss_tmp_ $+ [ %feedname ] $+ _title ] = $2- }
-  if (%tmppos == rss/channel/item/link) { % [ $+ rss_tmp_ $+ [ %feedname ] $+ _link ] = $2- }
-  if (%tmppos == rss/channel/item/description) { % [ $+ rss_tmp_ $+ [ %feedname ] $+ _description ] = $2- }
+  if (%tmppos == rss/channel/item/title) { % [ $+ rss_tmp_ $+ [ %feedname ] $+ _title ] = %data }
+  if (%tmppos == rss/channel/item/link) { % [ $+ rss_tmp_ $+ [ %feedname ] $+ _link ] = %data }
+  if (%tmppos == rss/channel/item/description) { % [ $+ rss_tmp_ $+ [ %feedname ] $+ _description ] = %data }
 }
 alias rss_xml_hchardata {
   var %feedname = $remove($1,rss_)
   var %tmppos = % [ $+ rss_tmp_ $+ [ %feedname ] $+ _position ]
-  if (!%tmppos) { return } ; nem erdekelnek a http fejlecek
+  var %data = $utf8($urldecode($2-)).dec
 
-  if (%tmppos == rss/channel/item/pubDate) { % [ $+ rss_tmp_ $+ [ %feedname ] $+ _pubdate ] = $httpdate($2-) }
-  if (%tmppos == rss/channel/item/title && % [ $+ rss_tmp_ $+ [ %feedname ] $+ _title ] == $null) { % [ $+ rss_tmp_ $+ [ %feedname ] $+ _title ] = $2- }
-  if (%tmppos == rss/channel/item/link && % [ $+ rss_tmp_ $+ [ %feedname ] $+ _link ] == $null) { % [ $+ rss_tmp_ $+ [ %feedname ] $+ _link ] = $2- }
-  if (%tmppos == rss/channel/item/description && % [ $+ rss_tmp_ $+ [ %feedname ] $+ _description ] == $null) { % [ $+ rss_tmp_ $+ [ %feedname ] $+ _description ] = $2- }
+  if (!%tmppos) { ; http fejlecek
+    if (!% [ $+ rss_tmp_ $+ [ %feedname ] $+ _firstpubdatepassed ] && $chr(60) $+ pubDate $+ $chr(62) isin %data) { ; feltetelezzuk, hogy a legujabb bejegyzes jon legeloszor
+      % [ $+ rss_tmp_ $+ [ %feedname ] $+ _firstpubdatepassed ] = 1
+      var %pubdatestart = $calc($pos(%data,<pubDate,1) + 9)
+      var %pubdateend = $calc( $pos( $mid(%data,%pubdatestart,$calc($len(%data) - %pubdatestart)) ,</pubDate,1) - 1)
+      var %lastmodtime = $httpdate($mid(%data,%pubdatestart,%pubdateend))
+      if (%lastmodtime && $hget(rss,%feedname $+ _lastupdate) && %lastmodtime <= $hget(rss,%feedname $+ _lastupdate)) {
+        if (!% [ $+ rss_tmp_ $+ [ %feedname ] $+ _quiet ]) { /rss_echo $color(notice) -tng $1 *** RSS ( $+ %feedname $+ ): nincs új bejegyzés.1 }
+        return
+      }
+    }
+    if ($left(%data,14) == Last-Modified:) {
+      var %lastmodtime = $httpdate($mid(%data,16,$calc($len(%data) - 15)))
+      if (%lastmodtime && $hget(rss,%feedname $+ _lastupdate) && %lastmodtime <= $hget(rss,%feedname $+ _lastupdate)) {
+        if (!% [ $+ rss_tmp_ $+ [ %feedname ] $+ _quiet ]) { /rss_echo $color(notice) -tng $1 *** RSS ( $+ %feedname $+ ): nincs új bejegyzés. 2}
+          return
+        }
+      }
+    }
+    if ($left(%data,9) == Location:) {
+      var %newurl = $mid(%data,11,$calc($len(%data) - 10))
+      var %oldurl = $hget(rss,%feedname $+ _url)
+      if (http:// !isin %newurl && https:// !isin %newurl) {
+        if ($left(%newurl,1) != /) { %newurl = / $+ %newurl }
+        %newurl = http:// $+ $gethostnamefromurl(%oldurl) $+ : $+ $getportfromurl(%oldurl) $+ %newurl
+      }
+      hadd rss %feedname $+ _url %newurl
+      if (!% [ $+ rss_tmp_ $+ [ %feedname ] $+ _quiet ]) { /rss_echo $color(info) -tng %feedname *** RSS ( $+ %feedname $+ ): átirányítás követése: %newurl }
+      % [ $+ rss_tmp_ $+ [ $1 ] $+ _jump ] = 1
+      if (!% [ $+ rss_tmp_ $+ [ %feedname ] $+ _quiet ]) { .timer 1 0 /rss_check %feedname }
+      else { .timer 1 0 .rss_check %feedname }
+      return
+    }
+    if (%data == HTTP/1.0 $+ $chr(32) $+ 401 $+ $chr(32) $+ Unauthorized) {
+      if (!% [ $+ rss_tmp_ $+ [ %feedname ] $+ _quiet ]) { /rss_echo $color(info2) -tng %feedname *** RSS hiba ( $+ %feedname $+ ): nem lehet autentikálni, valószínûleg hibás a megadott felhasználónév/jelszó! }
+    }
+    if ($left(%data,12) == HTTP/1.0 $+ $chr(32) $+ 403) {
+      if (!% [ $+ rss_tmp_ $+ [ %feedname ] $+ _quiet ]) { /rss_echo $color(info2) -tng %feedname *** RSS hiba ( $+ %feedname $+ ): elérési hiba! }
+    }
+  }
+
+  if (%tmppos == rss/channel/item/pubDate) { % [ $+ rss_tmp_ $+ [ %feedname ] $+ _pubdate ] = $httpdate(%data) }
+  if (%tmppos == rss/channel/item/title && % [ $+ rss_tmp_ $+ [ %feedname ] $+ _title ] == $null) { % [ $+ rss_tmp_ $+ [ %feedname ] $+ _title ] = %data }
+  if (%tmppos == rss/channel/item/link && % [ $+ rss_tmp_ $+ [ %feedname ] $+ _link ] == $null) { % [ $+ rss_tmp_ $+ [ %feedname ] $+ _link ] = %data }
+  if (%tmppos == rss/channel/item/description && % [ $+ rss_tmp_ $+ [ %feedname ] $+ _description ] == $null) { % [ $+ rss_tmp_ $+ [ %feedname ] $+ _description ] = %data }
 }
 ;END
