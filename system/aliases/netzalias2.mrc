@@ -529,7 +529,7 @@
 }
 ;END
 
-;URL FELDOLGOZ¡S
+;URL …S HTTP FELDOLGOZ¡S
 /gethostnamefromurl {
   var %domain = $remove($1-,http://,https://)
   var %cp $pos(%domain,/,1)
@@ -563,5 +563,80 @@
     %o_m = 0
   }
   return $calc($ctime(%y %m %d %time) %offset_sign ( %o_h * 3600 + %o_m * 60 ))
+}
+/utf8 {
+  if (dec* iswm $prop) {
+    return $replace($1-,√ú,‹,√ü,¸,√≥,Û,≈,ı,√∫,˙,√ä,È,√•,·,≈π,˚,√≠,Ì,√°,·,√ñ,÷,√ì,”,√â,…,√Å,¡,ı∞,€,√ç,Õ,√©,È,ı±,˚,√º,¸,√∂,ˆ,√ö,⁄,ıë,ı,ıê,’)
+  }
+  if (enc* iswm $prop) {
+    return $replace($1-,¡,√Å,…,√â,Õ,√ç,”,√ì,’,≈ê,÷,√ñ,⁄,√ö,€,≈∞,‹,√ú,·,√°,È,√©,Ì,√≠,Û,√≥,ı,≈ë,ˆ,√∂,˙,√∫,˚,≈±,¸,√º)
+  }
+}
+/base64 { ; by necronomi (aeternus_immortalis@hotmail.com)
+  var %b64 ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/
+  if (enc* iswm $prop) {
+    var %x = $len($1-), %i = 0, %bstr = ""
+    while (%i < %x) {
+      inc %i 1
+      %bstr = %bstr $+ $base($asc($mid($1-,%i,1)),10,2,8)
+    }
+    var %x = $len(%bstr), %i = 1, %bc = "", %p = $calc($len(%bstr) % 6), %bits = ""
+    while (%i < %x) {
+      %bc = $mid(%bstr,%i,6)
+      if ($len(%bc) < 6) { %bc = %bc $+ $str(0,$calc(6 - $len(%bc))) }
+      %bits = %bits $+ $mid(%b64,$calc($base(%bc,2,10) + 1),1)
+      inc %i 6
+    }
+    if (%p > 0) {
+      if (%p == 2) %bits = %bits $+ ==
+      elseif (%p == 4) %bits = %bits $+ =
+    }
+    return %bits
+  }
+  elseif (dec* iswm $prop) {
+    var %x = $len($1), %i = 0, %bstr = "", %p = $numtok($1,$asc(=)), %pos = 0, %asc = 0
+    while (%i < %x) {
+      inc %i 1
+      %pos = $poscs(%b64,$mid($1,%i,1),1)
+      if (%pos > 0) { %pos = $calc(%pos - 1) }
+      %bstr = %bstr $+ $base(%pos,10,2,6)
+    }
+    var %x = $len(%bstr), %i = 1, %text = ""
+    while (%i < %x) {
+      %asc = $base($mid(%bstr,%i,8),2,10)
+      if (%asc == 32) { %text = %text $chr(%asc) }
+      else { %text = %text $+ $chr(%asc) }
+      inc %i 8
+    }
+    return %text
+  }
+}
+/urldecode {
+  ; vegigmegyunk az uzenet karakterein, a nem alfanumerikus (&#-vel kezdodo) karaktereket dekodoljuk
+  var %i = 1
+  var %msg $replace($1-,&quot;,")
+  var %msg2
+  while (%i <= $len(%msg)) {
+    if ($right($left(%msg,%i),1) == $chr(38) && $right($left(%msg,$calc(%i + 1)),1) == $chr(35)) {
+      inc %i 2
+      var %num
+      while (%i <= $len(%msg) && $right($left(%msg,%i),1) != ;) {
+        %num = %num $+ $right($left(%msg,%i),1)
+        inc %i
+      }
+      var %outchar $chr(%num)
+      if (%num == 337) { %outchar = ı }
+      if (%num == 369) { %outchar = ˚ }
+      if (%num == 336) { %outchar = ’ }
+      if (%num == 368) { %outchar = € }
+      %msg2 = %msg2 $+ %outchar
+    }
+    else {
+      if ($right($left(%msg,%i),1) == $chr(32)) { %msg2 = %msg2 $+ $chr(32) $+  }
+      else { %msg2 = %msg2 $+ $right($left(%msg,%i),1) }
+    }
+    inc %i 1
+  }
+  return $strip(%msg2)
 }
 ;END
