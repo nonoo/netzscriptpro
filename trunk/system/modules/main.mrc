@@ -75,9 +75,9 @@ on *:START: {
     if (%nemvoltinditva == 1) { firstsetup | %nemvoltinditva = 0 }
     ; frissites keresese
     if (%autoupdate) { .timer 1 1 update -quiet }
-    ; auto connect
     ; away memorias cuccok resetelese
     unset %away_memoria_*
+    if (%rss_auto_check) { .rss --init }
     if (%autoconnect) {
       var %i 2
       ; az elso szervert az aktiv ablakba csatlakoztatjuk

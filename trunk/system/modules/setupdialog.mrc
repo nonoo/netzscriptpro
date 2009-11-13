@@ -13,6 +13,7 @@ dialog setupdialog {
   tab "&Beep", 166
   tab "E&mail", 194
   tab "&Skype", 282
+  tab "&Twitter/RSS", 322
   box "", 307, 8 25 322 365, tab 306
   box "", 252, 8 25 322 365, tab 251
   box "", 195, 8 25 322 365, tab 194
@@ -323,4 +324,13 @@ dialog setupdialog {
   box " OpHop ", 319, 211 350 112 35, tab 251
   check "Aktív", 320, 221 364 88 17, tab 251
   check "Többsoros tooltipek", 321, 22 188 138 17, tab 306
+  box "", 323, 8 25 322 365, tab 322
+  box " Twitter ", 324, 25 47 289 74, tab 322
+  edit "", 325, 138 68 160 20, tab 322
+  edit "", 326, 138 91 160 20, tab 322 pass
+  text "Felhasználónév:", 327, 41 69 84 17, tab 322
+  text "Jelszó:", 328, 43 93 82 17, tab 322
+  box " RSS olvasó ", 329, 25 136 289 90, tab 322
+  check "Automatikus olvasás", 330, 43 162 128 17, tab 322
+  button "Feedek szerkesztése", 331, 43 189 256 25, tab 322
 }
