@@ -131,12 +131,12 @@ on *:DIALOG:tfsetup:init:*: {
 
 ;TEXTFORMAT
 alias /textformat {
-  /set -n %tempszoveg $1
+  /set -n %tempszoveg $1-
   if (%onrandomcase) { /set -n %tempszoveg $randomcase(%tempszoveg) }
   if (%ontopten) { /set -n %tempszoveg $topten(%tempszoveg) }
   if (%onelite) { /set -n %tempszoveg $elite(%tempszoveg) }
   if (%onreverse) { /set -n %tempszoveg $reverse(%tempszoveg) }
-  if (%onrcolor) { /set -n %tempszoveg $randomcolor(%tempszoveg)    }
+  if (%onrcolor) { /set -n %tempszoveg $randomcolor(%tempszoveg) }
   if (%onbold) { /set -n %tempszoveg  $+ %tempszoveg }
   if (%oninverse) { /set -n %tempszoveg  $+ %tempszoveg }
   if (%onunderline) { /set -n %tempszoveg  $+ %tempszoveg }
@@ -469,8 +469,13 @@ alias /ml {
 
 ;TWITTER
 alias /twit {
-  if (!%twitter_acc || !%twitter_pass) { echo $color(info2) -atng *** /twit hiba: add meg a Twitter elérésed az F12-es setupban! | halt }
-  if ($len($1-) > 140 ) { echo $color(info2) -atng *** /twit hiba: az üzenet max. 140 karakter hosszú lehet! | halt }
+  if (!%twitter_acc || !%twitter_pass) {
+    echo $color(info2) -atng *** /twit hiba: nincs beállítva a twitter elérésed!
+    /setup
+    did -f setupdialog 322
+    return
+  }
+  if ($len($1-) > 140 ) { echo $color(info2) -atng *** /twit hiba: az üzenet max. 140 karakter hosszú lehet! | return }
   twit_destroy
   if ($len($1) == 0) {
     %twittmp_showstatus = 1
@@ -479,8 +484,8 @@ alias /twit {
     %twittmp_showstatus = 0
   }
   %twittmp_msg = $1-
-  sockopen twit twitter.com 80
   echo $color(info) -atng *** twitter: kapcsolódás...
+  sockopen twit twitter.com 80
 }
 alias /twit_destroy { unset %twittmp_* | sockclose twit | .remove system\temp\twit.xml }
 
@@ -722,7 +727,9 @@ alias /rss_rehash {
 }
 alias /rss_checkall {
   if ($gettok($hget(rss,feeds),0,59) == 0) {
-    echo $color(info2) -atngq *** RSS hiba: nincsenek beállítva feedek, szerkeszd a system\rss.ini fájlt!
+    echo $color(info2) -atngq *** RSS hiba: nincsenek beállítva feedek!
+    /setup
+    did -f setupdialog 322
     return
   }
   echo $color(notice) -atngq *** RSS: feedek ellenõrzése...
@@ -750,11 +757,12 @@ alias /rss_echo {
   }
 
   while (%i <= %wndcount) {
-    %wndname = @ $+ $gettok($hget(rss,$3 $+ _egyeb_ablakokba),%i,32)
-    if (%wndname != @) {
+    %wndname = $gettok($hget(rss,$3 $+ _egyeb_ablakokba),%i,32)
+    if ($len(%wndname)) {
+      %wndname = @ $+ RSS: $+ %wndname
       if (!$window(%wndname)) { /window -ekmhw3 %wndname Fixedsys }
       echo $1 $2 %wndname $4-
-      /window -g1 %wndname
+      if (n !isin $2) { /window -g1 %wndname }
     }
     inc %i 1
   }
@@ -808,7 +816,7 @@ alias /rss_check { ; params: feedname, jump
 }
 on 1:sockopen:rss_*: {
   var %feedname = $remove($sockname,rss_)
-  if ($sockerr > 0) { if (!% [ $+ rss_tmp_ $+ [ %feedname ] $+ _quiet ]) { /rss_echo $color(info2) -tng %feedname *** RSS hiba ( $+ %feedname $+ ): nem lehet kapcsolódni a szerverre! } | return }
+  if ($sockerr > 0) { if (!% [ $+ rss_tmp_ $+ [ %feedname ] $+ _quiet ]) { /rss_echo $color(info2) -tg %feedname *** RSS hiba ( $+ %feedname $+ ): nem lehet kapcsolódni a szerverre! } | return }
   if (!% [ $+ rss_tmp_ $+ [ %feedname ] $+ _quiet ]) { /rss_echo $color(notice) -tng %feedname *** RSS ( $+ %feedname $+ ): letöltés... }
   write -c system\temp\rss_ $+ %feedname $+ .xml
 
@@ -837,20 +845,16 @@ on 1:sockread:rss_*: {
 on 1:sockclose:rss_*: {
   var %feedname = $remove($sockname,rss_)
   if (!% [ $+ rss_tmp_ $+ [ %feedname ] $+ _noanalyze ]) { rss_analyze %feedname }
-  .remove system\temp\rss_ $+ %feedname $+ .xml
-
-  hsave rss system\rss_data.dat
-  unset % [ $+ rss_tmp_ $+ [ %feedname ] $+ _* ]
 }
 alias /rss_analyze {
   if ( !$isfile(system\temp\rss_ $+ $1 $+ .xml) ) {
-    if (!% [ $+ rss_tmp_ $+ [ $1 ] $+ _quiet ]) { /rss_echo $color(info2) -tng $1 *** RSS hiba ( $+ $1 $+ ): nem érkezett válasz a szervertõl! }
+    if (!% [ $+ rss_tmp_ $+ [ $1 ] $+ _quiet ]) { /rss_echo $color(info2) -tg $1 *** RSS hiba ( $+ $1 $+ ): nem érkezett válasz a szervertõl! }
     return
   }
   if (!$file(system\temp\rss_ $+ $1 $+ .xml).size) { return }
 
   var %result = $dll(system\xml.dll,create_parser,rss_ $+ $1)
-  if (%result != S_OK) { if (!% [ $+ rss_tmp_ $+ [ $1 ] $+ _quiet ]) { /rss_echo $color(info2) -tng $1 *** RSS hiba ( $+ $1 $+ ): nem lehet betölteni az XML értelmezõt (xml.dll)! } | return }
+  if (%result != S_OK) { if (!% [ $+ rss_tmp_ $+ [ $1 ] $+ _quiet ]) { /rss_echo $color(info2) -tg $1 *** RSS hiba ( $+ $1 $+ ): nem lehet betölteni az XML értelmezõt (xml.dll)! } | return }
 
   dll system\xml.dll set_handler_startelement rss_ $+ $1 rss_xml_hstartelement
   dll system\xml.dll set_handler_endelement rss_ $+ $1 rss_xml_hendelement
@@ -861,7 +865,7 @@ alias /rss_analyze {
   % [ $+ rss_tmp_ $+ [ $1 ] $+ _position ] = $null
   % [ $+ rss_tmp_ $+ [ $1 ] $+ _displayed ] = 0
   %result = $dll(system\xml.dll,parse_file,rss_ $+ $1)
-  if (%result != S_OK) { if (!% [ $+ rss_tmp_ $+ [ $1 ] $+ _quiet ]) { /rss_echo $color(info2) -tng $1 *** RSS hiba ( $+ $1 $+ ): nem lehet értelmezni a szerver válaszát! } }
+  if (%result != S_OK) { if (!% [ $+ rss_tmp_ $+ [ $1 ] $+ _quiet ]) { /rss_echo $color(info2) -tg $1 *** RSS hiba ( $+ $1 $+ ): nem lehet értelmezni a szerver válaszát! } }
   else {
     if (!% [ $+ rss_tmp_ $+ [ $1 ] $+ _displayed ] && !% [ $+ rss_tmp_ $+ [ $1 ] $+ _jump ]) {
       if (!% [ $+ rss_tmp_ $+ [ $1 ] $+ _quiet ]) { /rss_echo $color(notice) -tng $1 *** RSS ( $+ $1 $+ ): nincs új bejegyzés. }
@@ -871,6 +875,10 @@ alias /rss_analyze {
   dll system\xml.dll free_parser rss_ $+ $1
 
   if (% [ $+ rss_tmp_ $+ [ $1 ] $+ _displayed ]) { hadd rss $1 $+ _lastupdate $gmt }
+
+  hsave rss system\rss_data.dat
+  .remove system\temp\rss_ $+ $1 $+ .xml
+  unset % [ $+ rss_tmp_ $+ [ $1 ] $+ _* ]
 }
 
 alias rss_xml_hstartelement {
@@ -891,7 +899,7 @@ alias rss_xml_hendelement {
 
   if ($2 == item) {
     var %pubdate = % [ $+ rss_tmp_ $+ [ %feedname ] $+ _pubdate ]
-    if (!$hget(rss,%feedname $+ _lastupdate) || %pubdate > $hget(rss,%feedname $+ _lastupdate)) {
+    if (%pubdate <= $gmt && ( !$hget(rss,%feedname $+ _lastupdate) || %pubdate > $hget(rss,%feedname $+ _lastupdate) ) ) {
       ; rehash utan csak 3 bejegyzest kuldunk ki
       if (% [ $+ rss_tmp_ $+ [ %feedname ] $+ _rehashed ] && % [ $+ rss_tmp_ $+ [ %feedname ] $+ _displayed ] >= 3) {
         dll system\xml.dll free_parser rss_ $+ %feedname
@@ -917,23 +925,23 @@ alias rss_xml_hendelement {
         }
 
         if (%titleanddescmatch) {
-          rss_echo $color(notice) -tng %feedname *** RSS ( $+ $color(nick) $+  $+ %feedname $+ ): $+ $color(nick) % [ $+ rss_tmp_ $+ [ %feedname ] $+ _title ] %timestring
+          rss_echo $color(notice) -tg %feedname *** RSS ( $+ $color(nick) $+  $+ %feedname $+ ): $+ $color(nick) % [ $+ rss_tmp_ $+ [ %feedname ] $+ _title ] %timestring
           rss_msgtochannels %feedname (netZ RSS) ( $+ %feedname $+ ): % [ $+ rss_tmp_ $+ [ %feedname ] $+ _title ] %timestring
           %displayed = 1
         }
         else {
-          rss_echo $color(notice) -tng %feedname *** RSS ( $+ $color(nick) $+  $+ %feedname $+ ): $+ $color(nick) % [ $+ rss_tmp_ $+ [ %feedname ] $+ _title ]  $+ %timestring
+          rss_echo $color(notice) -tg %feedname *** RSS ( $+ $color(nick) $+  $+ %feedname $+ ): $+ $color(nick) % [ $+ rss_tmp_ $+ [ %feedname ] $+ _title ]  $+ %timestring
           rss_msgtochannels %feedname (netZ RSS) ( $+ %feedname $+ ): % [ $+ rss_tmp_ $+ [ %feedname ] $+ _title ]  $+ %timestring
           %displayed = 1
         }
       }
       if ($hget(rss,%feedname $+ _leiras_kiirasa) && !%titleanddescmatch && $len(% [ $+ rss_tmp_ $+ [ %feedname ] $+ _description ]) > 0 && % [ $+ rss_tmp_ $+ [ %feedname ] $+ _description ] != Nincs $+ $chr(32) $+ leírás) {
-        rss_echo $color(notice) -tng %feedname *** RSS ( $+ $color(nick) $+  $+ %feedname $+ ): $+ $color(nick) % [ $+ rss_tmp_ $+ [ %feedname ] $+ _description ]
+        rss_echo $color(notice) -tg %feedname *** RSS ( $+ $color(nick) $+  $+ %feedname $+ ): $+ $color(nick) % [ $+ rss_tmp_ $+ [ %feedname ] $+ _description ]
         rss_msgtochannels %feedname (netZ RSS) ( $+ %feedname $+ ): % [ $+ rss_tmp_ $+ [ %feedname ] $+ _description ]
         %displayed = 1
       }
       if ($hget(rss,%feedname $+ _link_kiirasa) && $len(% [ $+ rss_tmp_ $+ [ %feedname ] $+ _link ]) > 0) {
-        rss_echo $color(notice) -tng %feedname *** RSS ( $+ $color(nick) $+  $+ %feedname $+ ): %link
+        rss_echo $color(notice) -tg %feedname *** RSS ( $+ $color(nick) $+  $+ %feedname $+ ): %link
         rss_msgtochannels %feedname (netZ RSS) ( $+ %feedname $+ ): % [ $+ rss_tmp_ $+ [ %feedname ] $+ _link ]
         %displayed = 1
       }
@@ -979,10 +987,10 @@ alias rss_xml_hchardata {
       return
     }
     if (%data == HTTP/1.0 $+ $chr(32) $+ 401 $+ $chr(32) $+ Unauthorized) {
-      if (!% [ $+ rss_tmp_ $+ [ %feedname ] $+ _quiet ]) { /rss_echo $color(info2) -tng %feedname *** RSS hiba ( $+ %feedname $+ ): nem lehet autentikálni, valószínûleg hibás a megadott felhasználónév/jelszó! }
+      if (!% [ $+ rss_tmp_ $+ [ %feedname ] $+ _quiet ]) { /rss_echo $color(info2) -tg %feedname *** RSS hiba ( $+ %feedname $+ ): nem lehet autentikálni, valószínûleg hibás a megadott felhasználónév/jelszó! }
     }
     if ($left(%data,12) == HTTP/1.0 $+ $chr(32) $+ 403) {
-      if (!% [ $+ rss_tmp_ $+ [ %feedname ] $+ _quiet ]) { /rss_echo $color(info2) -tng %feedname *** RSS hiba ( $+ %feedname $+ ): elérési hiba! }
+      if (!% [ $+ rss_tmp_ $+ [ %feedname ] $+ _quiet ]) { /rss_echo $color(info2) -tg %feedname *** RSS hiba ( $+ %feedname $+ ): elérési hiba! }
     }
     return
   }
@@ -1006,5 +1014,12 @@ alias rss_xml_hchardata {
   if (%tmppos == rss/channel/item/description && % [ $+ rss_tmp_ $+ [ %feedname ] $+ _description ] == $null) {
     % [ $+ rss_tmp_ $+ [ %feedname ] $+ _description ] = $utf8($urldecode($2-)).dec
   }
+}
+menu @RSS:* {
+  Feedek frissítése	[/rss]: /rss
+  -
+  Feedek szerkesztése: /run notepad system\rss.ini
+  -
+  Ablak bezárása: /window -c $active
 }
 ;END

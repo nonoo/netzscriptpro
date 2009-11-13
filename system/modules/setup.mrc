@@ -321,6 +321,12 @@ on *:DIALOG:setupdialog:init:*: {
   did -a $dname 303 %skype_msg1
   did -a $dname 304 %skype_msg2
   ;END
+
+  ;TWITTER/RSS
+  did -a $dname 325 %twitter_acc
+  did -a $dname 326 $dekod(%twitter_pass)
+  if (%rss_auto_check) { did -c $dname 330 }
+  ;END
 }
 ;END
 
@@ -779,6 +785,10 @@ on *:DIALOG:setupdialog:sclick:294: {
 }
 ;END
 
+;TWITTER/RSS EVENTS
+on *:DIALOG:setupdialog:sclick:331: { /run notepad system\rss.ini }
+;END
+
 ;OK GOMB
 on *:DIALOG:setupdialog:sclick:3: {
   ;WINAMP
@@ -1104,6 +1114,13 @@ on *:DIALOG:setupdialog:sclick:3: {
   if ($did(292).sel == 4) { %skype_away_mod = invisible }
   %skype_msg1 = $did(303)
   %skype_msg2 = $did(304)
+  ;END
+
+  ;TWITTER/RSS
+  %twitter_acc = $did(325)
+  %twitter_pass = $enkod($did(326))
+  if ($did(330).state) { %rss_auto_check = 1 | .rss --init }
+  else { %rss_auto_check = 0 | .timerRSS off }
   ;END
 
   emailsettingssave
