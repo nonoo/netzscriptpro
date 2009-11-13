@@ -618,14 +618,12 @@
   var %i = 1
   var %msg $replace($1-,&quot;,",&lt;,<,&gt;,>,&nbsp;,$chr(32),&amp;,&,&cent;,?,&pound;,?,&yen;,?,&euro;,€,&sect;,§,&copy;,©,&reg;,®)
   var %msg2
-  var %c
   while (%i <= $len(%msg)) {
-    %c = $right($left(%msg,%i),1)
-    if (%c == $chr(38) && $right($left(%msg,$calc(%i + 1)),1) == $chr(35)) {
+    if ($right($left(%msg,%i),1) == $chr(38) && $right($left(%msg,$calc(%i + 1)),1) == $chr(35)) {
       inc %i 2
       var %num
-      while (%i <= $len(%msg) && %c != ;) {
-        %num = %num $+ %c
+      while (%i <= $len(%msg) && $right($left(%msg,%i),1) != ;) {
+        %num = %num $+ $right($left(%msg,%i),1)
         inc %i
       }
       var %outchar $chr(%num)
@@ -637,7 +635,7 @@
     }
     else {
       if ($right($left(%msg,%i),1) == $chr(32)) { %msg2 = %msg2 $+ $chr(32) $+  }
-      else { %msg2 = %msg2 $+ %c }
+      else { %msg2 = %msg2 $+ $right($left(%msg,%i),1) }
     }
     inc %i 1
   }
