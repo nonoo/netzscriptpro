@@ -605,6 +605,7 @@ alias twit_xml_hchardata {
 
 ;RSS
 alias /rss {
+  if ($1 == edit) { run notepad system\rss.ini | return }
   if ($hget(rss) == $null) {
     hmake rss 100
     if ($exists(system\rss_data.dat)) {
@@ -766,8 +767,9 @@ alias /rss_echo {
     if ($len(%wndname)) {
       %wndname = @ $+ RSS: $+ %wndname
       if (!$window(%wndname)) { /window -ekmhw3 %wndname Fixedsys }
-      echo $1 $2 %wndname $4-
       if (n !isin $2) { /window -g1 %wndname }
+      var %echoparams = $remove($2,n)
+      echo $1 %echoparams %wndname $4-
     }
     inc %i 1
   }
@@ -962,7 +964,7 @@ alias rss_xml_hendelement {
 alias rss_xml_hcdata {
   var %feedname = $remove($1,rss_)
   var %tmppos = % [ $+ rss_tmp_ $+ [ %feedname ] $+ _position ]
-  var %data = $utf8($urldecode($2-)).dec
+  var %data = $striphtml($utf8($urldecode($2-)).dec)
 
   if (%tmppos == rss/channel/item/title) { % [ $+ rss_tmp_ $+ [ %feedname ] $+ _title ] = %data }
   if (%tmppos == rss/channel/item/link) { % [ $+ rss_tmp_ $+ [ %feedname ] $+ _link ] = %data }
@@ -1015,13 +1017,13 @@ alias rss_xml_hchardata {
     }
   }
   if (%tmppos == rss/channel/item/title && % [ $+ rss_tmp_ $+ [ %feedname ] $+ _title ] == $null) {
-    % [ $+ rss_tmp_ $+ [ %feedname ] $+ _title ] = $utf8($urldecode($2-)).dec
+    % [ $+ rss_tmp_ $+ [ %feedname ] $+ _title ] = $striphtml($utf8($urldecode($2-)).dec)
   }
   if (%tmppos == rss/channel/item/link && % [ $+ rss_tmp_ $+ [ %feedname ] $+ _link ] == $null) {
-    % [ $+ rss_tmp_ $+ [ %feedname ] $+ _link ] = $utf8($urldecode($2-)).dec
+    % [ $+ rss_tmp_ $+ [ %feedname ] $+ _link ] = $striphtml($utf8($urldecode($2-)).dec)
   }
   if (%tmppos == rss/channel/item/description && % [ $+ rss_tmp_ $+ [ %feedname ] $+ _description ] == $null) {
-    % [ $+ rss_tmp_ $+ [ %feedname ] $+ _description ] = $utf8($urldecode($2-)).dec
+    % [ $+ rss_tmp_ $+ [ %feedname ] $+ _description ] = $striphtml($utf8($urldecode($2-)).dec)
   }
 }
 menu @RSS:* {

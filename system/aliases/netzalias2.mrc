@@ -558,10 +558,12 @@
   elseif (%offset_sign == $chr(45)) { %offset_sign = $chr(43) }
   var %o_h = $left(%offset,2)
   var %o_m = $right(%offset,2)
-  if (%offset == GMT) {
-    %o_h = 0
-    %o_m = 0
-  }
+  if (%offset == GMT || %offset == UT) { %o_h = 0 | %o_m = 0 }
+  if (%offset == EST || %offset == CDT) { %offset_sign = - | %o_h = 5 | %o_m = 0 }
+  if (%offset == EDT) { %offset_sign = - | %o_h = 4 | %o_m = 0 }
+  if (%offset == MST || %offset == PDT) { %offset_sign = - | %o_h = 7 | %o_m = 0 }
+  if (%offset == MDT || %offset == CST) { %offset_sign = - | %o_h = 6 | %o_m = 0 }
+  if (%offset == PST) { %offset_sign = - | %o_h = 8 | %o_m = 0 }
   return $calc($ctime(%y %m %d %time) %offset_sign ( %o_h * 3600 + %o_m * 60 ))
 }
 /utf8 {
@@ -614,14 +616,16 @@
 /urldecode {
   ; vegigmegyunk az uzenet karakterein, a nem alfanumerikus (&#-vel kezdodo) karaktereket dekodoljuk
   var %i = 1
-  var %msg $replace($1-,&quot;,")
+  var %msg $replace($1-,&quot;,",&lt;,<,&gt;,>,&nbsp;,$chr(32),&amp;,&,&cent;,?,&pound;,?,&yen;,?,&euro;,€,&sect;,§,&copy;,©,&reg;,®)
   var %msg2
+  var %c
   while (%i <= $len(%msg)) {
-    if ($right($left(%msg,%i),1) == $chr(38) && $right($left(%msg,$calc(%i + 1)),1) == $chr(35)) {
+    %c = $right($left(%msg,%i),1)
+    if (%c == $chr(38) && $right($left(%msg,$calc(%i + 1)),1) == $chr(35)) {
       inc %i 2
       var %num
-      while (%i <= $len(%msg) && $right($left(%msg,%i),1) != ;) {
-        %num = %num $+ $right($left(%msg,%i),1)
+      while (%i <= $len(%msg) && %c != ;) {
+        %num = %num $+ %c
         inc %i
       }
       var %outchar $chr(%num)
@@ -633,10 +637,28 @@
     }
     else {
       if ($right($left(%msg,%i),1) == $chr(32)) { %msg2 = %msg2 $+ $chr(32) $+  }
-      else { %msg2 = %msg2 $+ $right($left(%msg,%i),1) }
+      else { %msg2 = %msg2 $+ %c }
     }
     inc %i 1
   }
   return $strip(%msg2)
+}
+/striphtml {
+  var %i = 1
+  var %on = 1
+  var %msg = $1-
+  var %out
+  var %c
+  while (%i <= $len(%msg)) {
+    %c = $right($left(%msg,%i),1)
+    if (%c == <) { %on = 0 }
+    if (%on) {
+      if ($right($left(%msg,%i),1) == $chr(32)) { %out = %out $+ $chr(32) $+  }
+      %out = %out $+ %c
+    }
+    if (%c == >) { %on = 1 }
+    inc %i 1
+  }
+  return %out
 }
 ;END
