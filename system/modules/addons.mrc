@@ -630,6 +630,7 @@ alias /rss_rehash {
   else { hmake rss 100 }
 
   .remove system\rss_data.dat
+  unset %rss_tmp_*
 
   if ($fopen(rssconfig)) { .fclose rssconfig }
 
@@ -858,7 +859,10 @@ alias /rss_analyze {
     if (!% [ $+ rss_tmp_ $+ [ $1 ] $+ _quiet ]) { /rss_echo $color(info2) -tg $1 *** RSS hiba ( $+ $1 $+ ): nem érkezett válasz a szervertõl! }
     return
   }
-  if (!$file(system\temp\rss_ $+ $1 $+ .xml).size) { return }
+  var %filesize = $file(system\temp\rss_ $+ $1 $+ .xml).size
+  if (!%filesize) { return }
+
+  if (!% [ $+ rss_tmp_ $+ [ $1 ] $+ _quiet ]) { /rss_echo $color(notice) -tng $1 *** RSS ( $+ $1 $+ ): $meret(%filesize) letöltve, feldolgozás... }
 
   var %result = $dll(system\xml.dll,create_parser,rss_ $+ $1)
   if (%result != S_OK) { if (!% [ $+ rss_tmp_ $+ [ $1 ] $+ _quiet ]) { /rss_echo $color(info2) -tg $1 *** RSS hiba ( $+ $1 $+ ): nem lehet betölteni az XML értelmezõt (xml.dll)! } | return }
@@ -920,39 +924,43 @@ alias rss_xml_hendelement {
       if ( isin %url_kiemeles_style) { %url_kiemeles_unset = %url_kiemeles_unset $+  }
       if ( isin %url_kiemeles_style) { %url_kiemeles_unset = %url_kiemeles_unset $+  }
       if ( isin %url_kiemeles_style) { %url_kiemeles_unset = %url_kiemeles_unset $+  }
-      var %link = %url_kiemeles_style $+ % [ $+ rss_tmp_ $+ [ %feedname ] $+ _link ] $+ %url_kiemeles_unset
+      var %fancylink = %url_kiemeles_style $+ % [ $+ rss_tmp_ $+ [ %feedname ] $+ _link ] $+ %url_kiemeles_unset
 
       var %displayed = 0
       var %titleanddescmatch = 0
-      if ($len(% [ $+ rss_tmp_ $+ [ %feedname ] $+ _title ]) > 0 && % [ $+ rss_tmp_ $+ [ %feedname ] $+ _title ] == % [ $+ rss_tmp_ $+ [ %feedname ] $+ _description ]) { %titleanddescmatch = 1 }
-      if ($hget(rss,%feedname $+ _cim_kiirasa) && $len(% [ $+ rss_tmp_ $+ [ %feedname ] $+ _title ]) > 0) {
+      var %title = % [ $+ rss_tmp_ $+ [ %feedname ] $+ _title ]
+      var %description = % [ $+ rss_tmp_ $+ [ %feedname ] $+ _description ]
+      var %link = % [ $+ rss_tmp_ $+ [ %feedname ] $+ _link ]
+
+      if ($len(%title) > 0 && %title == %description) { %titleanddescmatch = 1 }
+      if ($hget(rss,%feedname $+ _cim_kiirasa) && $len(%title) > 0) {
         var %timestring = $null
         if ($hget(rss,%feedname $+ _ido_kiirasa_a_cimbe)) {
-          %timestring = ( $+ $asctime( $calc(%pubdate + (-1 * $timezone)),yyyy. mm. dd. HH:nn:ss) $+ )
+          %timestring = ( $+ $asctime( $calc(%pubdate + (-1 * $timezone)),yyyy/mm/dd HH:nn:ss) $+ )
         }
 
         if (%titleanddescmatch) {
-          rss_echo $color(notice) -tg %feedname *** RSS ( $+ $color(nick) $+  $+ %feedname $+ ): $+ $color(nick) % [ $+ rss_tmp_ $+ [ %feedname ] $+ _title ] %timestring
-          rss_msgtochannels %feedname (netZ RSS) ( $+ %feedname $+ ): % [ $+ rss_tmp_ $+ [ %feedname ] $+ _title ] %timestring
+          rss_echo $color(notice) -tg %feedname *** RSS ( $+ $color(nick) $+  $+ %feedname $+ ): $+ $color(nick) %title  $+ $color(notice) $+ %timestring
+          rss_msgtochannels %feedname (netZ RSS) ( $+ %feedname $+ ): %title %timestring
         }
         else {
-          rss_echo $color(notice) -tg %feedname *** RSS ( $+ $color(nick) $+  $+ %feedname $+ ): $+ $color(nick) % [ $+ rss_tmp_ $+ [ %feedname ] $+ _title ]  $+ %timestring
-          rss_msgtochannels %feedname (netZ RSS) ( $+ %feedname $+ ): % [ $+ rss_tmp_ $+ [ %feedname ] $+ _title ]  $+ %timestring
+          rss_echo $color(notice) -tg %feedname *** RSS ( $+ $color(nick) $+  $+ %feedname $+ ): $+ $color(nick) %title  $+ $color(notice) $+  $+ %timestring
+          rss_msgtochannels %feedname (netZ RSS) ( $+ %feedname $+ ): %title  $+ %timestring
         }
         %displayed = 1
       }
-      if ($hget(rss,%feedname $+ _leiras_kiirasa) && !%titleanddescmatch && $len(% [ $+ rss_tmp_ $+ [ %feedname ] $+ _description ]) > 0 && % [ $+ rss_tmp_ $+ [ %feedname ] $+ _description ] != Nincs $+ $chr(32) $+ leírás) {
-        rss_echo $color(notice) -tg %feedname *** RSS ( $+ $color(nick) $+  $+ %feedname $+ ): $+ $color(nick) % [ $+ rss_tmp_ $+ [ %feedname ] $+ _description ]
-        rss_msgtochannels %feedname (netZ RSS) ( $+ %feedname $+ ): % [ $+ rss_tmp_ $+ [ %feedname ] $+ _description ]
+      if ($hget(rss,%feedname $+ _leiras_kiirasa) && !%titleanddescmatch && $len(%description) > 0 && %description != Nincs $+ $chr(32) $+ leírás) {
+        rss_echo $color(notice) -tg %feedname *** RSS ( $+ $color(nick) $+  $+ %feedname $+ ): $+ $color(nick) %description
+        rss_msgtochannels %feedname (netZ RSS) ( $+ %feedname $+ ): %description
         %displayed = 1
       }
-      if ($hget(rss,%feedname $+ _link_kiirasa) && $len(% [ $+ rss_tmp_ $+ [ %feedname ] $+ _link ]) > 0) {
-        rss_echo $color(notice) -tg %feedname *** RSS ( $+ $color(nick) $+  $+ %feedname $+ ): %link
-        rss_msgtochannels %feedname (netZ RSS) ( $+ %feedname $+ ): % [ $+ rss_tmp_ $+ [ %feedname ] $+ _link ]
+      if ($hget(rss,%feedname $+ _link_kiirasa) && $len(%link) > 0) {
+        rss_echo $color(notice) -tg %feedname *** RSS ( $+ $color(nick) $+  $+ %feedname $+ ): %fancylink
+        rss_msgtochannels %feedname (netZ RSS) ( $+ %feedname $+ ): %link
         %displayed = 1
       }
       if ($hget(rss,%feedname $+ _buborek)) {
-        var %tip = $tip(%feedname, %feedname $+ : % [ $+ rss_tmp_ $+ [ %feedname ] $+ _title ], % [ $+ rss_tmp_ $+ [ %feedname ] $+ _description ], $null, system\img\feed.ico, $null, /run % [ $+ rss_tmp_ $+ [ %feedname ] $+ _link ] )
+        var %tip = $tip(%feedname, %feedname $+ : %title, %description, $null, system\img\feed.ico, $null, /run %link )
       }
       if (%displayed) {
         inc % [ $+ rss_tmp_ $+ [ %feedname ] $+ _displayed ] 1
