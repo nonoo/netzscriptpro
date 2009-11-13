@@ -511,6 +511,7 @@
 /f4 { /wp }
 /f6 { /emailer }
 /f5 { /checkmail }
+/sf5 { /rss }
 /f7 {
   if ($active == Status Window) { halt }
   var %greet = $hget(data,$cid $+ koszones $+ $active)
