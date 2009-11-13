@@ -880,7 +880,7 @@ on 1:sockread:rss_*: {
     var %pubdateend = $calc( $pos( $mid(%temp,%pubdatestart,$calc($len(%temp) - %pubdatestart)) ,</pubDate,1) - 1)
     var %lastmodtime = $httpdate($mid(%temp,%pubdatestart,%pubdateend))
     if (%lastmodtime && $hget(rss,%feedname $+ _lastupdate) && %lastmodtime <= $hget(rss,%feedname $+ _lastupdate)) {
-      if (!% [ $+ rss_tmp_ $+ [ $1 ] $+ _quiet ]) { /rss_echo $color(notice) -tng $1 *** RSS ( $+ %feedname $+ ): nincs új bejegyzés. }
+      if (!% [ $+ rss_tmp_ $+ [ %feedname ] $+ _quiet ]) { /rss_echo $color(notice) -tng $1 *** RSS ( $+ %feedname $+ ): nincs új bejegyzés. }
       % [ $+ rss_tmp_ $+ [ %feedname ] $+ _noanalyze ] = 1
       sockclose rss_ $+ %feedname
       return
@@ -889,7 +889,7 @@ on 1:sockread:rss_*: {
   if ($left(%temp,14) == Last-Modified:) {
     var %lastmodtime = $httpdate($mid(%temp,16,$calc($len(%temp) - 15)))
     if (%lastmodtime && $hget(rss,%feedname $+ _lastupdate) && %lastmodtime <= $hget(rss,%feedname $+ _lastupdate)) {
-      if (!% [ $+ rss_tmp_ $+ [ $1 ] $+ _quiet ]) { /rss_echo $color(notice) -tng $1 *** RSS ( $+ %feedname $+ ): nincs új bejegyzés. 2 }
+      if (!% [ $+ rss_tmp_ $+ [ %feedname ] $+ _quiet ]) { /rss_echo $color(notice) -tng $1 *** RSS ( $+ %feedname $+ ): nincs új bejegyzés. }
       % [ $+ rss_tmp_ $+ [ %feedname ] $+ _noanalyze ] = 1
       sockclose rss_ $+ %feedname
       return
@@ -937,10 +937,8 @@ alias /rss_analyze {
   var %result = $dll(system\xml.dll,create_parser,rss_ $+ $1)
   if (%result != S_OK) { if (!% [ $+ rss_tmp_ $+ [ $1 ] $+ _quiet ]) { /rss_echo $color(info2) -tng $1 *** RSS hiba ( $+ $1 $+ ): nem lehet betölteni az XML értelmezõt (xml.dll)! } | return }
 
-  ;dll system\xml.dll set_handler_xmldecl rss_ $+ $1 rss_xml_hxmldecl
   dll system\xml.dll set_handler_startelement rss_ $+ $1 rss_xml_hstartelement
   dll system\xml.dll set_handler_endelement rss_ $+ $1 rss_xml_hendelement
-  ;dll system\xml.dll set_handler_attribute rss_ $+ $1 rss_xml_hattribute
   dll system\xml.dll set_handler_chardata rss_ $+ $1 rss_xml_hchardata
   dll system\xml.dll set_handler_cdata rss_ $+ $1 rss_xml_hcdata
   dll system\xml.dll set_file rss_ $+ $1 system\temp\rss_ $+ $1 $+ .xml
@@ -960,8 +958,6 @@ alias /rss_analyze {
   hadd rss $1 $+ _lastupdate $gmt
 }
 
-alias rss_xml_hxmldecl {}
-alias rss_xml_hattribute {}
 alias rss_xml_hstartelement {
   var %feedname = $remove($1,rss_)
   if (% [ $+ rss_tmp_ $+ [ %feedname ] $+ _position ]) { % [ $+ rss_tmp_ $+ [ %feedname ] $+ _position ] = % [ $+ rss_tmp_ $+ [ %feedname ] $+ _position ] $+ / }
@@ -1013,7 +1009,6 @@ alias rss_xml_hendelement {
       }
       % [ $+ rss_tmp_ $+ [ %feedname ] $+ _displayed ] = 1
     }
-    else { return -1 }
   }
 }
 alias rss_xml_hcdata {
