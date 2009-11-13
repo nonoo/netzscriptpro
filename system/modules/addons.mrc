@@ -644,6 +644,7 @@ alias /rss_rehash {
   var %rsstmp_default_aktiv_ablakba = $readini(system\rss.init,np,default,aktiv_ablakba)
   var %rsstmp_default_egyeb_ablakokba = $readini(system\rss.init,np,default,egyeb_ablakokba)
   var %rsstmp_default_csatikra = $readini(system\rss.init,np,default,csatikra)
+  var %rsstmp_default_buborek = $readini(system\rss.init,np,default,buborek)
 
   ; eloszor egyenkent vegigmegyunk a szekciokon
   .fopen rssconfig system\rss.ini
@@ -680,6 +681,7 @@ alias /rss_rehash {
       var %rsstmp_aktiv_ablakba = %rsstmp_default_aktiv_ablakba
       var %rsstmp_egyeb_ablakokba = %rsstmp_default_egyeb_ablakokba
       var %rsstmp_csatikra = %rsstmp_default_csatikra
+      var %rsstmp_buborek = %rsstmp_default_buborek
 
       while (!$feof) {
         var %fpos $fopen(rssconfig).pos
@@ -703,6 +705,7 @@ alias /rss_rehash {
         if (%param == aktiv_ablakba) { %rsstmp_aktiv_ablakba = $gettok(%line,2-,61) }
         if (%param == egyeb_ablakokba) { %rsstmp_egyeb_ablakokba = $gettok(%line,2-,61) }
         if (%param == csatikra) { %rsstmp_csatikra = $gettok(%line,2-,61) }
+        if (%param == buborek) { %rsstmp_buborek = $gettok(%line,2-,61) }
       }
 
       hadd rss %section $+ _engedelyezes %rsstmp_engedelyezes
@@ -717,6 +720,7 @@ alias /rss_rehash {
       hadd rss %section $+ _aktiv_ablakba %rsstmp_aktiv_ablakba
       hadd rss %section $+ _egyeb_ablakokba %rsstmp_egyeb_ablakokba
       hadd rss %section $+ _csatikra %rsstmp_csatikra
+      hadd rss %section $+ _buborek %rsstmp_buborek
 
       if (%rsstmp_engedelyezes) { % [ $+ rss_tmp_ $+ [ %section ] $+ _rehashed ] = 1 }
     }
@@ -928,13 +932,12 @@ alias rss_xml_hendelement {
         if (%titleanddescmatch) {
           rss_echo $color(notice) -tg %feedname *** RSS ( $+ $color(nick) $+  $+ %feedname $+ ): $+ $color(nick) % [ $+ rss_tmp_ $+ [ %feedname ] $+ _title ] %timestring
           rss_msgtochannels %feedname (netZ RSS) ( $+ %feedname $+ ): % [ $+ rss_tmp_ $+ [ %feedname ] $+ _title ] %timestring
-          %displayed = 1
         }
         else {
           rss_echo $color(notice) -tg %feedname *** RSS ( $+ $color(nick) $+  $+ %feedname $+ ): $+ $color(nick) % [ $+ rss_tmp_ $+ [ %feedname ] $+ _title ]  $+ %timestring
           rss_msgtochannels %feedname (netZ RSS) ( $+ %feedname $+ ): % [ $+ rss_tmp_ $+ [ %feedname ] $+ _title ]  $+ %timestring
-          %displayed = 1
         }
+        %displayed = 1
       }
       if ($hget(rss,%feedname $+ _leiras_kiirasa) && !%titleanddescmatch && $len(% [ $+ rss_tmp_ $+ [ %feedname ] $+ _description ]) > 0 && % [ $+ rss_tmp_ $+ [ %feedname ] $+ _description ] != Nincs $+ $chr(32) $+ leírás) {
         rss_echo $color(notice) -tg %feedname *** RSS ( $+ $color(nick) $+  $+ %feedname $+ ): $+ $color(nick) % [ $+ rss_tmp_ $+ [ %feedname ] $+ _description ]
@@ -946,7 +949,12 @@ alias rss_xml_hendelement {
         rss_msgtochannels %feedname (netZ RSS) ( $+ %feedname $+ ): % [ $+ rss_tmp_ $+ [ %feedname ] $+ _link ]
         %displayed = 1
       }
-      if (%displayed) { inc % [ $+ rss_tmp_ $+ [ %feedname ] $+ _displayed ] 1 }
+      if ($hget(rss,%feedname $+ _buborek)) {
+        var %tip = $tip(%feedname, %feedname $+ : % [ $+ rss_tmp_ $+ [ %feedname ] $+ _title ], % [ $+ rss_tmp_ $+ [ %feedname ] $+ _description ], $null, system\img\feed.ico, $null, /run % [ $+ rss_tmp_ $+ [ %feedname ] $+ _link ] )
+      }
+      if (%displayed) {
+        inc % [ $+ rss_tmp_ $+ [ %feedname ] $+ _displayed ] 1
+      }
     }
     else { dll system\xml.dll free_parser rss_ $+ %feedname }
   }
