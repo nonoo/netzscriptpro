@@ -544,4 +544,24 @@
   if ( : isin %domain ) { return $gettok(%domain,2,58) }
   else { return 80 }
 }
+/httpdate { ; ilyen formatumu datumbol csinalt timestampet: Fri, 13 Nov 2009 07:15:52 +0000
+  if (!$2) { tokenize 32 $1 }
+  var %y = $4
+  var %m = $3
+  var %d = $2
+  var %time = $5
+  var %offset = $6
+  var %offset_sign = $left(%offset,1)
+  if (%offset_sign == $chr(43) || %offset_sign == $chr(45)) { %offset = $right(%offset,4) }
+  else { %offset_sign = $chr(43) }
+  if (%offset_sign == $chr(43)) { %offset_sign = $chr(45) }
+  elseif (%offset_sign == $chr(45)) { %offset_sign = $chr(43) }
+  var %o_h = $left(%offset,2)
+  var %o_m = $right(%offset,2)
+  if (%offset == GMT) {
+    %o_h = 0
+    %o_m = 0
+  }
+  return $calc($ctime(%y %m %d %time) %offset_sign ( %o_h * 3600 + %o_m * 60 ))
+}
 ;END
