@@ -929,21 +929,7 @@ on ^1:TEXT:*:#:{
   if ($nick ishop $chan) { %plusz = % }
   if ($nick isop $chan) { %plusz = @ }
   ; urlek kiemelese
-  if (%url_kiemeles) {
-    var %i = $len(%tempszoveg)
-    while (%i > 0) {
-      if ((http:// isin $gettok(%tempszoveg,%i,32)) || (ftp:// isin $gettok(%tempszoveg,%i,32)) || (https:// isin $gettok(%tempszoveg,%i,32)))  {
-        ; ha van alahuzas, reverz, bold a kiemeles styleban, akkor azokat a kiemeles vegen ki kell kapcsolnunk
-        var %url_kiemeles_unset
-        if ( isin %url_kiemeles_style) { %url_kiemeles_unset = %url_kiemeles_unset $+  }
-        if ( isin %url_kiemeles_style) { %url_kiemeles_unset = %url_kiemeles_unset $+  }
-        if ( isin %url_kiemeles_style) { %url_kiemeles_unset = %url_kiemeles_unset $+  }
-        if ( isin %url_kiemeles_style) { %url_kiemeles_unset = %url_kiemeles_unset $+  }
-        /set -n %tempszoveg $replace(%tempszoveg,$gettok(%tempszoveg,%i,32),%url_kiemeles_style $+ $gettok(%tempszoveg,%i,32) $+ %url_kiemeles_unset)
-      }
-      dec %i 1
-    }
-  }
+  if (%url_kiemeles) { %tempszoveg = $urlkiemeles(%tempszoveg) }
   ; kiemelés+kiírás
   if ($highlight_ok(%tempszoveg)) {
     /echo $color(normal) -tm $chan %mas_bal $+  $+ %nick_highlight_szin $+ %plusz $+ $nick $+ %mas_jobb $+  $+ $color(normal) %tempszoveg
@@ -1039,21 +1025,7 @@ on ^1:TEXT:*:?:{
     /halt
   }
   ; urlek kiemelese
-  if (%url_kiemeles) {
-    var %i = $len(%tempszoveg)
-    while (%i > 0) {
-      if ((http:// isin $gettok(%tempszoveg,%i,32)) || (ftp:// isin $gettok(%tempszoveg,%i,32)) || (https:// isin $gettok(%tempszoveg,%i,32))) {
-        ; ha van alahuzas, reverz, bold a kiemeles styleban, akkor azokat a kiemeles vegen ki kell kapcsolnunk
-        var %url_kiemeles_unset
-        if ( isin %url_kiemeles_style) { %url_kiemeles_unset = %url_kiemeles_unset $+  }
-        if ( isin %url_kiemeles_style) { %url_kiemeles_unset = %url_kiemeles_unset $+  }
-        if ( isin %url_kiemeles_style) { %url_kiemeles_unset = %url_kiemeles_unset $+  }
-        if ( isin %url_kiemeles_style) { %url_kiemeles_unset = %url_kiemeles_unset $+  }
-        /set -n %tempszoveg $replace(%tempszoveg,$gettok(%tempszoveg,%i,32),%url_kiemeles_style $+ $gettok(%tempszoveg,%i,32) $+ %url_kiemeles_unset)
-      }
-      dec %i 1
-    }
-  }
+  if (%url_kiemeles) { %tempszoveg = $urlkiemeles(%tempszoveg) }
   ; üzenet kiírása
   /echo $color(normal) -tm $nick %mas_bal $+  $+ $color(nick) $+ $nick $+ %mas_jobb $+  $+ $color(normal) %tempszoveg
   ; flash, csak akkor ha az illeto mar %flash_priviknel_timeout perce nem irt privat uzenetet

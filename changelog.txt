@@ -9,7 +9,9 @@
   bekerül
 - /viewlog parancsnak már megadható, hogy milyen csati logját nyissa meg
 - új verziójú OpenSSL DLL-ek
-- twitter support (/twit parancs, F12-es setupban állítsd be a user/pass-t)
+- twitter support (/twit parancs, F12-es setupban állítsd be a user/pass-t,
+  érdemes az RSS olvasóval figyeltetni a twitter feededet és akkor rögtön
+  látod a többiek twitjeit)
 - RSS olvasó (/rss)
 
 [2.106] 2008. 03. 22. 20:30
