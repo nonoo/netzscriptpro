@@ -545,7 +545,7 @@
   else { return 80 }
 }
 /httpdate { ; ilyen formatumu datumbol csinalt timestampet: Fri, 13 Nov 2009 07:15:52 +0000
-  if (!$2) { tokenize 32 $1 }
+  tokenize 32 $1-
   var %y = $4
   var %m = $3
   var %d = $2
@@ -559,11 +559,11 @@
   var %o_h = $left(%offset,2)
   var %o_m = $right(%offset,2)
   if (%offset == GMT || %offset == UT) { %o_h = 0 | %o_m = 0 }
-  if (%offset == EST || %offset == CDT) { %offset_sign = - | %o_h = 5 | %o_m = 0 }
-  if (%offset == EDT) { %offset_sign = - | %o_h = 4 | %o_m = 0 }
-  if (%offset == MST || %offset == PDT) { %offset_sign = - | %o_h = 7 | %o_m = 0 }
-  if (%offset == MDT || %offset == CST) { %offset_sign = - | %o_h = 6 | %o_m = 0 }
-  if (%offset == PST) { %offset_sign = - | %o_h = 8 | %o_m = 0 }
+  if (%offset == EST || %offset == CDT) { %offset_sign = + | %o_h = 5 | %o_m = 0 }
+  if (%offset == EDT) { %offset_sign = + | %o_h = 4 | %o_m = 0 }
+  if (%offset == MST || %offset == PDT) { %offset_sign = + | %o_h = 7 | %o_m = 0 }
+  if (%offset == MDT || %offset == CST) { %offset_sign = + | %o_h = 6 | %o_m = 0 }
+  if (%offset == PST) { %offset_sign = + | %o_h = 8 | %o_m = 0 }
   return $calc($ctime(%y %m %d %time) %offset_sign ( %o_h * 3600 + %o_m * 60 ))
 }
 /utf8 {
@@ -658,5 +658,23 @@
     inc %i 1
   }
   return %out
+}
+/urlkiemeles {
+  set -n %tempszoveg $1-
+  if (http:// !isin %tempszoveg && https:// !isin %tempszoveg && ftp:// !isin %tempszoveg) { return %tempszoveg }
+  var %i = $numtok(%tempszoveg,32)
+  while (%i > 0) {
+    if ((http:// isin $gettok(%tempszoveg,%i,32)) || (ftp:// isin $gettok(%tempszoveg,%i,32)) || (https:// isin $gettok(%tempszoveg,%i,32)))  {
+      ; ha van alahuzas, reverz, bold a kiemeles styleban, akkor azokat a kiemeles vegen ki kell kapcsolnunk
+      var %url_kiemeles_unset
+      if ( isin %url_kiemeles_style) { %url_kiemeles_unset = %url_kiemeles_unset $+  }
+      if ( isin %url_kiemeles_style) { %url_kiemeles_unset = %url_kiemeles_unset $+  }
+      if ( isin %url_kiemeles_style) { %url_kiemeles_unset = %url_kiemeles_unset $+  }
+      if ( isin %url_kiemeles_style) { %url_kiemeles_unset = %url_kiemeles_unset $+  }
+      /set -n %tempszoveg $replace(%tempszoveg,$gettok(%tempszoveg,%i,32),%url_kiemeles_style $+ $gettok(%tempszoveg,%i,32) $+ %url_kiemeles_unset)
+    }
+    dec %i 1
+  }
+  return %tempszoveg
 }
 ;END

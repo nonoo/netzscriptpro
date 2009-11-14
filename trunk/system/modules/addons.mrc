@@ -875,6 +875,8 @@ alias /rss_analyze {
 
   % [ $+ rss_tmp_ $+ [ $1 ] $+ _position ] = $null
   % [ $+ rss_tmp_ $+ [ $1 ] $+ _displayed ] = 0
+  if (!$hget(rss,$1 $+ _lastupdate)) { hadd rss $1 $+ _lastupdate 0 }
+  % [ $+ rss_tmp_ $+ [ $1 ] $+ _latestpubdate ] = $hget(rss,$1 $+ _lastupdate)
   %result = $dll(system\xml.dll,parse_file,rss_ $+ $1)
   if (%result != S_OK) { if (!% [ $+ rss_tmp_ $+ [ $1 ] $+ _quiet ]) { /rss_echo $color(info2) -tg $1 *** RSS hiba ( $+ $1 $+ ): nem lehet értelmezni a szerver válaszát! } }
   else {
@@ -885,7 +887,7 @@ alias /rss_analyze {
 
   dll system\xml.dll free_parser rss_ $+ $1
 
-  if (% [ $+ rss_tmp_ $+ [ $1 ] $+ _displayed ]) { hadd rss $1 $+ _lastupdate $gmt }
+  hadd rss $1 $+ _lastupdate % [ $+ rss_tmp_ $+ [ $1 ] $+ _latestpubdate ]
 
   hsave rss system\rss_data.dat
   .remove system\temp\rss_ $+ $1 $+ .xml
@@ -909,70 +911,59 @@ alias rss_xml_hendelement {
   % [ $+ rss_tmp_ $+ [ %feedname ] $+ _position ] = $left(% [ $+ rss_tmp_ $+ [ %feedname ] $+ _position ], $calc($len(% [ $+ rss_tmp_ $+ [ %feedname ] $+ _position ]) - ($len($2) + 1)) )
 
   if ($2 == item) {
-    var %pubdate = % [ $+ rss_tmp_ $+ [ %feedname ] $+ _pubdate ]
-    if (%pubdate <= $gmt && ( !$hget(rss,%feedname $+ _lastupdate) || %pubdate > $hget(rss,%feedname $+ _lastupdate) ) ) {
-      ; rehash utan csak 3 bejegyzest kuldunk ki
-      if (% [ $+ rss_tmp_ $+ [ %feedname ] $+ _rehashed ] && % [ $+ rss_tmp_ $+ [ %feedname ] $+ _displayed ] >= 3) {
-        dll system\xml.dll free_parser rss_ $+ %feedname
-        return
-      }
-
-      if (% [ $+ rss_tmp_ $+ [ %feedname ] $+ _displayed ]) { rss_echo $color(background) -ng %feedname - }
-      ; ha van alahuzas, reverz, bold a kiemeles styleban, akkor azokat a kiemeles vegen ki kell kapcsolnunk
-      var %url_kiemeles_unset
-      if ( isin %url_kiemeles_style) { %url_kiemeles_unset = %url_kiemeles_unset $+  }
-      if ( isin %url_kiemeles_style) { %url_kiemeles_unset = %url_kiemeles_unset $+  }
-      if ( isin %url_kiemeles_style) { %url_kiemeles_unset = %url_kiemeles_unset $+  }
-      if ( isin %url_kiemeles_style) { %url_kiemeles_unset = %url_kiemeles_unset $+  }
-      var %fancylink = %url_kiemeles_style $+ % [ $+ rss_tmp_ $+ [ %feedname ] $+ _link ] $+ %url_kiemeles_unset
-
-      var %displayed = 0
-      var %titleanddescmatch = 0
-      var %title = % [ $+ rss_tmp_ $+ [ %feedname ] $+ _title ]
-      var %description = % [ $+ rss_tmp_ $+ [ %feedname ] $+ _description ]
-      var %link = % [ $+ rss_tmp_ $+ [ %feedname ] $+ _link ]
-
-      if ($len(%title) > 0 && %title == %description) { %titleanddescmatch = 1 }
-      if ($hget(rss,%feedname $+ _cim_kiirasa) && $len(%title) > 0) {
-        var %timestring = $null
-        if ($hget(rss,%feedname $+ _ido_kiirasa_a_cimbe)) {
-          %timestring = ( $+ $asctime( $calc(%pubdate + (-1 * $timezone)),yyyy/mm/dd HH:nn:ss) $+ )
-        }
-
-        if (%titleanddescmatch) {
-          rss_echo $color(notice) -tg %feedname *** RSS ( $+ $color(nick) $+  $+ %feedname $+ ): $+ $color(nick) %title  $+ $color(notice) $+ %timestring
-          rss_msgtochannels %feedname (netZ RSS) ( $+ %feedname $+ ): %title %timestring
-        }
-        else {
-          rss_echo $color(notice) -tg %feedname *** RSS ( $+ $color(nick) $+  $+ %feedname $+ ): $+ $color(nick) %title  $+ $color(notice) $+  $+ %timestring
-          rss_msgtochannels %feedname (netZ RSS) ( $+ %feedname $+ ): %title  $+ %timestring
-        }
-        %displayed = 1
-      }
-      if ($hget(rss,%feedname $+ _leiras_kiirasa) && !%titleanddescmatch && $len(%description) > 0 && %description != Nincs $+ $chr(32) $+ leírás) {
-        rss_echo $color(notice) -tg %feedname *** RSS ( $+ $color(nick) $+  $+ %feedname $+ ): $+ $color(nick) %description
-        rss_msgtochannels %feedname (netZ RSS) ( $+ %feedname $+ ): %description
-        %displayed = 1
-      }
-      if ($hget(rss,%feedname $+ _link_kiirasa) && $len(%link) > 0) {
-        rss_echo $color(notice) -tg %feedname *** RSS ( $+ $color(nick) $+  $+ %feedname $+ ): %fancylink
-        rss_msgtochannels %feedname (netZ RSS) ( $+ %feedname $+ ): %link
-        %displayed = 1
-      }
-      if ($hget(rss,%feedname $+ _buborek)) {
-        var %tip = $tip(%feedname, %feedname $+ : %title, %description, $null, system\img\feed.ico, $null, /run %link )
-      }
-      if (%displayed) {
-        inc % [ $+ rss_tmp_ $+ [ %feedname ] $+ _displayed ] 1
-      }
+    ; rehash utan csak 3 bejegyzest kuldunk ki
+    if (% [ $+ rss_tmp_ $+ [ %feedname ] $+ _rehashed ] && % [ $+ rss_tmp_ $+ [ %feedname ] $+ _displayed ] >= 3) {
+      dll system\xml.dll free_parser rss_ $+ %feedname
+      return
     }
-    else { dll system\xml.dll free_parser rss_ $+ %feedname }
+
+    rss_echo $color(background) -ng %feedname -
+
+    var %displayed = 0
+    var %titleanddescmatch = 0
+    var %title = % [ $+ rss_tmp_ $+ [ %feedname ] $+ _title ]
+    var %description = % [ $+ rss_tmp_ $+ [ %feedname ] $+ _description ]
+    var %link = % [ $+ rss_tmp_ $+ [ %feedname ] $+ _link ]
+
+    if ($len(%title) > 0 && %title == %description) { %titleanddescmatch = 1 }
+    if ($hget(rss,%feedname $+ _cim_kiirasa) && $len(%title) > 0) {
+      var %timestring = $null
+      if ($hget(rss,%feedname $+ _ido_kiirasa_a_cimbe)) {
+        %timestring = ( $+ $asctime( $calc(% [ $+ rss_tmp_ $+ [ %feedname ] $+ _pubdate ] + (-1 * $timezone)),yyyy/mm/dd HH:nn:ss) $+ )
+      }
+
+      if (%titleanddescmatch) {
+        rss_echo $color(notice) -tg %feedname *** RSS ( $+ $color(nick) $+  $+ %feedname $+ ): $+ $color(own) %title  $+ $color(normal) $+ %timestring
+        rss_msgtochannels %feedname (netZ RSS) ( $+ %feedname $+ ): %title %timestring
+      }
+      else {
+        rss_echo $color(notice) -tg %feedname *** RSS ( $+ $color(nick) $+  $+ %feedname $+ ): $+ $color(own) %title  $+ $color(normal) $+  $+ %timestring
+        rss_msgtochannels %feedname (netZ RSS) ( $+ %feedname $+ ): %title  $+ %timestring
+      }
+      %displayed = 1
+    }
+    if ($hget(rss,%feedname $+ _leiras_kiirasa) && !%titleanddescmatch && $len(%description) > 0 && %description != Nincs $+ $chr(32) $+ leírás) {
+      rss_echo $color(notice) -tg %feedname *** RSS ( $+ $color(nick) $+  $+ %feedname $+ ): $+ $color(normal) %description
+      rss_msgtochannels %feedname (netZ RSS) ( $+ %feedname $+ ): %description
+      %displayed = 1
+    }
+    if ($hget(rss,%feedname $+ _link_kiirasa) && $len(%link) > 0) {
+      rss_echo $color(notice) -tg %feedname *** RSS ( $+ $color(nick) $+  $+ %feedname $+ ): $+ $color(normal) %link
+      rss_msgtochannels %feedname (netZ RSS) ( $+ %feedname $+ ): $strip(%link)
+      %displayed = 1
+    }
+    if ($hget(rss,%feedname $+ _buborek) && !$appactive) {
+      var %tip = $tip(%feedname, %feedname $+ : %title, %description, $null, system\img\feed.ico, $null, /run $strip(%link) )
+    }
+    if (%displayed) {
+      inc % [ $+ rss_tmp_ $+ [ %feedname ] $+ _displayed ] 1
+    }
   }
 }
 alias rss_xml_hcdata {
   var %feedname = $remove($1,rss_)
   var %tmppos = % [ $+ rss_tmp_ $+ [ %feedname ] $+ _position ]
-  var %data = $striphtml($utf8($urldecode($2-)).dec)
+  var %data = $urlkiemeles($urldecode($utf8($striphtml($urldecode($2-))).dec))
 
   if (%tmppos == rss/channel/item/title) { % [ $+ rss_tmp_ $+ [ %feedname ] $+ _title ] = %data }
   if (%tmppos == rss/channel/item/link) { % [ $+ rss_tmp_ $+ [ %feedname ] $+ _link ] = %data }
@@ -1023,21 +1014,27 @@ alias rss_xml_hchardata {
       dll system\xml.dll free_parser rss_ $+ %feedname
       return
     }
+
+    ; a feed latestupdatejet a legfrissebb (legelso) bejegyzes pubdate-jere allitjuk
+    if (% [ $+ rss_tmp_ $+ [ %feedname ] $+ _pubdate ] > % [ $+ rss_tmp_ $+ [ %feedname ] $+ _latestpubdate ] && % [ $+ rss_tmp_ $+ [ %feedname ] $+ _pubdate ] <= $gmt) { % [ $+ rss_tmp_ $+ [ %feedname ] $+ _latestpubdate ] = % [ $+ rss_tmp_ $+ [ %feedname ] $+ _pubdate ] }
   }
   if (%tmppos == rss/channel/item/title && % [ $+ rss_tmp_ $+ [ %feedname ] $+ _title ] == $null) {
-    % [ $+ rss_tmp_ $+ [ %feedname ] $+ _title ] = $striphtml($utf8($urldecode($2-)).dec)
+    % [ $+ rss_tmp_ $+ [ %feedname ] $+ _title ] = $urlkiemeles($urldecode($utf8($striphtml($urldecode($2-))).dec))
   }
   if (%tmppos == rss/channel/item/link && % [ $+ rss_tmp_ $+ [ %feedname ] $+ _link ] == $null) {
-    % [ $+ rss_tmp_ $+ [ %feedname ] $+ _link ] = $striphtml($utf8($urldecode($2-)).dec)
+    % [ $+ rss_tmp_ $+ [ %feedname ] $+ _link ] = $urlkiemeles($urldecode($utf8($striphtml($urldecode($2-))).dec))
   }
   if (%tmppos == rss/channel/item/description && % [ $+ rss_tmp_ $+ [ %feedname ] $+ _description ] == $null) {
-    % [ $+ rss_tmp_ $+ [ %feedname ] $+ _description ] = $striphtml($utf8($urldecode($2-)).dec)
+    % [ $+ rss_tmp_ $+ [ %feedname ] $+ _description ] = $urlkiemeles($urldecode($utf8($striphtml($urldecode($2-))).dec))
   }
 }
 menu @RSS:* {
   Feedek frissítése	[/rss]: /rss
-  -
   Feedek szerkesztése: /run notepad system\rss.ini
+  -
+  rss.ini rehash	[/rss_rehash]: /rss_rehash
+  -
+  Ablak törlése	[/clear]: /clear
   -
   Ablak bezárása: /window -c $active
 }

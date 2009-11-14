@@ -786,7 +786,7 @@ on *:DIALOG:setupdialog:sclick:294: {
 ;END
 
 ;TWITTER/RSS EVENTS
-on *:DIALOG:setupdialog:sclick:331: { /run notepad system\rss.ini }
+on *:DIALOG:setupdialog:sclick:331: { /rss edit }
 ;END
 
 ;OK GOMB

@@ -192,3 +192,4 @@ Példák: - ma este 8-kor kezdõdik a Dallas:
 /datum - ugyanaz mint a /date
 /twit [üzenet] - üzenet küldése twitterre
 /rss (edit) - RSS feedek frissítése (szerkesztése)
+/rss_rehash - rss.ini újratöltése

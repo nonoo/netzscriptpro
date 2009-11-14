@@ -258,8 +258,9 @@
   if ( $chan(%i) == $1 ) || ( $chat(%i) == $remove($1,=) ) || ( $query(%i) == $1 ) { /echo $color(own) -tm $1 %en_bal $+  $+ $color(nick) $+ $me $+ %en_jobb $+  $+ $color(own) $2- | .msg $1- | return }
   if (%i >= $chan(0)) && (%i >= $query(0)) && (%i >= $chat(0)) {
     ; egyebkent meg az aktiv ablakba irjuk
-    /echo $color(notice) -atngm -m-s-g-> - $+ $1 $+ - $2-
+    /echo $color(notice) -atngm -m-s-g-> - $+ $1 $+ - $urlkiemeles($2-)
     .msg $1 $2-
+    unset %tempszoveg
     return
   }
   inc %i
