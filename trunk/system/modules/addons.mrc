@@ -475,7 +475,7 @@ alias /twit {
     did -f setupdialog 322
     return
   }
-  if ($len($1-) > 140 ) { echo $color(info2) -atng *** /twit hiba: az üzenet max. 140 karakter hosszú lehet! | return }
+  if ($len($1-) > 140 ) { echo $color(info2) -atng *** /twit hiba: az üzeneted túl hosszú ( $+ $len($1-) karakter), max. 140 karakter hosszú lehet! | return }
   twit_destroy
   if ($len($1) == 0) {
     %twittmp_showstatus = 1
