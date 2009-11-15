@@ -203,10 +203,18 @@
       %parancs = $3-
     }
     else { ; egyaltalan nincs megadva datum
-      if (: !isin $1) { /jobhasznalat | halt }
-      %datum = $asctime(yyyy/mm/dd)
-      %ido = $1
-      %parancs = $2-
+      if (+ isin $1) { ; perc mulva lett megadva
+        var %idotimestamp = $calc($ctime + ($1 * 60))
+        %datum = $asctime(%idotimestamp,yyyy/mm/dd)
+        %ido = $asctime(%idotimestamp,HH:nn)
+        %parancs = $2-
+      }
+      else {
+        if (: !isin $1) { /jobhasznalat | halt }
+        %datum = $asctime(yyyy/mm/dd)
+        %ido = $1
+        %parancs = $2-
+      }
     }
   }
 
@@ -323,10 +331,18 @@
     %uzenet = $3-
   }
   else {
-    if (: !isin $1) { /alarmhasznalat | halt }
-    %datum = $asctime(yyyy/mm/dd)
-    %ido = $1
-    %uzenet = $2-
+    if (+ isin $1) { ; perc mulva lett megadva
+      var %idotimestamp = $calc($ctime + ($1 * 60))
+      %datum = $asctime(%idotimestamp,yyyy/mm/dd)
+      %ido = $asctime(%idotimestamp,HH:nn)
+      %uzenet = $2-
+    }
+    else {
+      if (: !isin $1) { /alarmhasznalat | halt }
+      %datum = $asctime(yyyy/mm/dd)
+      %ido = $1
+      %uzenet = $2-
+    }
   }
 
   job %datum %ido /onalarm %uzenet
@@ -431,8 +447,6 @@
     return
   }
 
-  if ($2 == $null) { /ebresztohasznalat | halt }
-
   ; ebreszto leallitasa
   if ($2 == off) || ($2 == stop) {
     if (/onebreszto isin $hget(jobs,$1)) {
@@ -447,22 +461,25 @@
     }
   }
 
+  var %uzenet
+
   ; ebreszto uzenet atirasa
   if (/onebreszto isin $hget(jobs,$1)) {
+    if ($2 == $null) { %uzenet = ébresztõ }
+    else { %uzenet = $2- }
     var %datum $gettok($hget(jobs,$1),1,32)
     var %ido $gettok($hget(jobs,$1),2,32)
     var %prop $gettok($hget(jobs,$1),3,32)
     hdel jobs $1
-    hadd jobs $1 %datum %ido %prop /onebreszto $2-
+    hadd jobs $1 %datum %ido %prop /onebreszto %uzenet
     hsave jobs system\jobs.dat
 
-    /echo $color(info) -atng *** Ébresztõ $+ $1 üzenet átírva: $2-
+    /echo $color(info) -atng *** Ébresztõ $+ $1 üzenet átírva: %uzenet
     return
   }
 
   var %datum
   var %ido
-  var %uzenet
   var %times 1,2
   if ( - isin $1 ) {
     if ($3 == $null) { /ebresztohasznalat | halt }
@@ -473,7 +490,6 @@
       %datum = $2
       if (: !isin $3) { /ebresztohasznalat | halt }
       %ido = $3
-      if ($4 == $null) { /ebresztohasznalat | halt }
       %uzenet = $4-
     }
     else {
@@ -488,16 +504,25 @@
       %datum = $1
       if (: !isin $2) { /ebresztohasznalat | halt }
       %ido = $2
-      if ($3 == $null) { /ebresztohasznalat | halt }
       %uzenet = $3-
     }
     else {
-      if (: !isin $1) { /ebresztohasznalat | halt }
-      %datum = $asctime(yyyy/mm/dd)
-      %ido = $1
-      %uzenet = $2-
+      if (+ isin $1) { ; perc mulva lett megadva
+        var %idotimestamp = $calc($ctime + ($1 * 60))
+        %datum = $asctime(%idotimestamp,yyyy/mm/dd)
+        %ido = $asctime(%idotimestamp,HH:nn)
+        %uzenet = $2-
+      }
+      else {
+        if (: !isin $1) { /ebresztohasznalat | halt }
+        %datum = $asctime(yyyy/mm/dd)
+        %ido = $1
+        %uzenet = $2-
+      }
     }
   }
+
+  if ($len(%uzenet) == 0) { %uzenet = ébresztõ }
 
   job %datum %ido /onebreszto %times %uzenet
 }

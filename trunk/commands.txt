@@ -151,9 +151,9 @@ vagy on-t, vagy offot írsz oda.
 /amoba [nick] - amõbázás
 /domain [domain(pl. hu)] - országkód visszafejtés
 /viewlog (csati) - megadott/aktív csati logjának megnyitása
-/job (dátum (pl. 2007/11/06, 11/06)) vagy holnap vagy (nap(ok) neve(i), retrig, vesszõvel elválasztva)) [idõ (pl. 0:25)] [parancs] - parancs végrehajtása a megadott idõpontban, ezeket elmenti, újraindítás után is megmaradnak. Ha elsõ paraméternek egy aktív job sorszámát adjuk meg, a második paraméterrel írja felül az eredeti job parancsot.
+/job (dátum (pl. 2007/11/06, 11/06)) vagy holnap vagy (nap(ok) neve(i), retrig, vesszõvel elválasztva)) [idõ (pl. 0:25, vagy hány perc múlva, pl. +5)] [parancs] - parancs végrehajtása a megadott idõpontban, ezeket elmenti, újraindítás után is megmaradnak. Ha elsõ paraméternek egy aktív job sorszámát adjuk meg, a második paraméterrel írja felül az eredeti job parancsot.
 /alarm (paraméterezése ugyanaz, mint a /job-nak) - emlékeztetõ beállítása a megadott idõpontra, ezeket elmenti, újraindítás után is megmaradnak. Ha elsõ paraméternek egy aktív alarm sorszámát adjuk meg, a második paraméterrel írja felül az eredeti alarm üzenetet.
-/ebreszto (off) vagy (-NUM(,DELAY) NUM=hányszor aktiválódjon az ébresztõ,DELAY=hány perc legyen a késleltetés) (többi paraméter ugyanaz lehet, mint a /job-nál) - ébresztõ beállítása a megadott idõpontra, ezeket elmenti, újraindítás után is megmaradnak. Ha elsõ paraméternek egy aktív ébresztõ sorszámát adjuk meg, a második paraméterrel írja felül az eredeti ébresztõ üzenetet.
+/ebreszto (off) vagy (-NUM(,DELAY) NUM=hányszor aktiválódjon az ébresztõ,DELAY=hány perc legyen a késleltetés) (többi paraméter ugyanaz lehet, mint a /job-nál, de nem kötelezõ üzenetet megadni) - ébresztõ beállítása a megadott idõpontra, ezeket elmenti, újraindítás után is megmaradnak. Ha elsõ paraméternek egy aktív ébresztõ sorszámát adjuk meg, a második paraméterrel írja felül az eredeti ébresztõ üzenetet.
 
 Példák: - ma este 8-kor kezdõdik a Dallas:
           /alarm 20:00 kezdodik a dallas!
@@ -169,7 +169,7 @@ Példák: - ma este 8-kor kezdõdik a Dallas:
           megszûnne a job, tehát ez arra való, hogy aktiválás után se
           szûnjön meg az adott job/alarm/ébresztõ)
         - hétköznaponként reggel 7-kor ébresztõ:
-          /ebreszto hetfo,kedd,szerda,csütörtök,péntek 7:00 ébresztõõõ!
+          /ebreszto hetfo,kedd,szerda,csütörtök,péntek 7:00
           (Látható, hogy ékezettel, ékezet nélkül is elfogadja a napok neveit.
           Itt nem kell retrig, mert automatikusan retrigesnek veszi az
           eseményt, mivel több nap van megadva.)
@@ -184,6 +184,10 @@ Példák: - ma este 8-kor kezdõdik a Dallas:
           /ebreszto off
         - csütörtök délután 5-kor fodrászhoz kell indulnunk:
           /alarm csütörtök 17:00 fodrász!
+        - 10 perc múlva aratnom kell Farmvilleben:
+          /alarm +10 aratás!
+        - 3 óra múlva ébresztõ
+          /ebreszto +180 vége az alvásnak öcsém!
 
 /jobs (off) - aktív jobok listázása, off paraméter megadására törli az összes aktív jobot, FIGYELEM: mivel az alarmok, ébresztõk is jobok, ezért ez azokat is törölni fogja
 /alarms (off) - aktív alarmok listázása, off paraméter megadására törli az összes aktív alarmot
