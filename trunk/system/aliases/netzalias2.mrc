@@ -542,7 +542,10 @@
   var %cp $pos(%domain,/,1)
   if (%cp != $null) { %domain = $left(%domain,$calc(%cp - 1)) }
   if ( : isin %domain ) { return $gettok(%domain,2,58) }
-  else { return 80 }
+  else {
+    if (https:// isin $1-) { return 443 }
+    return 80
+  }
 }
 /httpdate { ; ilyen formatumu datumbol csinalt timestampet: Fri, 13 Nov 2009 07:15:52 +0000
   tokenize 32 $1-
