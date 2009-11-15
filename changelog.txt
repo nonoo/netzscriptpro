@@ -13,6 +13,9 @@
   érdemes az RSS olvasóval figyeltetni a twitter feededet és akkor rögtön
   látod a többiek twitjeit)
 - RSS olvasó (/rss)
+- /job-nak, /alarm-nak, /ebreszto-nek megadható úgy is az idõpont, hogy hány
+  perc múlva - pl. alarm 20 perc múlva: /alarm +20 fodrász
+- /ebreszto-nek már nem kötelezõ ébresztési üzenetet megadni
 
 [2.106] 2008. 03. 22. 20:30
 - ban nem hosszú n, javítva mindenhol (pl. bannolás -> banolás) (köszi rulez)
