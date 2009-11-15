@@ -613,7 +613,7 @@ alias twit_xml_hchardata {
         /echo $color(nick) -atng *** twitter: %twittmp_changedtextnotice
         /echo $color(nick) -atng *** twitter: %data
       }
-      else { /echo $color(nick) -atng *** twitter: twit elküldve! }
+      else { /echo $color(nick) -atng *** twitter: twit elküldve: %data }
     }
   }
   else { ; statusz lekeres

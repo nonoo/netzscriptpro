@@ -194,6 +194,6 @@ Példák: - ma este 8-kor kezdõdik a Dallas:
 /ebresztok (off) - aktív ébresztõk listázása, off paraméter megadására törli az összes aktív ébresztõt
 /date - mai dátum kiírása
 /datum - ugyanaz mint a /date
-/twit [üzenet] - üzenet küldése twitterre
+/twit (üzenet) - üzenet küldése twitterre, paraméter nélkül az aktuális státuszod mutatja
 /rss (edit) - RSS feedek frissítése (szerkesztése)
 /rss_rehash - rss.ini újratöltése
