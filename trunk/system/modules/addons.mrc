@@ -468,162 +468,162 @@ alias /ml {
 ;END
 
 ;TWITTER
-alias /twit {
+alias /tweet {
   if (!%twitter_acc || !%twitter_pass) {
-    echo $color(info2) -atng *** /twit hiba: nincs beállítva a twitter elérésed!
+    echo $color(info2) -atng *** /tweet hiba: nincs beállítva a twitter elérésed!
     /setup
     did -f setupdialog 322
     return
   }
-  if ($len($1-) > 140 ) { echo $color(info2) -atng *** /twit hiba: az üzeneted túl hosszú ( $+ $len($1-) karakter), max. 140 karakter hosszú lehet! | return }
-  twit_destroy
+  if ($len($1-) > 140 ) { echo $color(info2) -atng *** /tweet hiba: az üzeneted túl hosszú ( $+ $len($1-) karakter), max. 140 karakter hosszú lehet! | return }
+  tweet_destroy
   if ($len($1) == 0) {
-    %twittmp_showstatus = 1
+    %tweettmp_showstatus = 1
   }
   else {
-    %twittmp_showstatus = 0
+    %tweettmp_showstatus = 0
   }
-  %twittmp_msg = $1-
+  %tweettmp_msg = $1-
   echo $color(info) -atng *** twitter: kapcsolódás...
-  sockopen twit twitter.com 80
+  sockopen tweet twitter.com 80
 }
-alias /twit_destroy {
-  unset %twittmp_*
-  sockclose twit
-  .remove system\temp\twit.xml
+alias /tweet_destroy {
+  unset %tweettmp_*
+  sockclose tweet
+  .remove system\temp\tweet.xml
 }
 
-on 1:sockopen:twit: {
+on 1:sockopen:tweet: {
   if ($sockerr > 0) { /echo $color(info2) -atng *** twitter hiba: nem lehet kapcsolódni a twitter.com-ra! | halt }
-  write -c system\temp\twit.xml
+  write -c system\temp\tweet.xml
 
   var %authtmp $base64(%twitter_acc $+ : $+ $dekod(%twitter_pass)).enc
-  if (!%twittmp_showstatus) {
+  if (!%tweettmp_showstatus) {
     echo $color(info) -atng *** twitter: küldés...
-    sockwrite -n twit POST /statuses/update.xml HTTP/1.0
-    sockwrite -n twit Accept: */*
-    sockwrite -n twit Accept-Language: en-us
-    sockwrite -n twit Content-Type: application/x-www-form-urlencoded
-    var %tmp status= $+ $urlencode($utf8(%twittmp_msg).enc)
-    sockwrite -n twit Content-Length: $len(%tmp)
-    sockwrite -n twit Authorization: Basic %authtmp
-    sockwrite -n twit User-Agent: netZ Script Pro v $+ %ver
-    sockwrite -n twit Connection: close
-    sockwrite -n twit Host: twitter.com
-    sockwrite -n twit
-    sockwrite -n twit %tmp
-    sockwrite -n twit
+    sockwrite -n tweet POST /statuses/update.xml HTTP/1.0
+    sockwrite -n tweet Accept: */*
+    sockwrite -n tweet Accept-Language: en-us
+    sockwrite -n tweet Content-Type: application/x-www-form-urlencoded
+    var %tmp status= $+ $urlencode($utf8(%tweettmp_msg).enc)
+    sockwrite -n tweet Content-Length: $len(%tmp)
+    sockwrite -n tweet Authorization: Basic %authtmp
+    sockwrite -n tweet User-Agent: netZ Script Pro v $+ %ver
+    sockwrite -n tweet Connection: close
+    sockwrite -n tweet Host: twitter.com
+    sockwrite -n tweet
+    sockwrite -n tweet %tmp
+    sockwrite -n tweet
   }
   else {
     echo $color(info) -atng *** twitter: státusz lekérése...
-    sockwrite -n twit GET /users/show/ $+ %twitter_acc $+ .xml HTTP/1.0
-    sockwrite -n twit Accept: */*
-    sockwrite -n twit Accept-Language: en-us
-    sockwrite -n twit Authorization: Basic %authtmp
-    sockwrite -n twit User-Agent: netZ Script Pro v $+ %ver
-    sockwrite -n twit Connection: close
-    sockwrite -n twit Host: twitter.com
-    sockwrite -n twit
+    sockwrite -n tweet GET /users/show/ $+ %twitter_acc $+ .xml HTTP/1.0
+    sockwrite -n tweet Accept: */*
+    sockwrite -n tweet Accept-Language: en-us
+    sockwrite -n tweet Authorization: Basic %authtmp
+    sockwrite -n tweet User-Agent: netZ Script Pro v $+ %ver
+    sockwrite -n tweet Connection: close
+    sockwrite -n tweet Host: twitter.com
+    sockwrite -n tweet
   }
 }
-on 1:sockread:twit: {
+on 1:sockread:tweet: {
   var &temp
   :ujraolvas
   sockread &temp
   if (!$sockbr) { return }
-  bwrite system\temp\twit.xml -1 &temp
+  bwrite system\temp\tweet.xml -1 &temp
   goto ujraolvas
 }
-on 1:sockclose:twit: { twit_analyzeresponse | twit_destroy }
+on 1:sockclose:tweet: { tweet_analyzeresponse | tweet_destroy }
 
-alias /twit_analyzeresponse {
-  if ( !$isfile(system\temp\twit.xml) ) { /echo $color(info2) -atng *** twitter hiba: nem érkezett válasz a szervertõl, próbáld újra! | return }
+alias /tweet_analyzeresponse {
+  if ( !$isfile(system\temp\tweet.xml) ) { /echo $color(info2) -atng *** twitter hiba: nem érkezett válasz a szervertõl, próbáld újra! | return }
 
-  var %result = $dll(system\xml.dll,create_parser,twit)
+  var %result = $dll(system\xml.dll,create_parser,tweet)
   if (%result != S_OK) { /echo $color(info2) -atng *** twitter hiba: nem lehet betölteni az XML értelmezõt (xml.dll)! | return }
 
-  ;dll system\xml.dll set_handler_xmldecl twit twit_xml_hxmldecl
-  dll system\xml.dll set_handler_startelement twit twit_xml_hstartelement
-  dll system\xml.dll set_handler_endelement twit twit_xml_hendelement
-  ;dll system\xml.dll set_handler_attribute twit twit_xml_hattribute
-  dll system\xml.dll set_handler_chardata twit twit_xml_hchardata
-  ;dll system\xml.dll set_handler_cdata twit twit_xml_hcdata
-  dll system\xml.dll set_file twit system\temp\twit.xml
+  ;dll system\xml.dll set_handler_xmldecl tweet tweet_xml_hxmldecl
+  dll system\xml.dll set_handler_startelement tweet tweet_xml_hstartelement
+  dll system\xml.dll set_handler_endelement tweet tweet_xml_hendelement
+  ;dll system\xml.dll set_handler_attribute tweet tweet_xml_hattribute
+  dll system\xml.dll set_handler_chardata tweet tweet_xml_hchardata
+  ;dll system\xml.dll set_handler_cdata tweet tweet_xml_hcdata
+  dll system\xml.dll set_file tweet system\temp\tweet.xml
 
-  %twittmp_position = $null
-  %twittmp_gotstatus = 0
-  %twittmp_changedtextnotice = FIGYELEM: a státuszod a következõ lett (lehet, hogy már írtad korábban ezt a szöveget):
-  %result = $dll(system\xml.dll,parse_file,twit)
+  %tweettmp_position = $null
+  %tweettmp_gotstatus = 0
+  %tweettmp_changedtextnotice = FIGYELEM: a státuszod a következõ lett (lehet, hogy már írtad korábban ezt a szöveget):
+  %result = $dll(system\xml.dll,parse_file,tweet)
   if (%result != S_OK) { /echo $color(info2) -atng *** twitter hiba: nem lehet értelmezni a szerver válaszát! }
 
-  if (!%twittmp_gotstatus && !%twittmp_error) { /echo $color(info2) -atng *** twitter hiba: nem volt bent a státusz a szerver válaszában (valószínûleg privát vagy és rossz jelszót adtál meg)! }
+  if (!%tweettmp_gotstatus && !%tweettmp_error) { /echo $color(info2) -atng *** twitter hiba: nem volt bent a státusz a szerver válaszában (valószínûleg privát vagy és rossz jelszót adtál meg)! }
 
-  dll system\xml.dll free_parser twit
+  dll system\xml.dll free_parser tweet
 }
 
-alias twit_xml_hxmldecl {}
-alias twit_xml_hattribute {}
-alias twit_xml_hcdata {}
-alias twit_xml_hstartelement {
-  if (%twittmp_position) { %twittmp_position = %twittmp_position $+ / }
-  %twittmp_position = %twittmp_position $+ $2
+alias tweet_xml_hxmldecl {}
+alias tweet_xml_hattribute {}
+alias tweet_xml_hcdata {}
+alias tweet_xml_hstartelement {
+  if (%tweettmp_position) { %tweettmp_position = %tweettmp_position $+ / }
+  %tweettmp_position = %tweettmp_position $+ $2
 }
-alias twit_xml_hendelement {
-  %twittmp_position = $left(%twittmp_position, $calc($len(%twittmp_position) - ($len($2) + 1)) )
+alias tweet_xml_hendelement {
+  %tweettmp_position = $left(%tweettmp_position, $calc($len(%tweettmp_position) - ($len($2) + 1)) )
 }
-alias twit_xml_hchardata {
-  if (!%twittmp_position) { ; http fejlecek
+alias tweet_xml_hchardata {
+  if (!%tweettmp_position) { ; http fejlecek
     if (503 $+ $chr(32) $+ Service $+ $chr(32) $+ Unavailable isin $2-) {
       /echo $color(info2) -atng *** twitter hiba: a szerver túlterhelt (503 Service Unavailable)!
-      %twittmp_error = 1
-      dll system\xml.dll free_parser twit
+      %tweettmp_error = 1
+      dll system\xml.dll free_parser tweet
     }
     if (500 $+ $chr(32) $+ Internal $+ $chr(32) $+ Server $+ $chr(32) $+ Error isin $2-) {
       /echo $color(info2) -atng *** twitter hiba: szerver hiba (500 Internal Server Error)!
-      %twittmp_error = 1
-      dll system\xml.dll free_parser twit
+      %tweettmp_error = 1
+      dll system\xml.dll free_parser tweet
     }
     if (404 $+ $chr(32) $+ Not $+ $chr(32) $+ Found isin $2-) {
       /echo $color(info2) -atng *** twitter hiba: nem található a megadott cím (404 Not Found)!
-      %twittmp_error = 1
-      dll system\xml.dll free_parser twit
+      %tweettmp_error = 1
+      dll system\xml.dll free_parser tweet
     }
     if (401 $+ $chr(32) $+ Unauthorized isin $2-) {
       /echo $color(info2) -atng *** twitter hiba: nem lehet autentikálni (401 Unauthorized), valószínûleg hibás a megadott felhasználónév/jelszó!
-      %twittmp_error = 1
-      dll system\xml.dll free_parser twit
+      %tweettmp_error = 1
+      dll system\xml.dll free_parser tweet
     }
     if (403 $+ $chr(32) $+ Forbidden isin $2-) {
       /echo $color(info2) -atng *** twitter hiba: elérési hiba (403 Forbidden)!
-      %twittmp_error = 1
-      dll system\xml.dll free_parser twit
+      %tweettmp_error = 1
+      dll system\xml.dll free_parser tweet
     }
     return
   }
 
   var %data = $urldecode($2-)
-  if (!%twittmp_showstatus) { ; twit kuldes
-    if ( %twittmp_position == status/truncated && %data == true ) {
+  if (!%tweettmp_showstatus) { ; tweet kuldes
+    if ( %tweettmp_position == status/truncated && %data == true ) {
       /echo $color(nick) -atng *** twitter: FIGYELEM: túl hosszú volt az üzeneted!
-      %twittmp_changedtextnotice = a státuszod a következõ lett:
+      %tweettmp_changedtextnotice = a státuszod a következõ lett:
     }
-    if ( %twittmp_position == status/text ) {
-      %twittmp_gotstatus = 1
-      if ( %data != %twittmp_msg ) {
-        /echo $color(nick) -atng *** twitter: %twittmp_changedtextnotice
+    if ( %tweettmp_position == status/text ) {
+      %tweettmp_gotstatus = 1
+      if ( %data != %tweettmp_msg ) {
+        /echo $color(nick) -atng *** twitter: %tweettmp_changedtextnotice
         /echo $color(nick) -atng *** twitter: %data
       }
-      else { /echo $color(nick) -atng *** twitter: twit elküldve: %data }
+      else { /echo $color(nick) -atng *** twitter: tweet elküldve: %data }
     }
   }
   else { ; statusz lekeres
-    if ( %twittmp_position == user/status/text ) {
+    if ( %tweettmp_position == user/status/text ) {
       /echo $color(nick) -atng *** twitter: a jelenlegi státuszod: %data
-      %twittmp_gotstatus = 1
+      %tweettmp_gotstatus = 1
     }
   }
 
-  if ( %twittmp_position == hash/error ) {
+  if ( %tweettmp_position == hash/error ) {
     /echo $color(info2) -atng *** twitter hibaüzenet: %data
   }
 }
