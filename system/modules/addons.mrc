@@ -968,7 +968,7 @@ alias rss_xml_hendelement {
         %timestring = ( $+ $asctime( $calc(% [ $+ rss_tmp_ $+ [ %feedname ] $+ _pubdate ] + (-1 * $timezone)),yyyy/mm/dd HH:nn:ss) $+ )
       }
 
-      rss_echo $color(notice) -tg %feedname *** RSS ( $+ $color(nick) $+  $+ %feedname $+ ): $+ $color(own) %title  $+ $color(normal) $+  $+ %timestring
+      rss_echo $color(notice) -tg %feedname *** RSS ( $+ $color(nick) $+  $+ %feedname $+ ): $+ $color(own) $urlkiemelesutaniszin($color(own),%title)  $+ $color(normal) $+  $+ %timestring
       rss_msgtochannels %feedname (netZ RSS) ( $+ %feedname $+ ): %title  $+ %timestring
       %displayed = 1
     }

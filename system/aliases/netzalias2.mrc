@@ -680,4 +680,7 @@
   }
   return %tempszoveg
 }
+/urlkiemelesutaniszin {
+  return $replace($2-, $+ $chr(32), $+ $1 $+ $chr(32),, $+ $1 $+ ,, $+ $1 $+ )
+}
 ;END
