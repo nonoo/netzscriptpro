@@ -336,8 +336,8 @@ on 1:sockopen:szotar: {
   %resfigy = 0
   /echo $color(background) -ang -
   /echo $color(info) -atng *** $+ $color(nick) %nyelvfrom $+ 2 $+ %nyelvto  $+ $color(info) $+ listázás $+ : $+ $color(nick) %szo
-  sockwrite -n szotar GET http://szotar.sztaki.hu/dict_search.php?L= $+ %nyelvfrom $+ : $+ %nyelvto $+ : $+ %szotar $+ &S=W&M=3&wap_exp=1&W= $+ $replace(%szo,$chr(32),+) HTTP/1.1
-  sockwrite -n szotar Host: szotar.sztaki.hu:80
+  sockwrite -n szotar GET /dict_search.php?L= $+ %nyelvfrom $+ : $+ %nyelvto $+ : $+ %szotar $+ &S=W&M=3&wap_exp=1&W= $+ $replace(%szo,$chr(32),+) HTTP/1.0
+  sockwrite -n szotar Host: szotar.sztaki.hu
   sockwrite -n szotar Accept: */*
   sockwrite -n szotar Accept-Language: en-us
   sockwrite -n szotar User-Agent: netZ Script Pro v $+ %ver
@@ -500,7 +500,7 @@ on 1:sockopen:twit: {
   var %authtmp $base64(%twitter_acc $+ : $+ $dekod(%twitter_pass)).enc
   if (!%twittmp_showstatus) {
     echo $color(info) -atng *** twitter: küldés...
-    sockwrite -n twit POST http://twitter.com/statuses/update.xml HTTP/1.1
+    sockwrite -n twit POST /statuses/update.xml HTTP/1.0
     sockwrite -n twit Accept: */*
     sockwrite -n twit Accept-Language: en-us
     sockwrite -n twit Content-Type: application/x-www-form-urlencoded
@@ -509,20 +509,20 @@ on 1:sockopen:twit: {
     sockwrite -n twit Authorization: Basic %authtmp
     sockwrite -n twit User-Agent: netZ Script Pro v $+ %ver
     sockwrite -n twit Connection: close
-    sockwrite -n twit Host: twitter.com:80
+    sockwrite -n twit Host: twitter.com
     sockwrite -n twit
     sockwrite -n twit %tmp
     sockwrite -n twit
   }
   else {
     echo $color(info) -atng *** twitter: státusz lekérése...
-    sockwrite -n twit GET http://twitter.com/users/show/ $+ %twitter_acc $+ .xml HTTP/1.1
+    sockwrite -n twit GET /users/show/ $+ %twitter_acc $+ .xml HTTP/1.0
     sockwrite -n twit Accept: */*
     sockwrite -n twit Accept-Language: en-us
     sockwrite -n twit Authorization: Basic %authtmp
     sockwrite -n twit User-Agent: netZ Script Pro v $+ %ver
     sockwrite -n twit Connection: close
-    sockwrite -n twit Host: twitter.com:80
+    sockwrite -n twit Host: twitter.com
     sockwrite -n twit
   }
 }
@@ -856,20 +856,23 @@ alias /rss_check { ; params: feedname, jump
 on 1:sockopen:rss_*: {
   var %feedname = $remove($sockname,rss_)
   if ($sockerr > 0) { if (!% [ $+ rss_tmp_ $+ [ %feedname ] $+ _quiet ]) { /rss_echo $color(info2) -tg %feedname *** RSS hiba ( $+ %feedname $+ ): nem lehet kapcsolódni a szerverre! } | return }
-  if (!% [ $+ rss_tmp_ $+ [ %feedname ] $+ _quiet ]) { /rss_echo $color(notice) -tng %feedname *** RSS ( $+ %feedname $+ ): letöltés... }
+  var %url = $hget(rss,%feedname $+ _url)
+  if (!% [ $+ rss_tmp_ $+ [ %feedname ] $+ _quiet ]) { /rss_echo $color(notice) -tng %feedname *** RSS ( $+ %feedname $+ ): letöltés: %url }
   write -c system\temp\rss_ $+ %feedname $+ .xml
 
   var %authtmp
   if ($hget(rss,%feedname $+ _felhasznalonev) != $null) {
     %authtmp = $base64($hget(rss,%feedname $+ _felhasznalonev) $+ : $+ $hget(rss,%feedname $+ _jelszo)).enc
   }
-  var %url = $hget(rss,%feedname $+ _url)
-  sockwrite -n $sockname GET %url HTTP/1.1
+  ; http://valami.com/egyketto -> /egyketto
+  var %url2 = $right(%url,$calc($len(%url) - $pos(%url,/,3) + 1))
+  if (%url2 == $null || !$pos(%url,/,3)) { %url2 = / }
+  sockwrite -n $sockname GET %url2 HTTP/1.0
   sockwrite -n $sockname Accept: */*
   if (%authtmp) { sockwrite -n $sockname Authorization: Basic %authtmp }
   sockwrite -n $sockname User-Agent: netZ Script Pro v $+ %ver
   sockwrite -n $sockname Connection: close
-  sockwrite -n $sockname Host: $gethostnamefromurl(%url) $+ : $+ $getportfromurl(%url)
+  sockwrite -n $sockname Host: $gethostnamefromurl(%url)
   sockwrite -n $sockname
 }
 on 1:sockread:rss_*: {
