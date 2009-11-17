@@ -983,6 +983,7 @@ alias rss_xml_hendelement {
       %displayed = 1
     }
     if ($hget(rss,%feedname $+ _buborek) && !$appactive) {
+      if (%description == $null) { %description = %title }
       var %tip = $tip(%feedname, %feedname $+ : %title, %description, $null, system\img\feed.ico, $null, /run $strip(%link) )
     }
     if (%displayed) {
