@@ -644,7 +644,7 @@ alias /rss {
   if ($1 == --init) { .timerRSS 0 60 .rss }
   else {
     if ($timer(RSS)) { .timerRSS off }
-    .timerRSS 0 60 .rss
+    if (%rss_auto_check) { .timerRSS 0 60 .rss }
     rss_checkall
   }
 }
