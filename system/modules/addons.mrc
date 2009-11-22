@@ -641,10 +641,10 @@ alias /rss {
 
   if (!$hget(rss,0).item || $file(system\rss.ini).mtime != %rss_ini_mtime) { rss_rehash }
 
-  if ($1 == --init) { .timerRSS 0 60 .rss }
+  if ($1 == --init) { .timerRSS -oi 0 60 .rss }
   else {
     if ($timer(RSS)) { .timerRSS off }
-    if (%rss_auto_check) { .timerRSS 0 60 .rss }
+    if (%rss_auto_check) { .timerRSS -oi 0 60 .rss }
     rss_checkall
   }
 }
