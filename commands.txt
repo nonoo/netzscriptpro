@@ -197,3 +197,5 @@ Példák: - ma este 8-kor kezdõdik a Dallas:
 /tweet (üzenet) - üzenet küldése twitterre, paraméter nélkül az aktuális státuszod mutatja
 /rss (edit) - RSS feedek frissítése (szerkesztése)
 /rss_rehash - rss.ini újratöltése
+/length [szöveg] - kiírja egy szöveg hosszát
+/len - /length

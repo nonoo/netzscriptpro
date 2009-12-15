@@ -91,6 +91,8 @@
 }
 /date { /echo $color(info) -atng *** Mai dátum: $asctime(yyyy/mm/dd) }
 /datum /date
+/len { echo $color(info) -atng *** A szöveg hossza: $len($1-) karakter }
+/length /len $1-
 ;END
 
 ;ALAP PARANCSOK
