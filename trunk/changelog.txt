@@ -1,4 +1,4 @@
-[2.107] 2009. 12.
+[2.107] 2009. 12. 17. 03:00
 - A csati topicja: '60gb-s, 160 helyett ezt írta - javítva (köszi Zoo)
 - ha noticet küldtünk valakinek és volt nyitva vele query, 2x küldte
   el azt - javítva
