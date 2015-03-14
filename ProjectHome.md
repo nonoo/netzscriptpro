@@ -1,0 +1,1 @@
+Hungarian mIRC script with many features for making chatting more comfortable.
